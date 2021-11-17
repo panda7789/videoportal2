@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Box, Typography } from '@mui/material';
+import NavigationContext from '../Navigation/NavigationContext';
 
 const Logo = () => {
+  const { setActualPage } = useContext(NavigationContext);
+
   const onClickHandler = useCallback(() => {
-    // TODO
-    console.log('kliknuto');
+    setActualPage(0);
   }, []);
 
   return (
@@ -17,6 +19,7 @@ const Logo = () => {
         height: '48px',
         width: '80px',
         pl: 1,
+        cursor: 'pointer',
       }}
       onClick={onClickHandler}
     >

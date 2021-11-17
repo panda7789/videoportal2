@@ -17,11 +17,11 @@ import {
   Toolbar,
   Typography,
   useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import MUIAvatar from '@mui/material/Avatar';
 import { TransitionProps } from '@mui/material/transitions';
 import React from 'react';
+import theme from '../../Theme';
 
 type AvatarProps = {
   inicials: string;
@@ -41,8 +41,7 @@ const Transition = React.forwardRef(
 
 const Avatar = ({ inicials }: AvatarProps) => {
   const [open, setOpen] = React.useState(false);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -67,7 +66,9 @@ const Avatar = ({ inicials }: AvatarProps) => {
         {inicials}
       </MUIAvatar>
       <Dialog
-        fullScreen={fullScreen}
+        fullScreen={!isDesktop}
+        fullWidth={isDesktop}
+        maxWidth={isDesktop ? 'xs' : false}
         open={open}
         onClose={handleClose}
         TransitionComponent={Transition}

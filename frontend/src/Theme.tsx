@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -14,7 +14,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-const themeOptions: ThemeOptions = {
+const themePalette = createTheme({
   palette: {
     primary: {
       main: '#30BCED',
@@ -24,7 +24,31 @@ const themeOptions: ThemeOptions = {
       main: '#FC5130',
     },
   },
-};
+});
+const themeComponents = createTheme({
+  components: {
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            color: themePalette.palette.primary.main,
+            '& .MuiListItemIcon-root': {
+              color: themePalette.palette.primary.main,
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
-const theme = createTheme(themeOptions);
+const theme = createTheme({ ...themePalette, components: themeComponents.components });
+
+export const CustomColors = [
+  { name: 'gray', hexValue: '#6D6D6D' },
+  { name: 'red', hexValue: '#E10050' },
+  { name: 'yellow', hexValue: '#FFB74D' },
+  { name: 'blue', hexValue: '#1976D2' },
+  { name: 'green', hexValue: '#4CAF50' },
+];
 export default theme;
