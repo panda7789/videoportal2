@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Chip, IconButton, useMediaQuery } from '@mui/material';
+import { Box, IconButton, useMediaQuery } from '@mui/material';
 import { SxProps } from '@mui/system';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import theme, { CustomColors } from '../../Theme';
+import CustomChip from './CustomChip';
 
 enum ScrollState {
   FullyLeft = 0,
@@ -34,6 +35,7 @@ const ScrollArrow = ({ direction, onClickProp, sx }: ScrollArrowInterface) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        mb: 2,
       }}
     >
       <IconButton
@@ -160,24 +162,14 @@ const ChipLine = () => {
       )}
       {subjects.map((subject, index) => {
         const actualColor = CustomColors[index % CustomColors.length]?.hexValue ?? 'primary';
+        const active = index === activeChip;
         return (
-          <Chip
+          <CustomChip
             key={subject}
-            label={subject}
-            variant="outlined"
+            text={subject}
+            color={actualColor}
             onClick={() => setActiveChip(index)}
-            className={index === activeChip ? 'chip--selected' : 'chip'}
-            sx={{
-              color: actualColor,
-              borderColor: actualColor,
-              '&.chip--selected': {
-                color: '#FFF',
-                backgroundColor: actualColor,
-              },
-              '&.chip--selected:hover': {
-                backgroundColor: actualColor,
-              },
-            }}
+            active={active}
           />
         );
       })}
