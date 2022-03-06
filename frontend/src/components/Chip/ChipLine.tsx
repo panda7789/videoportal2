@@ -3,8 +3,8 @@ import { Box, IconButton, useMediaQuery } from '@mui/material';
 import { SxProps } from '@mui/system';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import theme, { CustomColors } from '../../Theme';
-import CustomChip from './CustomChip';
+import theme from '../../Theme';
+import CustomChip, { CustomChipInterface } from './CustomChip';
 
 enum ScrollState {
   FullyLeft = 0,
@@ -53,7 +53,12 @@ const ScrollArrow = ({ direction, onClickProp, sx }: ScrollArrowInterface) => {
   );
 };
 
-const ChipLine = () => {
+interface ChipLineInterface {
+  chipData: CustomChipInterface[];
+  setActiveChipCallback?: (chipName: string) => void;
+}
+
+const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
   const [activeChip, setActiveChip] = useState(0);
   const [scrollState, setScrollState] = useState(ScrollState.FullyLeft);
   const [showScroll, setShowScroll] = useState(false);
@@ -86,6 +91,12 @@ const ChipLine = () => {
     scrollHandle();
   });
 
+  useEffect(() => {
+    if (setActiveChipCallback) {
+      setActiveChipCallback(chipData[activeChip].text);
+    }
+  }, [activeChip]);
+
   const scrollButtonHandle = (direction: ScrollDirection) => {
     const lineRefCurrent = lineRef.current;
     if (lineRefCurrent) {
@@ -98,46 +109,6 @@ const ChipLine = () => {
       }
     }
   };
-  // todo user subjects
-  const subjects = [
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-    'YPS2',
-    'YAML2',
-    'YMAT',
-    'YMAT2',
-  ];
-  subjects.unshift('VŠE');
 
   return (
     <Box
@@ -150,6 +121,7 @@ const ChipLine = () => {
         '&::-webkit-scrollbar': {
           height: '0px', // hides the scrollbar but still can scroll
         },
+        paddingBottom: 1,
       }}
       onScroll={scrollHandle}
     >
@@ -160,15 +132,21 @@ const ChipLine = () => {
           sx={{ left: 0 }}
         />
       )}
-      {subjects.map((subject, index) => {
-        const actualColor = CustomColors[index % CustomColors.length]?.hexValue ?? 'primary';
-        const active = index === activeChip;
+      <CustomChip
+        key="Vše"
+        text="Vše"
+        color="#6D6D6D"
+        onClick={() => setActiveChip(0)}
+        active={activeChip === 0}
+      />
+      {chipData.map((chip, index) => {
+        const active = index + 1 === activeChip;
         return (
           <CustomChip
-            key={subject}
-            text={subject}
-            color={actualColor}
-            onClick={() => setActiveChip(index)}
+            key={chip.text}
+            text={chip.text}
+            color={chip.color}
+            onClick={() => setActiveChip(index + 1)}
             active={active}
           />
         );

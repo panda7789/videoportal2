@@ -51,4 +51,30 @@ export const CustomColors = [
   { name: 'blue', hexValue: '#1976D2' },
   { name: 'green', hexValue: '#4CAF50' },
 ];
+
+export enum Faculty {
+  'Cyrilometodejska',
+  'Filozoficka',
+  'Lekarska',
+  'Prirodovedecka',
+  'Pedagogicka',
+  'Telesne_kultury',
+  'Pravnicka',
+  'Zdravotnich_ved',
+};
+
+export const FacultyColors = {
+  [Faculty.Cyrilometodejska]: '#9E82B5',
+  [Faculty.Filozoficka]: '#3AB0E1',
+  [Faculty.Lekarska]: '#B62846',
+  [Faculty.Prirodovedecka]: '#EB6D25',
+  [Faculty.Pedagogicka]: '#E7AE05',
+  [Faculty.Telesne_kultury]: '#099652',
+  [Faculty.Pravnicka]: '#58507F',
+  [Faculty.Zdravotnich_ved]: '#B2C918',
+};
+
+export const GetColorByFaculty = (faculty: Faculty) => {
+  return FacultyColors[faculty];
+};
 export default theme;

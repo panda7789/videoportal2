@@ -1,26 +1,84 @@
-import { Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
+import {
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+  Typography,
+  Grid,
+  IconButton,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
+import { Subject } from '../../model/Subject';
+import { GetColorByFaculty } from '../../Theme';
 import CustomChip from '../Chip/CustomChip';
 
 interface VideoCardInterface {
   title: string;
   imageSrc: string;
-  subject: string;
+  subject: Subject;
 }
 
 const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
-    <Card sx={{ width: 376, height: 280 }}>
-      <CardActionArea>
-        <CardMedia component="img" height="212" image={imageSrc} alt={imageSrc} />
-        <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-          <CustomChip text={subject} color="primary" />
-          <Typography variant="body1" component="div">
-            {title}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+    <Grid item xs={12} md={4}>
+      <Card variant="outlined">
+        <CardActionArea>
+          <CardMedia component="img" sx={{ aspectRatio: '16/9' }} image={imageSrc} alt={imageSrc} />
+          <CardContent
+            sx={{ display: 'flex', alignItems: 'center', height: 64, padding: '0 8px 0 8px' }}
+          >
+            <CustomChip text={subject.name} color={GetColorByFaculty(subject.faculty)} active />
+            <Typography
+              variant="subtitle2"
+              component="div"
+              width="100%"
+              height={48}
+              textOverflow="ellipsis"
+              overflow="hidden"
+              display="-webkit-box"
+              ml={1}
+              sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+            >
+              {title}
+            </Typography>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls="long-menu"
+              aria-expanded={open ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={handleClose}>Logout</MenuItem>
+            </Menu>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid>
   );
 };
 

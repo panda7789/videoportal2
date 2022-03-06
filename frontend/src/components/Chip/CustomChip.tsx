@@ -1,7 +1,7 @@
 import { Chip } from '@mui/material';
 import React from 'react';
 
-interface CustomChipInterface {
+export interface CustomChipInterface {
   text: string;
   onClick?: React.MouseEventHandler;
   color: string;
