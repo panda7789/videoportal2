@@ -55,7 +55,7 @@ const ScrollArrow = ({ direction, onClickProp, sx }: ScrollArrowInterface) => {
 
 interface ChipLineInterface {
   chipData: CustomChipInterface[];
-  setActiveChipCallback?: (chipName: string) => void;
+  setActiveChipCallback?: (chipName: string | null) => void;
 }
 
 const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
@@ -93,7 +93,11 @@ const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
 
   useEffect(() => {
     if (setActiveChipCallback) {
-      setActiveChipCallback(chipData[activeChip].text);
+      if (activeChip === 0) {
+        setActiveChipCallback(null);
+        return;
+      }
+      setActiveChipCallback(chipData[activeChip - 1].text);
     }
   }, [activeChip]);
 

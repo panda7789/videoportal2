@@ -34,7 +34,13 @@ const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
     <Grid item xs={12} md={4}>
       <Card variant="outlined">
         <CardActionArea>
-          <CardMedia component="img" sx={{ aspectRatio: '16/9' }} image={imageSrc} alt={imageSrc} />
+          <CardMedia
+            component="img"
+            draggable={false}
+            sx={{ aspectRatio: '16/9' }}
+            image={imageSrc}
+            alt={imageSrc}
+          />
           <CardContent
             sx={{ display: 'flex', alignItems: 'center', height: 64, padding: '0 8px 0 8px' }}
           >

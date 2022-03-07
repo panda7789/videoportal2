@@ -10,7 +10,7 @@ import { CustomChipInterface } from '../Chip/CustomChip';
 const HomePage = () => {
   const [images, setImages] = useState<[]>([]);
   const [videos, setVideos] = useState<VideoThumbnail[]>([]);
-  const [filteredSubject, setFilteredSubject] = useState(null);
+  const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
 
   const subjects: Subject[] = [
     { name: 'YAML2', teacher: 'Pan Dan', faculty: Faculty.Cyrilometodejska },
@@ -23,25 +23,41 @@ const HomePage = () => {
     'Amet et minim nostrud sunt',
     'Sit aliquip officia aliquip et fugiat anim aliquip Lorem incididunt nostrud laborum sit',
   ];
-
-  useEffect(() => {
+  const loadVideoThumbnails = () => {
+    const x: VideoThumbnail[] = [];
     for (let i = 0; i < 15; i += 1) {
       const video: VideoThumbnail = {
+        id: i.toString(),
         name: videoNames[Math.floor(Math.random() * videoNames.length)],
-        imageUrl: images[Math.floor(Math.random() * images.length)],
+        imageUrl: `https://picsum.photos/id/${
+          // eslint-disable-next-line @typescript-eslint/dot-notation
+          images[Math.floor(Math.random() * images.length)]['id']
+        }/500/280`,
         subject: subjects[Math.floor(Math.random() * subjects.length)],
       };
-      videos.push(video);
+      x.push(video);
     }
-  }, []);
+    setVideos(x);
+  };
 
   useEffect(() => {
-    fetch('https://picsum.photos/list')
+    fetch('https://picsum.photos/v2/list')
       .then((response) => response.json())
       .then((data) => {
         setImages(data.slice(0, 15));
       });
   }, []);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      loadVideoThumbnails();
+    }
+  }, [images]);
+
+  const filteredVideos = videos.filter(
+    (video) => video.subject.name === filteredSubject || filteredSubject === null,
+  );
+
   return (
     <Box>
       <ChipLine
@@ -49,20 +65,17 @@ const HomePage = () => {
           text: x.name,
           color: GetColorByFaculty(x.faculty),
         }))}
+        setActiveChipCallback={setFilteredSubject}
       />
       <Grid container spacing={1}>
-        {videos
-          .filter((video) => video.subject.name === filteredSubject || filteredSubject === null)
-          .map((video) => {
-            return (
-              <VideoCard
-                key={video.name}
-                subject={video.subject}
-                imageSrc={video.imageUrl}
-                title={video.name}
-              />
-            );
-          })}
+        {filteredVideos.map((video) => (
+          <VideoCard
+            key={video.id}
+            subject={video.subject}
+            imageSrc={video.imageUrl}
+            title={video.name}
+          />
+        ))}
       </Grid>
     </Box>
   );
