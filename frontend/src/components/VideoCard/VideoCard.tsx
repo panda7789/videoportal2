@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Subject } from '../../model/Subject';
 import { GetColorByFaculty } from '../../Theme';
 import CustomChip from '../Chip/CustomChip';
@@ -33,7 +34,7 @@ const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
   return (
     <Grid item xs={12} md={4}>
       <Card variant="outlined">
-        <CardActionArea>
+        <CardActionArea component={Link} to={`/video?id=${title}`}>
           <CardMedia
             component="img"
             draggable={false}

@@ -127,6 +127,7 @@ const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
         },
         paddingBottom: 1,
       }}
+      paddingLeft={{ xs: 1, md: 0 }}
       onScroll={scrollHandle}
     >
       {showScroll && scrollState !== ScrollState.FullyLeft && (

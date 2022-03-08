@@ -21,11 +21,7 @@ const renderPage = (actualPage: number) => {
 const Pages = () => {
   const { actualPage } = useContext(NavigationContext);
   return (
-    <Box
-      component="main"
-      padding={{ xs: 0, md: '16px 24px 24px 24px' }}
-      sx={{ flexGrow: 1, overflow: 'auto' }}
-    >
+    <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>
       <Toolbar />
       <Box>{renderPage(actualPage)}</Box>
     </Box>
