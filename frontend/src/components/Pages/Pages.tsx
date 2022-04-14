@@ -1,4 +1,4 @@
-import { Box, Toolbar, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useContext } from 'react';
 import NavigationContext from '../Navigation/NavigationContext';
 import HomePage from './HomePage';
@@ -22,8 +22,7 @@ const Pages = () => {
   const { actualPage } = useContext(NavigationContext);
   return (
     <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>
-      <Toolbar />
-      <Box>{renderPage(actualPage)}</Box>
+      <Box padding={{ xs: 0, md: '0 0 0 256px' }}>{renderPage(actualPage)}</Box>
     </Box>
   );
 };

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import ChipLine from '../Chip/ChipLine';
-import VideoCard from '../VideoCard/VideoCard';
+import VideoCard from '../VideoThumbnail/VideoCard';
 import { Faculty, GetColorByFaculty } from '../../Theme';
 import { Subject } from '../../model/Subject';
-import { VideoThumbnail } from '../../model/VideoThumbnail';
+import { VideoThumbnail } from '../../model/Video';
 import { CustomChipInterface } from '../Chip/CustomChip';
 
 const HomePage = () => {
@@ -13,9 +13,14 @@ const HomePage = () => {
   const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
 
   const subjects: Subject[] = [
-    { name: 'YAML2', teacher: 'Pan Dan', faculty: Faculty.Cyrilometodejska },
-    { name: 'YALM1', teacher: 'Pan Daň', faculty: Faculty.Prirodovedecka },
-    { name: 'MAT', teacher: 'Pan Ván', faculty: Faculty.Pedagogicka },
+    {
+      name: 'YAML2',
+      fullName: 'Algoritmy 2',
+      teacher: 'Pan Dan',
+      faculty: Faculty.Cyrilometodejska,
+    },
+    { name: 'YALM1', fullName: 'Algoritmy 1', teacher: 'Pan Daň', faculty: Faculty.Prirodovedecka },
+    { name: 'MAT', fullName: 'Matematika', teacher: 'Pan Ván', faculty: Faculty.Pedagogicka },
   ];
   const videoNames: string[] = [
     'Excepteur Lorem proident in magna ad velit duis quis fugiat eiusmod laboris ipsum enim id',

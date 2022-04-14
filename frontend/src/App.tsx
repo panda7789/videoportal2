@@ -1,4 +1,4 @@
-import { Box, ThemeProvider } from '@mui/material';
+import { Box, ThemeProvider, Toolbar } from '@mui/material';
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
@@ -17,9 +17,10 @@ function App() {
   return (
     <ThemeProvider theme={Theme}>
       <Box sx={{ display: 'flex' }}>
-        <AppBarModified />
-        <Box padding={{ xs: 0, md: '16px 24px 24px 24px' }}>
-          <BrowserRouter>
+        <BrowserRouter>
+          <AppBarModified />
+          <Box padding={{ xs: 0, md: '16px 24px 24px 24px' }} width="100%">
+            <Toolbar />
             <Routes>
               <Route
                 path="/"
@@ -30,10 +31,17 @@ function App() {
                   </NavigationContext.Provider>
                 }
               />
-              <Route path="video" element={<VideoDetail />} />
+              <Route
+                path="video"
+                element={
+                  <>
+                    <VideoDetail />
+                  </>
+                }
+              />
             </Routes>
-          </BrowserRouter>
-        </Box>
+          </Box>
+        </BrowserRouter>
       </Box>
     </ThemeProvider>
   );
