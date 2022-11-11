@@ -3,10 +3,11 @@ import { Toolbar } from '@mui/material';
 import { Box } from '@mui/system';
 import AppBarModified from 'components/AppBar/AppBar';
 import Navigation from 'components/Navigation/Navigation';
-import { Outlet } from 'react-router-dom';
-
+import { Outlet, useNavigation } from 'react-router-dom';
 
 export default function Root() {
+  const navigation = useNavigation();
+
   return (
     <>
       <AppBarModified />
@@ -14,13 +15,15 @@ export default function Root() {
         <Toolbar />
         <Navigation />
         <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>
-          <Box padding={{ xs: 0, md: '0 0 0 256px' }}>
+          <Box
+            id="detail"
+            padding={{ xs: 0, md: '0 0 0 256px' }}
+            className={navigation.state === 'loading' ? 'loading' : ''}
+          >
             <Outlet />
           </Box>
         </Box>
-        
       </Box>
     </>
-  )
+  );
 }
-

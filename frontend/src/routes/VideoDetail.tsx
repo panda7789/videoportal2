@@ -14,14 +14,13 @@ import React, { useEffect, useRef } from 'react';
 import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { UserVideoStats, Video } from 'model/Video';
+import { getVideoById, UserVideoStats, Video } from 'model/Video';
 import theme from 'Theme';
 import CustomChip from 'components/Chip/CustomChip';
 import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
-import { Form, useLoaderData } from "react-router-dom";
-
+import { useLoaderData } from 'react-router-dom';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -48,8 +47,8 @@ const videoUserStats: UserVideoStats = {
   like: true,
 };
 
-export async function loader({ params }) {
-  return getContact(params.contactId);
+export async function loader({ params }: { params: any }) {
+  return getVideoById(params.videoId);
 }
 
 function VideoDetail() {
@@ -58,8 +57,7 @@ function VideoDetail() {
   const [expanded, setExpanded] = React.useState(false);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
-  const contact = useLoaderData();
-
+  const video = useLoaderData() as Video;
 
   useEffect(() => {
     const commentsApi: CommentProps[] = [];
@@ -75,7 +73,13 @@ function VideoDetail() {
     if (commentText) {
       const comment: CommentProps = {
         text: commentText,
-        user: { id: '0', name: 'Lukáš Linhart', initials: 'LL', email: 'a@b.cz', rights: Privileges.user }, // TODO Current user
+        user: {
+          id: '0',
+          name: 'Lukáš Linhart',
+          initials: 'LL',
+          email: 'a@b.cz',
+          rights: Privileges.user,
+        }, // TODO Current user
       };
       setComments((prevState) => [comment, ...prevState]);
     }
@@ -98,16 +102,6 @@ function VideoDetail() {
     };
   }, []);
 
-  // todo fetch api by videoID
-  const VideoData: Video = {
-    id: '1',
-    name: 'Implementace GUI ve Visual Studio (Janoštík)',
-    dataUrl: '/sampleVideo.mp4',
-    imageUrl: 'https://picsum.photos/1920/1080',
-    dislikeCount: 0,
-    likeCount: 581,
-  };
-
   const ExpandMore = styled((props: ExpandMoreProps) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -125,12 +119,12 @@ function VideoDetail() {
   };
 
   return (
-    <Box height="360px">
+    <Box>
       <video ref={playerRef} className="video-js vjs-16-9" />
       <Box padding={2}>
         <Box display="flex" onClick={handleExpandClick}>
           <Typography variant="subtitle1" lineHeight="24px" width="100%">
-            {VideoData.name}
+            {video.name}
           </Typography>
           <ExpandMore expand={expanded} aria-expanded={expanded} aria-label="show more">
             <ExpandMoreIcon />
@@ -146,16 +140,12 @@ function VideoDetail() {
         </Collapse>
         <LikeDislikeMenu
           {...videoUserStats}
-          likeCount={VideoData.likeCount}
-          dislikeCount={VideoData.dislikeCount}
+          likeCount={video.likeCount}
+          dislikeCount={video.dislikeCount}
         />
         <Divider sx={{ marginTop: 2 }} />
         <Box display="flex" mt={2} alignItems="center">
-          <CustomChip
-            color="#fff"
-            text="tag1"
-            active
-          />
+          <CustomChip color="#fff" text="tag1" active />
           <Typography paddingLeft={1}>tag1</Typography>
         </Box>
         <Divider sx={{ marginTop: 2 }} />

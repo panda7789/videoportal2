@@ -1,27 +1,26 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
-import NavigationContext from './NavigationContext';
 import type { NavigationItem } from './Navigation';
+import CustomNavLink from './CustomNavLink';
 
 interface Props {
   items: NavigationItem[];
 }
 
 function AndroidNavigation({ items }: Props) {
-  const { actualPage, setActualPage } = useContext(NavigationContext);
-
   return (
     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1 }} elevation={3}>
-      <BottomNavigation
-        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
-        showLabels
-        value={actualPage}
-        onChange={(event, newValue) => {
-          setActualPage(newValue);
-        }}
-      >
+      <BottomNavigation sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} showLabels>
         {items.map((item) => {
-          return <BottomNavigationAction key={item.order} label={item.title} icon={item.icon} />;
+          return (
+            <BottomNavigationAction
+              component={CustomNavLink}
+              to={item.route}
+              key={item.order}
+              label={item.title}
+              icon={item.icon}
+            />
+          );
         })}
       </BottomNavigation>
     </Paper>

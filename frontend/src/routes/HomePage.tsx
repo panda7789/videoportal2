@@ -46,23 +46,19 @@ function HomePage() {
   }, [images]);
 
   const filteredVideos = videos.filter(
-    () => true // video.tags.contains.name === filteredSubject || filteredSubject === null,
+    () => true, // video.tags.contains.name === filteredSubject || filteredSubject === null,
   );
 
   return (
     <Box>
       <ChipLine
-        chipData={["tag1", "tag2", "tag3"].map(x => ({color: "123", text: x}))}
-        setActiveChipCallback={() => { }}
+        chipData={['tag1', 'tag2', 'tag3'].map((x) => ({ color: '123', text: x }))}
+        setActiveChipCallback={() => {}}
       />
       <Grid container spacing={1}>
-        {filteredVideos.map((video) => (
-          <VideoCard
-            key={video.id}
-            imageSrc={video.imageUrl}
-            title={video.name}
-          />
-        ))}
+        {filteredVideos.map((video) => {
+          return <VideoCard key={video.id} {...video} />;
+        })}
       </Grid>
     </Box>
   );

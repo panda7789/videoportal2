@@ -13,13 +13,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CustomChip from 'components/Chip/CustomChip';
+import { VideoThumbnail } from 'model/Video';
 
-interface VideoCardInterface {
-  title: string;
-  imageSrc: string;
-}
-
-function VideoCard({ title, imageSrc }: VideoCardInterface) {
+function VideoCard(video: VideoThumbnail) {
+  const { imageUrl, name, id } = video;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -31,13 +28,13 @@ function VideoCard({ title, imageSrc }: VideoCardInterface) {
   return (
     <Grid item xs={12} md={3}>
       <Card variant="outlined">
-        <CardActionArea component={Link} to={`/video?id=${title}`}>
+        <CardActionArea component={Link} to={`/video/${id}`}>
           <CardMedia
             component="img"
             draggable={false}
             sx={{ aspectRatio: '16/9' }}
-            image={imageSrc}
-            alt={imageSrc}
+            image={imageUrl}
+            alt={imageUrl}
           />
           <CardContent
             sx={{ display: 'flex', alignItems: 'center', height: 64, padding: '0 8px 0 8px' }}
@@ -54,7 +51,7 @@ function VideoCard({ title, imageSrc }: VideoCardInterface) {
               ml={1}
               sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
             >
-              {title}
+              {name}
             </Typography>
             <IconButton
               aria-label="more"

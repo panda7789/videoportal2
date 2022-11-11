@@ -1,41 +1,33 @@
-import React, { useCallback, useContext } from 'react';
+import React from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
-import NavigationContext from 'components/Navigation/NavigationContext';
 
 function Logo() {
-  const { setActualPage } = useContext(NavigationContext);
-
-  const onClickHandler = useCallback(() => {
-    setActualPage(0);
-  }, []);
-
   return (
-    <Link to="/">
-      <Box
+    <Box
+      component={Link}
+      to="/"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        color: '#fff',
+        height: '48px',
+        width: '80px',
+        pl: 1,
+        cursor: 'pointer',
+      }}
+    >
+      <Typography
+        variant="h4"
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          color: '#fff',
-          height: '48px',
-          width: '80px',
-          pl: 1,
-          cursor: 'pointer',
+          fontWeight: 900,
         }}
-        onClick={onClickHandler}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 900,
-          }}
-        >
-          VP
-        </Typography>
-        <PlayCircleIcon fontSize="large" />
-      </Box>
-    </Link>
+        VP
+      </Typography>
+      <PlayCircleIcon fontSize="large" />
+    </Box>
   );
 }
 export default Logo;

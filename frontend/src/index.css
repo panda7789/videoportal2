@@ -11,3 +11,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#detail.loading {
+  opacity: 0.25;
+  transition: opacity 100ms;
+  transition-delay: 100ms;
+}
