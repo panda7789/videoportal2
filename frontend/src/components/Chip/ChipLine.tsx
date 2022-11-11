@@ -3,7 +3,7 @@ import { Box, IconButton, useMediaQuery } from '@mui/material';
 import { SxProps } from '@mui/system';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import theme from '../../Theme';
+import theme from 'Theme';
 import CustomChip, { CustomChipInterface } from './CustomChip';
 
 enum ScrollState {
@@ -21,7 +21,7 @@ interface ScrollArrowInterface {
   onClickProp: React.MouseEventHandler<HTMLButtonElement>;
   sx?: SxProps;
 }
-const ScrollArrow = ({ direction, onClickProp, sx }: ScrollArrowInterface) => {
+function ScrollArrow({ direction, onClickProp, sx }: ScrollArrowInterface) {
   return (
     <Box
       width="4"
@@ -51,14 +51,14 @@ const ScrollArrow = ({ direction, onClickProp, sx }: ScrollArrowInterface) => {
       </IconButton>
     </Box>
   );
-};
+}
 
 interface ChipLineInterface {
   chipData: CustomChipInterface[];
   setActiveChipCallback?: (chipName: string | null) => void;
 }
 
-const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
+function ChipLine({ setActiveChipCallback, chipData }: ChipLineInterface) {
   const [activeChip, setActiveChip] = useState(0);
   const [scrollState, setScrollState] = useState(ScrollState.FullyLeft);
   const [showScroll, setShowScroll] = useState(false);
@@ -165,5 +165,5 @@ const ChipLine = ({ setActiveChipCallback, chipData }: ChipLineInterface) => {
       )}
     </Box>
   );
-};
+}
 export default ChipLine;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface INavigationContext {
+export interface INavigationContext {
   actualPage: number;
   setActualPage: (value: number) => void;
 }

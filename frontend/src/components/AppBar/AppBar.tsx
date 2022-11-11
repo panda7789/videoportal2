@@ -1,15 +1,15 @@
 import React from 'react';
 import { AppBar, Slide, Toolbar, useMediaQuery, useScrollTrigger } from '@mui/material';
+import theme from 'Theme';
 import Logo from './Logo';
 import Search from './Search';
 import Avatar from './Avatar';
-import theme from '../../Theme';
 
 interface Props {
   children: React.ReactElement;
 }
 
-const HideOnScroll = (props: Props) => {
+function HideOnScroll(props: Props) {
   const { children } = props;
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const trigger = useScrollTrigger();
@@ -20,9 +20,9 @@ const HideOnScroll = (props: Props) => {
       {children}
     </Slide>
   );
-};
+}
 
-const AppBarModified = () => {
+function AppBarModified() {
   return (
     <HideOnScroll>
       <AppBar
@@ -45,6 +45,6 @@ const AppBarModified = () => {
       </AppBar>
     </HideOnScroll>
   );
-};
+}
 
 export default AppBarModified;

@@ -18,8 +18,8 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ShareIcon from '@mui/icons-material/Share';
 import QueueIcon from '@mui/icons-material/Queue';
 import React from 'react';
-import theme from '../../Theme';
-import { UserVideoStats } from '../../model/Video';
+import theme from 'Theme';
+import { UserVideoStats } from 'model/Video';
 
 export interface LikeDislikeMenuProps extends UserVideoStats {
   likeCount: number;
@@ -33,13 +33,13 @@ const Item = styled(Box)(() => ({
   width: '48px',
 }));
 
-const LikeDislikeMenu = ({
+function LikeDislikeMenu({
   likeCount,
   dislikeCount,
   like,
   dislike,
   addedToPlaylist,
-}: LikeDislikeMenuProps) => {
+}: LikeDislikeMenuProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
@@ -169,5 +169,5 @@ const LikeDislikeMenu = ({
       />
     </Stack>
   );
-};
+}
 export default LikeDislikeMenu;

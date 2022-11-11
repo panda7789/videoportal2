@@ -7,7 +7,7 @@ interface Props {
   items: NavigationItem[];
 }
 
-const AndroidNavigation = ({ items }: Props) => {
+function AndroidNavigation({ items }: Props) {
   const { actualPage, setActualPage } = useContext(NavigationContext);
 
   return (
@@ -26,5 +26,5 @@ const AndroidNavigation = ({ items }: Props) => {
       </BottomNavigation>
     </Paper>
   );
-};
+}
 export default AndroidNavigation;

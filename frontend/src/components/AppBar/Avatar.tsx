@@ -21,7 +21,7 @@ import {
 import MUIAvatar from '@mui/material/Avatar';
 import { TransitionProps } from '@mui/material/transitions';
 import React from 'react';
-import theme from '../../Theme';
+import theme from 'Theme';
 
 type AvatarProps = {
   inicials: string;
@@ -39,7 +39,7 @@ const Transition = React.forwardRef(
   },
 );
 
-const Avatar = ({ inicials }: AvatarProps) => {
+function Avatar({ inicials }: AvatarProps) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
@@ -124,6 +124,6 @@ const Avatar = ({ inicials }: AvatarProps) => {
       </Dialog>
     </Box>
   );
-};
+}
 
 export default Avatar;

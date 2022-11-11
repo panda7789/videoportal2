@@ -1,10 +1,7 @@
-import { Subject } from './Subject';
-
 export type Video = {
   id: string;
   name: string;
   imageUrl: string;
-  subject: Subject;
   dataUrl: string;
   likeCount: number;
   dislikeCount: number;
@@ -22,5 +19,4 @@ export type VideoThumbnail = {
   name: string;
   url?: string;
   imageUrl: string;
-  subject: Subject;
 };

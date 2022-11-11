@@ -14,22 +14,24 @@ import React, { useEffect, useRef } from 'react';
 import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { UserVideoStats, Video } from '../model/Video';
-import theme, { Faculty, GetColorByFaculty } from '../Theme';
-import CustomChip from '../components/Chip/CustomChip';
-import Comment, { CommentProps } from '../components/Comment/Comment';
-import { UserLite } from '../model/User';
-import LikeDislikeMenu from '../components/VideoDetail/LikeDislikeMenu';
+import { UserVideoStats, Video } from 'model/Video';
+import theme from 'Theme';
+import CustomChip from 'components/Chip/CustomChip';
+import Comment, { CommentProps } from 'components/Comment/Comment';
+import { Privileges, User } from 'model/User';
+import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
+import { Form, useLoaderData } from "react-router-dom";
+
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 
-const Users: UserLite[] = [
-  { id: '1', name: 'Lillie Myers', initials: 'LM' },
-  { id: '2', name: 'Gene Rose', initials: 'GR' },
-  { id: '3', name: 'Thomas Reese', initials: 'TR' },
-  { id: '4', name: 'Tillie Guzman', initials: 'TG' },
+const Users: User[] = [
+  { id: '1', name: 'Lillie Myers', initials: 'LM', email: 'a@b.cz', rights: Privileges.user },
+  { id: '2', name: 'Gene Rose', initials: 'GR', email: 'a@b.cz', rights: Privileges.user },
+  { id: '3', name: 'Thomas Reese', initials: 'TR', email: 'a@b.cz', rights: Privileges.user },
+  { id: '4', name: 'Tillie Guzman', initials: 'TG', email: 'a@b.cz', rights: Privileges.user },
 ];
 
 const Texts: string[] = [
@@ -46,12 +48,18 @@ const videoUserStats: UserVideoStats = {
   like: true,
 };
 
-const VideoDetail = () => {
+export async function loader({ params }) {
+  return getContact(params.contactId);
+}
+
+function VideoDetail() {
   const videoSrc = '/sampleVideo.mp4';
   const playerRef = useRef<HTMLVideoElement>(null);
   const [expanded, setExpanded] = React.useState(false);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
+  const contact = useLoaderData();
+
 
   useEffect(() => {
     const commentsApi: CommentProps[] = [];
@@ -67,7 +75,7 @@ const VideoDetail = () => {
     if (commentText) {
       const comment: CommentProps = {
         text: commentText,
-        user: { id: '0', name: 'Lukáš Linhart', initials: 'LL' }, // TODO Current user
+        user: { id: '0', name: 'Lukáš Linhart', initials: 'LL', email: 'a@b.cz', rights: Privileges.user }, // TODO Current user
       };
       setComments((prevState) => [comment, ...prevState]);
     }
@@ -98,12 +106,6 @@ const VideoDetail = () => {
     imageUrl: 'https://picsum.photos/1920/1080',
     dislikeCount: 0,
     likeCount: 581,
-    subject: {
-      name: 'YAML2',
-      fullName: 'Algoritmy 2',
-      teacher: 'Pan Dan',
-      faculty: Faculty.Cyrilometodejska,
-    },
   };
 
   const ExpandMore = styled((props: ExpandMoreProps) => {
@@ -150,11 +152,11 @@ const VideoDetail = () => {
         <Divider sx={{ marginTop: 2 }} />
         <Box display="flex" mt={2} alignItems="center">
           <CustomChip
-            color={GetColorByFaculty(VideoData.subject.faculty)}
-            text={VideoData.subject.name}
+            color="#fff"
+            text="tag1"
             active
           />
-          <Typography paddingLeft={1}>{VideoData.subject.fullName}</Typography>
+          <Typography paddingLeft={1}>tag1</Typography>
         </Box>
         <Divider sx={{ marginTop: 2 }} />
         <Box mt={1}>
@@ -185,6 +187,6 @@ const VideoDetail = () => {
       </Box>
     </Box>
   );
-};
+}
 
 export default VideoDetail;

@@ -12,17 +12,14 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Subject } from '../../model/Subject';
-import { GetColorByFaculty } from '../../Theme';
-import CustomChip from '../Chip/CustomChip';
+import CustomChip from 'components/Chip/CustomChip';
 
 interface VideoCardInterface {
   title: string;
   imageSrc: string;
-  subject: Subject;
 }
 
-const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
+function VideoCard({ title, imageSrc }: VideoCardInterface) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -32,7 +29,7 @@ const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
     setAnchorEl(null);
   };
   return (
-    <Grid item xs={12} md={4}>
+    <Grid item xs={12} md={3}>
       <Card variant="outlined">
         <CardActionArea component={Link} to={`/video?id=${title}`}>
           <CardMedia
@@ -45,7 +42,7 @@ const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
           <CardContent
             sx={{ display: 'flex', alignItems: 'center', height: 64, padding: '0 8px 0 8px' }}
           >
-            <CustomChip text={subject.name} color={GetColorByFaculty(subject.faculty)} active />
+            <CustomChip text="tag1" color="#123" active />
             <Typography
               variant="subtitle2"
               component="div"
@@ -87,6 +84,6 @@ const VideoCard = ({ title, imageSrc, subject }: VideoCardInterface) => {
       </Card>
     </Grid>
   );
-};
+}
 
 export default VideoCard;

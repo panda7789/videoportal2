@@ -1,5 +1,15 @@
-export interface UserLite {
+export interface User {
   id: string;
-  initials: string;
   name: string;
+  email: string;
+  initials: string;
+  rights: Privileges;
 }
+
+export enum Privileges {
+  user,
+  videoEditor,
+  admin
+}
+
+

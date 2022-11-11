@@ -1,14 +1,14 @@
 import React from 'react';
 import { Avatar, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { UserLite } from '../../model/User';
+import { User } from 'model/User';
 
 export interface CommentProps {
-  user: UserLite;
+  user: User;
   text: string;
 }
 
-const Comment = ({ user, text }: CommentProps) => {
+function Comment({ user, text }: CommentProps) {
   return (
     <Box display="flex" paddingTop={2}>
       <Avatar>{user.initials}</Avatar>
@@ -18,6 +18,6 @@ const Comment = ({ user, text }: CommentProps) => {
       </Box>
     </Box>
   );
-};
+}
 
 export default Comment;

@@ -2,9 +2,9 @@ import React, { useCallback, useContext } from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
-import NavigationContext from '../Navigation/NavigationContext';
+import NavigationContext from 'components/Navigation/NavigationContext';
 
-const Logo = () => {
+function Logo() {
   const { setActualPage } = useContext(NavigationContext);
 
   const onClickHandler = useCallback(() => {
@@ -37,5 +37,5 @@ const Logo = () => {
       </Box>
     </Link>
   );
-};
+}
 export default Logo;

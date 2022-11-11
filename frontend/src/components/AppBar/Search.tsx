@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, Box, InputBase } from '@mui/material';
 
-const Search = () => {
+function Search() {
   const [value, setValue] = React.useState<string | null>('');
   const [inputValue, setInputValue] = React.useState('');
   const predmety = ['ISVZ', 'PDF', 'KKS', 'LOL'];
@@ -95,6 +95,6 @@ const Search = () => {
       </Box>
     </Box>
   );
-};
+}
 
 export default Search;

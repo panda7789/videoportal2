@@ -1,27 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
-import ChipLine from '../Chip/ChipLine';
-import VideoCard from '../VideoThumbnail/VideoCard';
-import { Faculty, GetColorByFaculty } from '../../Theme';
-import { Subject } from '../../model/Subject';
-import { VideoThumbnail } from '../../model/Video';
-import { CustomChipInterface } from '../Chip/CustomChip';
+import ChipLine from 'components/Chip/ChipLine';
+import VideoCard from 'components/VideoThumbnail/VideoCard';
+import { VideoThumbnail } from 'model/Video';
 
-const HomePage = () => {
+function HomePage() {
   const [images, setImages] = useState<[]>([]);
   const [videos, setVideos] = useState<VideoThumbnail[]>([]);
-  const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
+  // const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
 
-  const subjects: Subject[] = [
-    {
-      name: 'YAML2',
-      fullName: 'Algoritmy 2',
-      teacher: 'Pan Dan',
-      faculty: Faculty.Cyrilometodejska,
-    },
-    { name: 'YALM1', fullName: 'Algoritmy 1', teacher: 'Pan Daň', faculty: Faculty.Prirodovedecka },
-    { name: 'MAT', fullName: 'Matematika', teacher: 'Pan Ván', faculty: Faculty.Pedagogicka },
-  ];
   const videoNames: string[] = [
     'Excepteur Lorem proident in magna ad velit duis quis fugiat eiusmod laboris ipsum enim id',
     'Consectetur enim voluptate esse non velit tempor adipisicing adipisicing cillum',
@@ -38,7 +25,6 @@ const HomePage = () => {
           // eslint-disable-next-line @typescript-eslint/dot-notation
           images[Math.floor(Math.random() * images.length)]['id']
         }/500/280`,
-        subject: subjects[Math.floor(Math.random() * subjects.length)],
       };
       x.push(video);
     }
@@ -60,23 +46,19 @@ const HomePage = () => {
   }, [images]);
 
   const filteredVideos = videos.filter(
-    (video) => video.subject.name === filteredSubject || filteredSubject === null,
+    () => true // video.tags.contains.name === filteredSubject || filteredSubject === null,
   );
 
   return (
     <Box>
       <ChipLine
-        chipData={subjects.map<CustomChipInterface>((x) => ({
-          text: x.name,
-          color: GetColorByFaculty(x.faculty),
-        }))}
-        setActiveChipCallback={setFilteredSubject}
+        chipData={["tag1", "tag2", "tag3"].map(x => ({color: "123", text: x}))}
+        setActiveChipCallback={() => { }}
       />
       <Grid container spacing={1}>
         {filteredVideos.map((video) => (
           <VideoCard
             key={video.id}
-            subject={video.subject}
             imageSrc={video.imageUrl}
             title={video.name}
           />
@@ -84,5 +66,5 @@ const HomePage = () => {
       </Grid>
     </Box>
   );
-};
+}
 export default HomePage;

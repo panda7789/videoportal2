@@ -1,5 +1,6 @@
 import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import type { NavigationItem } from './Navigation';
 import NavigationContext from './NavigationContext';
 
@@ -7,7 +8,7 @@ interface Props {
   items: NavigationItem[];
 }
 
-const DesktopNavigation = ({ items }: Props) => {
+function DesktopNavigation({ items }: Props) {
   const { actualPage, setActualPage } = useContext(NavigationContext);
 
   const drawerWidth = 256;
@@ -26,6 +27,8 @@ const DesktopNavigation = ({ items }: Props) => {
         {items.map((item) => {
           return (
             <ListItemButton
+              component={Link}
+              to={item.route}
               key={item.order}
               selected={actualPage === item.order}
               onClick={() => setActualPage(item.order)}
@@ -38,5 +41,5 @@ const DesktopNavigation = ({ items }: Props) => {
       </List>
     </Drawer>
   );
-};
+}
 export default DesktopNavigation;

@@ -8,7 +8,7 @@ export interface CustomChipInterface {
   active?: boolean;
 }
 
-const CustomChip = ({ text, onClick, color, active = false }: CustomChipInterface) => {
+function CustomChip({ text, onClick, color, active = false }: CustomChipInterface) {
   return (
     <Chip
       key={text}
@@ -29,6 +29,6 @@ const CustomChip = ({ text, onClick, color, active = false }: CustomChipInterfac
       }}
     />
   );
-};
+}
 
 export default CustomChip;
