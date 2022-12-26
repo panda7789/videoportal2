@@ -22,7 +22,7 @@ function DesktopNavigation({ items }: Props) {
       <Toolbar />
       <List>
         {items.map((item) => (
-          <ListItemButton component={CustomNavLink} to={item.route} key={item.order}>
+          <ListItemButton component={CustomNavLink} to={item.route} key={item.route}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.title} />
           </ListItemButton>

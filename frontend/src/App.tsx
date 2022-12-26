@@ -29,6 +29,9 @@ function App() {
           path: "video/:videoId",
           element: <VideoDetail />,
           loader: videoLoader
+        },
+        {
+          path: "search"
         }
 
       ]

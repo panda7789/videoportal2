@@ -16,7 +16,7 @@ function AndroidNavigation({ items }: Props) {
             <BottomNavigationAction
               component={CustomNavLink}
               to={item.route}
-              key={item.order}
+              key={item.route}
               label={item.title}
               icon={item.icon}
             />

@@ -4,27 +4,19 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
+  Grid
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CustomChip from 'components/Chip/CustomChip';
 import { VideoThumbnail } from 'model/Video';
+import DropDownMenu from 'components/DropDownMenu/DropDownMenu';
 
 function VideoCard(video: VideoThumbnail) {
   const { imageUrl, name, id } = video;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
+
+
   return (
     <Grid item xs={12} md={3}>
       <Card variant="outlined">
@@ -53,29 +45,7 @@ function VideoCard(video: VideoThumbnail) {
             >
               {name}
             </Typography>
-            <IconButton
-              aria-label="more"
-              id="long-button"
-              aria-controls="long-menu"
-              aria-expanded={open ? 'true' : undefined}
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
-            </Menu>
+            <DropDownMenu />
           </CardContent>
         </CardActionArea>
       </Card>

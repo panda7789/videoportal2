@@ -55,6 +55,8 @@ function Search() {
         >
           <SearchIcon />
         </IconButton>
+        <form id="search-form" role="search">
+
         <Autocomplete
           id="free-solo-demo"
           freeSolo
@@ -74,6 +76,8 @@ function Search() {
               <InputBase
                 {...params.InputProps}
                 {...rest}
+                name="q"
+                type="search"
                 sx={{
                   color: 'white',
                   '& .MuiInputBase-input': {
@@ -91,7 +95,8 @@ function Search() {
               />
             );
           }}
-        />
+          />
+        </form>
       </Box>
     </Box>
   );
