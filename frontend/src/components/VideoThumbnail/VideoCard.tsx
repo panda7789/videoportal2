@@ -10,12 +10,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CustomChip from 'components/Chip/CustomChip';
 import { VideoThumbnail } from 'model/Video';
-import DropDownMenu from 'components/DropDownMenu/DropDownMenu';
+import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 
 function VideoCard(video: VideoThumbnail) {
   const { imageUrl, name, id } = video;
 
-
+  const dropdownActions: DropDownMenuAction[] = [
+    {
+      name:"Ahoj",
+      onClick: () => console.log("lolíček")
+    }
+  ];
 
   return (
     <Grid item xs={12} md={3}>
@@ -45,7 +50,7 @@ function VideoCard(video: VideoThumbnail) {
             >
               {name}
             </Typography>
-            <DropDownMenu />
+            <DropDownMenu actions={dropdownActions}/>
           </CardContent>
         </CardActionArea>
       </Card>

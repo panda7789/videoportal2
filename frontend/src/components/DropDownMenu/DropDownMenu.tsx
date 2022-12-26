@@ -10,7 +10,15 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
 
-function DropDownMenu() {
+export interface Props{
+  actions: DropDownMenuAction[]
+}
+export interface DropDownMenuAction {
+  name: string,
+  onClick(): void,
+}
+
+function DropDownMenu({ actions } : Props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,6 +34,7 @@ function DropDownMenu() {
     }
 
     setOpen(false);
+    
   };
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
@@ -78,9 +87,12 @@ function DropDownMenu() {
                   aria-labelledby="composition-button"
                   onKeyDown={handleListKeyDown}
                 >
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
-                  <MenuItem onClick={handleClose}>Logout</MenuItem>
+                  {actions.map(action => {
+                    return (<MenuItem key={action.name} onClick={(event) => {
+                      handleClose(event);
+                      action.onClick();
+                    }}>{action.name}</MenuItem>);
+                  })}
                 </MenuList>
               </ClickAwayListener>
             </Paper>
