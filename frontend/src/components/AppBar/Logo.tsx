@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
+// eslint-disable-next-line import/no-cycle
+import { NavigationContext } from 'routes/Root';
 
 function Logo() {
+  const context = useContext(NavigationContext);
+
+  const handleClick = () => {
+    context?.setOpen(true);
+  };
+   
   return (
     <Box
       component={Link}
@@ -17,6 +25,7 @@ function Logo() {
         pl: 1,
         cursor: 'pointer',
       }}
+      onClick={() => handleClick()}
     >
       <Typography
         variant="h4"

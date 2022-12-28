@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -21,6 +21,7 @@ import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { useLoaderData } from 'react-router-dom';
+import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -58,6 +59,12 @@ function VideoDetail() {
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
   const video = useLoaderData() as Video;
+  const context = useContext(NavigationContext);
+
+  useEffect(() => {
+    context?.setOpen(false);
+  }, []);
+
 
   useEffect(() => {
     const commentsApi: CommentProps[] = [];
