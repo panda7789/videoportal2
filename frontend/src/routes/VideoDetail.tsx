@@ -25,9 +25,12 @@ import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { useLoaderData } from 'react-router-dom';
 import { NavigationContext } from './Root';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import 'videojs-hotkeys';
 import VideoCard from 'components/VideoThumbnail/VideoCard';
 import uuid from 'react-uuid';
+import { right } from '@popperjs/core';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -43,14 +46,14 @@ const Users: User[] = [
 const imgUrlGenerator = () => {
   return `https://picsum.photos/id/${
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    Math.floor(Math.random()*200)
+    Math.floor(Math.random() * 200)
   }/500/280`;
 };
 
 const RelatedVideos: VideoThumbnail[] = [];
 
-for (let i = 0; i < 10; i+=1) {
-  RelatedVideos.push({id: uuid(), imageUrl:imgUrlGenerator(), name: 'LM' });
+for (let i = 0; i < 10; i += 1) {
+  RelatedVideos.push({ id: uuid(), imageUrl: imgUrlGenerator(), name: 'LM' });
 }
 
 const Texts: string[] = [
@@ -79,6 +82,10 @@ function VideoDetail() {
   const [comments, setComments] = React.useState<CommentProps[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
+
+  const relatedVideosRef = useRef<HTMLUListElement>(null);
+  const [showLeft, setShowLeft] = React.useState(false);
+  const [showRight, setShowRight] = React.useState(true);
 
   useEffect(() => {
     context?.setOpen(false);
@@ -163,6 +170,35 @@ function VideoDetail() {
     }
   };
 
+  const scroll = (scrollRight: boolean) => {
+    if (relatedVideosRef.current) {
+      if (scrollRight) {
+        relatedVideosRef.current.scrollLeft += relatedVideosRef.current.scrollWidth / 2;
+      } else {
+        relatedVideosRef.current.scrollLeft -= relatedVideosRef.current.scrollWidth / 2;
+      }
+
+      setTimeout(() => {
+        if (!relatedVideosRef.current) {
+          return;
+        }
+        if (
+          relatedVideosRef.current.scrollLeft >
+          relatedVideosRef.current.scrollWidth - relatedVideosRef.current.clientWidth - 300
+        ) {
+          setShowRight(false);
+        } else {
+          setShowRight(true);
+        }
+        if (relatedVideosRef.current.scrollLeft < 300) {
+          setShowLeft(false);
+        } else {
+          setShowLeft(true);
+        }
+      }, 300);
+    }
+  };
+
   return (
     <Box width="100%">
       <video
@@ -223,8 +259,35 @@ function VideoDetail() {
           <Box mt={2}>
             <Typography variant="body1">Podobná videa</Typography>
             <Box display="flex" sx={{ maxWidth: '100%' }} mt={2} alignItems="center">
+              {showLeft && (
+                <Button
+                  sx={{
+                    position: 'absolute',
+                    zIndex: '100',
+                    height: '220px',
+                    '&:hover': {
+                      backgroundColor: '#ffffff99',
+                      '& .arrowButton': { backgroundColor: 'transparent' },
+                    },
+                  }}
+                  onClick={() => scroll(false)}
+                >
+                  <ArrowBackIosIcon
+                    className="arrowButton"
+                    sx={{
+                      padding: '10px',
+                      backgroundColor: '#ffffff99',
+                      borderRadius: '50px',
+                      transition:
+                        'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
+                    }}
+                  />
+                </Button>
+              )}
               <ImageList
+                ref={relatedVideosRef}
                 sx={{
+                  scrollBehavior: 'smooth',
                   gridAutoFlow: 'column',
                   gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr)) !important',
                   gridAutoColumns: 'minmax(280px, 1fr)',
@@ -240,7 +303,8 @@ function VideoDetail() {
                     background: '#f1f1f1',
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    background: 'linear-gradient(to right, transparent 0%,#AAA 25%,#AAA 75%, transparent 100%)'
+                    background:
+                      'linear-gradient(to right, transparent 0%,#AAA 25%,#AAA 75%, transparent 100%)',
                   },
                   '&::-webkit-scrollbar-thumb:hover': {
                     background: '#555',
@@ -250,6 +314,33 @@ function VideoDetail() {
                 {RelatedVideos.map((_video) => (
                   <VideoCard key={_video.id} {..._video} />
                 ))}
+                {showRight && (
+                  <Button
+                    sx={{
+                      position: 'absolute',
+                      zIndex: '100',
+                      right: '0',
+                      marginRight: '48px',
+                      height: '220px',
+                      '&:hover': {
+                        backgroundColor: '#ffffff99',
+                        '& .arrowButton': { backgroundColor: 'transparent' },
+                      },
+                    }}
+                    onClick={() => scroll(true)}
+                  >
+                    <ArrowForwardIosIcon
+                      className="arrowButton"
+                      sx={{
+                        padding: '10px',
+                        backgroundColor: '#ffffff99',
+                        borderRadius: '50px',
+                        transition:
+                          'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
+                      }}
+                    />
+                  </Button>
+                )}
               </ImageList>
             </Box>
           </Box>
