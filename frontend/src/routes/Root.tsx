@@ -27,7 +27,7 @@ export default function Root() {
   return (
         <NavigationContext.Provider value={navigationContextMemo}>
       <AppBarModified />
-      <Box padding={{ xs: 0, md: '16px 24px 24px 24px' }} width="100%">
+      <Box padding={{ xs: 0, md: 0 }} width="100%">
         <Toolbar />
         <Navigation/>
         <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>

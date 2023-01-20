@@ -17,7 +17,7 @@ function VideoCard(video: VideoThumbnail) {
 
   const dropdownActions: DropDownMenuAction[] = [
     {
-      name:"Ahoj",
+      name:"Přehrát později",
       onClick: () => console.log("lolíček")
     }
   ];
