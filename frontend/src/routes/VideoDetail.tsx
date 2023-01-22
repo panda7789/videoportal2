@@ -71,7 +71,7 @@ const videoUserStats: UserVideoStats = {
 };
 
 export async function loader({ params }: { params: any }) {
-  return getVideoById(params.videoId);
+  return getVideoById(params);
 }
 
 function VideoDetail() {
@@ -170,6 +170,27 @@ function VideoDetail() {
     }
   };
 
+  const scrollByButton = () => {
+    setTimeout(() => {
+      if (!relatedVideosRef.current) {
+        return;
+      }
+      if (
+        relatedVideosRef.current.scrollLeft >
+        relatedVideosRef.current.scrollWidth - relatedVideosRef.current.clientWidth - 300
+      ) {
+        setShowRight(false);
+      } else {
+        setShowRight(true);
+      }
+      if (relatedVideosRef.current.scrollLeft < 300) {
+        setShowLeft(false);
+      } else {
+        setShowLeft(true);
+      }
+    }, 300);
+  }
+
   const scroll = (scrollRight: boolean) => {
     if (relatedVideosRef.current) {
       if (scrollRight) {
@@ -177,25 +198,6 @@ function VideoDetail() {
       } else {
         relatedVideosRef.current.scrollLeft -= relatedVideosRef.current.scrollWidth / 2;
       }
-
-      setTimeout(() => {
-        if (!relatedVideosRef.current) {
-          return;
-        }
-        if (
-          relatedVideosRef.current.scrollLeft >
-          relatedVideosRef.current.scrollWidth - relatedVideosRef.current.clientWidth - 300
-        ) {
-          setShowRight(false);
-        } else {
-          setShowRight(true);
-        }
-        if (relatedVideosRef.current.scrollLeft < 300) {
-          setShowLeft(false);
-        } else {
-          setShowLeft(true);
-        }
-      }, 300);
     }
   };
 
@@ -286,6 +288,7 @@ function VideoDetail() {
               )}
               <ImageList
                 ref={relatedVideosRef}
+                onScroll={() => scrollByButton()}
                 sx={{
                   scrollBehavior: 'smooth',
                   gridAutoFlow: 'column',

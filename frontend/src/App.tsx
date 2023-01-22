@@ -5,9 +5,11 @@ import Root from 'routes/Root';
 import ErrorPage from "routes/ErrorPage";
 import { ThemeProvider } from "@emotion/react";
 import { Box } from "@mui/system";
-import MyPortal from "routes/MyPortal";
+import History from "routes/MyPortal";
 import HomePage from "routes/HomePage";
 import VideoDetail, { loader as videoLoader } from "routes/VideoDetail";
+import SearchResult from "routes/SearchResult";
+import { loader as searchLoader } from "components/AppBar/Search";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,7 +24,7 @@ function App() {
         },
         {
           path: "myportal",
-          element: <MyPortal />,
+          element: <History />,
         },
         {
           path: "video/:videoId",
@@ -30,7 +32,9 @@ function App() {
           loader: videoLoader
         },
         {
-          path: "search"
+          path: "search",
+          element: <SearchResult />,
+          loader: searchLoader
         }
 
       ]

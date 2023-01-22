@@ -40,6 +40,7 @@ export async function getVideoById(id: string): Promise<Video> {
 }
 
 export async function search(q: string): Promise<VideoThumbnail[]> {
+  console.log(`Searching for ${q}`);
   const data: VideoThumbnail = {
     id: uuidv4(),
     name: `${q}Implementace GUI ve Visual Studio (Janoštík)`,

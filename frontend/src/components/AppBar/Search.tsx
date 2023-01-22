@@ -3,14 +3,33 @@ import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, Box, InputBase } from '@mui/material';
+import { createSearchParams, useNavigate } from 'react-router-dom';
+import { search } from 'model/Video';
+
+export async function loader({ request }: { request: any }) {
+  const url = new URL(request.url);
+  const searchTerm = url.searchParams.get("q");
+  if (searchTerm) {
+    return search(searchTerm);
+  }
+  return null;
+}
 
 function Search() {
   const [value, setValue] = React.useState<string | null>('');
   const [inputValue, setInputValue] = React.useState('');
   const predmety = ['ISVZ', 'PDF', 'KKS', 'LOL'];
+  const navigate = useNavigate();
 
-  const searchButtonClickHandle = () => {
-    console.log(`/api/search?q=${inputValue}`);
+
+
+  const searchButtonClickHandle = (e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const params = { q: inputValue };
+    navigate({
+      pathname: '/search',
+      search: `?${createSearchParams(params)}`,
+    });
   };
 
   const selectedOption = (option: string | null) => {
@@ -90,7 +109,7 @@ function Search() {
                 }}
                 placeholder="Vyhledávání…"
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') searchButtonClickHandle();
+                  if (event.key === 'Enter') searchButtonClickHandle(event);
                 }}
               />
             );
