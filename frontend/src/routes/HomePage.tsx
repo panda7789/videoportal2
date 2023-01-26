@@ -24,7 +24,8 @@ function HomePage() {
         imageUrl: `https://picsum.photos/id/${
           // eslint-disable-next-line @typescript-eslint/dot-notation
           images[Math.floor(Math.random() * images.length)]['id']
-        }/500/280`,
+        }/500/280?grayscale`,
+        duration: '5:25',
       };
       x.push(video);
     }
@@ -57,7 +58,11 @@ function HomePage() {
       />
       <Grid container spacing={1}>
         {filteredVideos.map((video) => {
-          return <VideoCard key={video.id} {...video} />;
+          return (
+            <Grid item xs={12} md={3} key={video.id}>
+              <VideoCard key={video.id} video={{ ...video }} />
+            </Grid>
+          );
         })}
       </Grid>
     </Box>

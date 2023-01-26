@@ -8,8 +8,6 @@ import {
   IconButton,
   IconButtonProps,
   ImageList,
-  ImageListItem,
-  ImageListItemBar,
   TextField,
   Typography,
 } from '@mui/material';
@@ -30,7 +28,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import 'videojs-hotkeys';
 import VideoCard from 'components/VideoThumbnail/VideoCard';
 import uuid from 'react-uuid';
-import { right } from '@popperjs/core';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -47,13 +44,13 @@ const imgUrlGenerator = () => {
   return `https://picsum.photos/id/${
     // eslint-disable-next-line @typescript-eslint/dot-notation
     Math.floor(Math.random() * 200)
-  }/500/280`;
+  }/500/280?grayscale`;
 };
 
 const RelatedVideos: VideoThumbnail[] = [];
 
 for (let i = 0; i < 10; i += 1) {
-  RelatedVideos.push({ id: uuid(), imageUrl: imgUrlGenerator(), name: 'LM' });
+  RelatedVideos.push({ id: uuid(), imageUrl: imgUrlGenerator(), name: 'LM', duration: '1:55' });
 }
 
 const Texts: string[] = [
@@ -189,7 +186,7 @@ function VideoDetail() {
         setShowLeft(true);
       }
     }, 300);
-  }
+  };
 
   const scroll = (scrollRight: boolean) => {
     if (relatedVideosRef.current) {
@@ -315,7 +312,7 @@ function VideoDetail() {
                 }}
               >
                 {RelatedVideos.map((_video) => (
-                  <VideoCard key={_video.id} {..._video} />
+                  <VideoCard key={_video.id} video={{ ..._video }} />
                 ))}
                 {showRight && (
                   <Button
