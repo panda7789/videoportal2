@@ -1,0 +1,92 @@
+import React from 'react';
+import {
+  Typography,
+  Grid,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Box,
+  Button,
+} from '@mui/material';
+import { getVideoById, getVideoThumbnailById, VideoEditModel } from 'model/Video';
+import { useLoaderData } from 'react-router-dom';
+import AspectRatio from 'components/Utils/AspectRatio';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import SaveIcon from '@mui/icons-material/Save';
+import RestoreIcon from '@mui/icons-material/Restore';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+
+export async function loader({ params }: { params: any }) {
+  const video = await getVideoById(params);
+  const thumbnail = await getVideoThumbnailById(params);
+  const mix: VideoEditModel = {
+    ...video,
+    imageUrl: thumbnail.imageUrl,
+    description: thumbnail.description,
+  };
+  return mix;
+}
+
+export function VideoEdit() {
+  const video = useLoaderData() as VideoEditModel;
+
+  return (
+    <Box margin={4}>
+      <Box display="flex" justifyContent="space-between">
+        <Typography variant="h6" gutterBottom>
+          Editace videa
+        </Typography>
+        <Box gap={2} display="flex">
+          <Button variant="outlined" startIcon={<RestoreIcon />}>
+            Zahodit změny
+          </Button>
+          <Button variant="contained" startIcon={<SaveIcon />}>
+            Uložit
+          </Button>
+        </Box>
+      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6}>
+          <Grid container spacing={3} paddingTop={3}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                id="nazev"
+                name="nazev"
+                label="Název"
+                fullWidth
+                defaultValue={video.name}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                id="popis"
+                name="popis"
+                label="Popis"
+                fullWidth
+                defaultValue={video.description}
+                multiline
+                rows={14}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Typography>Náhledový obrázek:</Typography>
+          <AspectRatio ratio={16 / 9}>
+            <img width="100%" src={video.imageUrl} />
+          </AspectRatio>
+          <Box display="flex" justifyContent="center" gap={2} padding={2}>
+            <Button startIcon={<FileUploadIcon />} variant="outlined">
+              Nahrát jiný
+            </Button>
+            <Button startIcon={<AutorenewIcon />} variant="outlined">
+              Vygenerovat nový
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}

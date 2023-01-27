@@ -12,6 +12,7 @@ import { loader as searchLoader } from 'components/AppBar/Search';
 import { loader as historyLoader, History } from 'routes/MyPortal/History';
 import MyPortal from 'routes/MyPortal/MyPortal';
 import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
+import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 
 function App() {
   const router = createBrowserRouter([
@@ -44,6 +45,11 @@ function App() {
           path: 'video/:videoId',
           element: <VideoDetail />,
           loader: videoLoader,
+        },
+        {
+          path: 'videoedit/:videoId',
+          element: <VideoEdit />,
+          loader: videoEditLoader,
         },
         {
           path: 'search',

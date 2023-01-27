@@ -1,44 +1,63 @@
 import React from 'react';
 import { Box } from '@mui/system';
 import { VideoThumbnail } from 'model/Video';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import EnhancedTable, { Attribute } from 'components/Table/EnhancedTable';
+import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 export function MyVideos() {
   const arr = useLoaderData() as VideoThumbnail[];
+  const navigate = useNavigate();
 
   const attributes: Attribute<VideoThumbnail>[] = [
     {
       id: 'imageUrl',
-      numeric: false,
-      disablePadding: false,
       label: 'URL obrázku',
       image: true,
     },
     {
       id: 'name',
-      numeric: false,
-      disablePadding: true,
       label: 'Název',
     },
     {
       id: 'description',
-      numeric: false,
-      disablePadding: false,
       label: 'Popis',
     },
     {
       id: 'duration',
-      numeric: false,
-      disablePadding: false,
       label: 'Délka',
     },
   ];
 
+  const buttons: ToolbarButton[] = [];
+  buttons.push({
+    label: 'Přidat do playlistu',
+    icon: <PlaylistAddIcon />,
+    onClick: (selectedIDs: readonly string[]) => {
+      console.log(selectedIDs);
+      navigate({
+        pathname: `/video/${selectedIDs[0]}`,
+      });
+    },
+  });
+
+  const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
+    console.log(id);
+    navigate({
+      pathname: `/videoedit/${id}`,
+    });
+  };
+
   return (
     <Box margin={4}>
-      <EnhancedTable attributes={attributes} rows={arr} orderBy="id" />
+      <EnhancedTable
+        attributes={attributes}
+        rows={arr}
+        orderBy="id"
+        buttons={buttons}
+        rowClick={rowClick}
+      />
     </Box>
   );
 }

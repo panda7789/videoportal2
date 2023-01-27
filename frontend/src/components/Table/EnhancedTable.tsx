@@ -6,29 +6,31 @@ import {
   TableSortLabel,
   Toolbar,
   Typography,
-  Tooltip,
-  IconButton,
   Paper,
   TableContainer,
   Table,
   TableBody,
   TablePagination,
+  Button,
 } from '@mui/material';
 import { Box, alpha } from '@mui/system';
 import React from 'react';
 import { visuallyHidden } from '@mui/utils';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import AspectRatio from 'components/Utils/AspectRatio';
 
+export interface ToolbarButton {
+  label: string;
+  icon: any;
+  onClick(selectedIDs: readonly string[]): void;
+}
 interface TableDataBase {
   id: string;
 }
 
 export interface Attribute<T> {
-  disablePadding: boolean;
   id: keyof T;
   label: string;
-  numeric: boolean;
+  align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   image?: boolean;
 }
 
@@ -99,8 +101,7 @@ function EnhancedTableHead<T extends TableDataBase>(props: EnhancedTableHeadProp
         {attributes.map((headCell) => (
           <TableCell
             key={headCell.id as string}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.align ?? 'center'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -123,46 +124,47 @@ function EnhancedTableHead<T extends TableDataBase>(props: EnhancedTableHeadProp
 }
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
+  selected: readonly string[];
+  buttons?: ToolbarButton[];
 }
-function EnhancedTableToolbar({ numSelected }: EnhancedTableToolbarProps) {
-  return (
+function EnhancedTableToolbar({ selected, buttons }: EnhancedTableToolbarProps) {
+  return selected.length > 0 ? (
     <Toolbar
       sx={{
+        height: '48px !important',
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
+        ...(selected.length > 0 && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         }),
       }}
     >
-      {numSelected > 0 ? (
-        <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        ''
-      )}
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton onClick={() => console.log(`deleted ${numSelected} items`)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      <Typography sx={{ marginRight: 2 }} color="inherit" variant="subtitle1" component="div">
+        {selected.length} selected
+      </Typography>
+      <>
+        {buttons?.map((button) => (
+          <Button
+            key={button.label}
+            startIcon={button.icon}
+            onClick={() => button.onClick(selected)}
+          >
+            {button.label}
+          </Button>
+        ))}
+      </>
     </Toolbar>
+  ) : (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    <></>
   );
 }
 
 export interface EnhancedTableProps<T> {
   attributes: Attribute<T>[];
+  buttons?: ToolbarButton[];
+  rowClick?(event: React.MouseEvent<unknown>, name: string): void;
   rows: T[];
   orderBy: keyof T;
 }
@@ -171,12 +173,14 @@ export default function EnhancedTable<T extends TableDataBase>({
   rows,
   orderBy: _orderby,
   attributes,
+  buttons,
+  rowClick,
 }: EnhancedTableProps<T>) {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(_orderby ?? 'id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(8);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof T) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -193,7 +197,7 @@ export default function EnhancedTable<T extends TableDataBase>({
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
+  const handleCheckboxClick = (event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -230,7 +234,7 @@ export default function EnhancedTable<T extends TableDataBase>({
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar buttons={buttons} selected={selected} />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
             <EnhancedTableHead
@@ -252,9 +256,11 @@ export default function EnhancedTable<T extends TableDataBase>({
                   return (
                     <TableRow
                       hover
-                      onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
-                        handleClick(event, row.id)
-                      }
+                      onClick={(event: React.MouseEvent<unknown, MouseEvent>) => {
+                        if (rowClick) {
+                          rowClick(event, row.id);
+                        }
+                      }}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -265,15 +271,30 @@ export default function EnhancedTable<T extends TableDataBase>({
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
+                          onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
+                            handleCheckboxClick(event, row.id)
+                          }
                           inputProps={{
                             'aria-labelledby': labelId,
                           }}
                         />
                       </TableCell>
                       {attributes.map((attr) => (
-                        <TableCell key={String(attr.id)} align="right">
+                        <TableCell
+                          key={String(attr.id)}
+                          align="left"
+                          sx={{
+                            paddingTop: 1,
+                            paddingBottom: 1,
+                            ...(attr.image && {
+                              width: 130,
+                            }),
+                          }}
+                        >
                           {attr.image ?? false ? (
-                            <img width={'120px'} src={String(row[attr.id])} />
+                            <AspectRatio ratio={16 / 9}>
+                              <img width="100%" src={String(row[attr.id])} />
+                            </AspectRatio>
                           ) : (
                             String(row[attr.id])
                           )}
@@ -285,7 +306,7 @@ export default function EnhancedTable<T extends TableDataBase>({
               {emptyRows > 0 && (
                 <TableRow
                   style={{
-                    height: 53 * emptyRows,
+                    height: 90 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />
@@ -295,7 +316,7 @@ export default function EnhancedTable<T extends TableDataBase>({
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[8, 25]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
