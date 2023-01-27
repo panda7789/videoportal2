@@ -65,6 +65,7 @@ function VideoCard({ video, large }: Props) {
                 height: 64,
                 padding: '0 8px 0 8px',
               }),
+              width: '100%',
             }}
           >
             <Box>
@@ -86,7 +87,7 @@ function VideoCard({ video, large }: Props) {
               </Box>
               <Typography variant="body2">{description}</Typography>
             </Box>
-            <Box display="flex">
+            <Box display="flex" alignItems="center">
               <Avatar
                 sx={{
                   width: 24,

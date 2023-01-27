@@ -6,8 +6,6 @@ import { VideoThumbnail } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 
 function SearchResult() {
-  // loader
-  // use loader
   const arr = useLoaderData() as VideoThumbnail[];
 
   return (
@@ -23,8 +21,5 @@ function SearchResult() {
       </Grid>
     </Box>
   );
-
-  // foreach search result
-  // videoCard below each other
 }
 export default SearchResult;

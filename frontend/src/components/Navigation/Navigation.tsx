@@ -3,6 +3,7 @@ import React from 'react';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import UpdateIcon from '@mui/icons-material/Update';
 import theme from 'Theme';
+import HistoryIcon from '@mui/icons-material/History';
 import AndroidNavigation from './AndroidNavigation';
 import DesktopNavigation from './DesktopNavigation';
 
@@ -15,6 +16,7 @@ export interface NavigationItem {
 export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Nejnovější', icon: <UpdateIcon /> },
   { route: '/myportal', title: 'Můj portál', icon: <AccountBoxIcon /> },
+  { route: '/myportal/history', title: 'Historie', icon: <HistoryIcon /> },
 ];
 
 function Navigation() {
