@@ -13,6 +13,7 @@ import { loader as historyLoader, History } from 'routes/MyPortal/History';
 import MyPortal from 'routes/MyPortal/MyPortal';
 import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
+import { Playlist, loader as playlistLoader } from 'routes/MyPortal/Playlist';
 
 function App() {
   const router = createBrowserRouter([
@@ -55,6 +56,11 @@ function App() {
           path: 'search',
           element: <SearchResult />,
           loader: searchLoader,
+        },
+        {
+          path: 'playlist/:playlistId',
+          element: <Playlist />,
+          loader: playlistLoader,
         },
       ],
     },

@@ -1,6 +1,6 @@
 import { Tab, Tabs } from '@mui/material';
-import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import VideoSettingsIcon from '@mui/icons-material/VideoSettings';
 import HistoryIcon from '@mui/icons-material/History';
 
@@ -10,6 +10,19 @@ export default function MyPortal() {
   const handleChange = (_e: any, newValue: React.SetStateAction<number>) => {
     setValue(newValue);
   };
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    switch (pathname) {
+      case '/myportal/history':
+        setValue(1);
+        break;
+
+      default:
+        setValue(0);
+        break;
+    }
+  }, [pathname]);
 
   return (
     <>

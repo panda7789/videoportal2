@@ -69,12 +69,12 @@ function VideoCard({ video, large }: Props) {
             }}
           >
             <Box>
-              <Box display="flex">
+              <Box display="flex" position="relative">
                 <Typography
                   variant="subtitle2"
                   component="div"
                   width="100%"
-                  height={48}
+                  height={large ? 24 : 48}
                   textOverflow="ellipsis"
                   overflow="hidden"
                   display="-webkit-box"
@@ -83,11 +83,35 @@ function VideoCard({ video, large }: Props) {
                 >
                   {name}
                 </Typography>
-                <DropDownMenu actions={dropdownActions} />
+                <DropDownMenu sx={{ position: 'absolute', right: 0 }} actions={dropdownActions} />
               </Box>
-              <Typography variant="body2">{description}</Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  display: '-webkit-box',
+                  '-webkit-line-clamp': '2',
+                  '-webkit-box-orient': 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {description}
+              </Typography>
             </Box>
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems="center"
+              component={Link}
+              to="/profile/12345"
+              sx={{
+                textDecoration: 'none',
+                color: 'unset',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+                borderRadius: '15px',
+              }}
+            >
               <Avatar
                 sx={{
                   width: 24,

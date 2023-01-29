@@ -6,19 +6,23 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  Box,
+  SxProps,
+  Theme,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
 
-export interface Props{
-  actions: DropDownMenuAction[]
+export interface Props {
+  actions: DropDownMenuAction[];
+  sx?: SxProps<Theme>;
 }
 export interface DropDownMenuAction {
-  name: string,
-  onClick(): void,
+  name: string;
+  onClick(): void;
 }
 
-function DropDownMenu({ actions } : Props) {
+function DropDownMenu({ actions, sx }: Props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,7 +38,6 @@ function DropDownMenu({ actions } : Props) {
     }
 
     setOpen(false);
-    
   };
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
@@ -54,7 +57,7 @@ function DropDownMenu({ actions } : Props) {
   };
 
   return (
-    <>
+    <Box sx={sx}>
       <IconButton
         aria-label="more"
         id="long-button"
@@ -87,11 +90,18 @@ function DropDownMenu({ actions } : Props) {
                   aria-labelledby="composition-button"
                   onKeyDown={handleListKeyDown}
                 >
-                  {actions.map(action => {
-                    return (<MenuItem key={action.name} onClick={(event) => {
-                      handleClose(event);
-                      action.onClick();
-                    }}>{action.name}</MenuItem>);
+                  {actions.map((action) => {
+                    return (
+                      <MenuItem
+                        key={action.name}
+                        onClick={(event) => {
+                          handleClose(event);
+                          action.onClick();
+                        }}
+                      >
+                        {action.name}
+                      </MenuItem>
+                    );
                   })}
                 </MenuList>
               </ClickAwayListener>
@@ -99,7 +109,7 @@ function DropDownMenu({ actions } : Props) {
           </Grow>
         )}
       </Popper>
-    </>
+    </Box>
   );
 }
 

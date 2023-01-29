@@ -71,7 +71,7 @@ export async function search(q: string): Promise<VideoThumbnail[]> {
 
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 10; i++) {
-    arr.push(data);
+    arr.push({ ...data, id: uuidv4(), name: uuidv4() });
   }
 
   return arr;

@@ -6,6 +6,7 @@ import theme from 'Theme';
 import HistoryIcon from '@mui/icons-material/History';
 import AndroidNavigation from './AndroidNavigation';
 import DesktopNavigation from './DesktopNavigation';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
 export interface NavigationItem {
   route: string;
@@ -17,6 +18,7 @@ export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Nejnovější', icon: <UpdateIcon /> },
   { route: '/myportal', title: 'Můj portál', icon: <AccountBoxIcon /> },
   { route: '/myportal/history', title: 'Historie', icon: <HistoryIcon /> },
+  { route: '/playlist/playLater', title: 'Přehrát později', icon: <WatchLaterIcon /> },
 ];
 
 function Navigation() {

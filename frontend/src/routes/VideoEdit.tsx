@@ -30,6 +30,8 @@ export async function loader({ params }: { params: any }) {
 export function VideoEdit() {
   const video = useLoaderData() as VideoEditModel;
 
+  const generateThumbnailFromVideo = () => {};
+
   return (
     <Box margin={4}>
       <Box display="flex" justifyContent="space-between">
@@ -67,7 +69,8 @@ export function VideoEdit() {
                 fullWidth
                 defaultValue={video.description}
                 multiline
-                rows={14}
+                minRows={7}
+                maxRows={14}
               />
             </Grid>
           </Grid>
@@ -78,10 +81,15 @@ export function VideoEdit() {
             <img width="100%" src={video.imageUrl} />
           </AspectRatio>
           <Box display="flex" justifyContent="center" gap={2} padding={2}>
-            <Button startIcon={<FileUploadIcon />} variant="outlined">
+            <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
+              <input hidden accept="image/*" type="file" />
               Nahrát jiný
             </Button>
-            <Button startIcon={<AutorenewIcon />} variant="outlined">
+            <Button
+              startIcon={<AutorenewIcon />}
+              variant="outlined"
+              onClick={generateThumbnailFromVideo}
+            >
               Vygenerovat nový
             </Button>
           </Box>

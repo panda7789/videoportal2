@@ -198,6 +198,8 @@ export default function EnhancedTable<T extends TableDataBase>({
   };
 
   const handleCheckboxClick = (event: React.MouseEvent<unknown>, name: string) => {
+    event.preventDefault();
+    event.stopPropagation();
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -267,13 +269,12 @@ export default function EnhancedTable<T extends TableDataBase>({
                       key={row.id}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell padding="checkbox" onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
+                            handleCheckboxClick(event, row.id)
+                          }>
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
-                          onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
-                            handleCheckboxClick(event, row.id)
-                          }
                           inputProps={{
                             'aria-labelledby': labelId,
                           }}
