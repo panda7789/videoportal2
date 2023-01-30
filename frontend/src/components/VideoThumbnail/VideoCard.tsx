@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Card, CardMedia, CardContent, Typography, Grid, Avatar } from '@mui/material';
 import React from 'react';
 import { VideoThumbnail } from 'model/Video';
@@ -8,10 +9,12 @@ import { Link } from 'react-router-dom';
 
 interface Props {
   video: VideoThumbnail;
-  large?: boolean;
+  fullWidth?: boolean;
+  smallThumbnail?: boolean;
+  showDescription?: boolean;
 }
 
-function VideoCard({ video, large }: Props) {
+function VideoCard({ video, fullWidth, smallThumbnail, showDescription }: Props) {
   const { imageUrl, name, id, duration, description } = video;
 
   const dropdownActions: DropDownMenuAction[] = [
@@ -26,28 +29,32 @@ function VideoCard({ video, large }: Props) {
       <Card
         variant="outlined"
         sx={{
-          ...(large && {
+          ...(fullWidth && {
             display: 'flex',
+          }),
+          ...(!fullWidth && {
+            height: '100%',
           }),
           width: '100%',
         }}
       >
         <Grid
           item
-          xs={large ? 4 : 12}
-          sx={{ position: 'relative', ...(large && { display: 'flex' }) }}
+          xs={fullWidth ? (smallThumbnail ? 2.5 : 4) : 12}
+          sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
         >
           <AspectRatio ratio={16 / 9}>
             <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
           </AspectRatio>
           <Typography
+            variant={smallThumbnail ? 'caption' : 'body1'}
+            padding={smallThumbnail ? 0.5 : 1}
             sx={{
               height: 16,
               color: 'white',
               position: 'absolute',
               right: 0,
               bottom: 0,
-              padding: 1,
               backgroundColor: '#333333bb',
               borderRadius: '10%',
             }}
@@ -55,15 +62,20 @@ function VideoCard({ video, large }: Props) {
             {duration}
           </Typography>
         </Grid>
-        <Grid item xs={large ? 8 : 12} display="flex">
+        <Grid item xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12} display="flex">
           <CardContent
             sx={{
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              ...(!large && {
+              ...(!fullWidth && {
                 height: 64,
                 padding: '0 8px 0 8px',
+              }),
+              ...(smallThumbnail && {
+                maxHeight: '100%',
+                padding: '4px',
+                paddingBottom: '4px !important',
               }),
               width: '100%',
             }}
@@ -74,7 +86,7 @@ function VideoCard({ video, large }: Props) {
                   variant="subtitle2"
                   component="div"
                   width="100%"
-                  height={large ? 24 : 48}
+                  height={fullWidth ? 24 : 48}
                   textOverflow="ellipsis"
                   overflow="hidden"
                   display="-webkit-box"
@@ -85,18 +97,20 @@ function VideoCard({ video, large }: Props) {
                 </Typography>
                 <DropDownMenu sx={{ position: 'absolute', right: 0 }} actions={dropdownActions} />
               </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  display: '-webkit-box',
-                  '-webkit-line-clamp': '2',
-                  '-webkit-box-orient': 'vertical',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {description}
-              </Typography>
+              {(showDescription ?? true) && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-line-clamp': '2',
+                    '-webkit-box-orient': 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {description}
+                </Typography>
+              )}
             </Box>
             <Box
               display="flex"

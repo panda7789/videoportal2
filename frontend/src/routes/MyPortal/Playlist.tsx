@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Button, Grid, List, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Button, Grid, IconButton, List, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import VideoCard from 'components/VideoThumbnail/VideoCard';
 import { useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReorderIcon from '@mui/icons-material/Reorder';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { getPlaylistById, Playlist as playlistModel } from 'model/Playlist';
 import AspectRatio from 'components/Utils/AspectRatio';
@@ -43,11 +44,26 @@ export function Playlist() {
   return (
     <Box margin={4}>
       <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
-        <Grid item xs={4} padding={2} position="fixed">
+        <Grid
+          item
+          padding={2}
+          position={{ xs: 'initial', md: 'fixed' }}
+          width={{ xs: '100%', md: 'calc(100%/4.4)' }}
+        >
           <AspectRatio ratio={16 / 9}>
             <img width="100%" src={playlist.thumbnailUrl} />
           </AspectRatio>
-          <Typography>{playlist.name}</Typography>
+          <Box display="flex" justifyContent="space-between">
+            <Typography variant="h5" padding={1}>
+              {playlist.name}
+            </Typography>
+            <IconButton>
+              <EditIcon />
+            </IconButton>
+          </Box>
+          <Typography variant="body1" padding={1}>
+            {playlist.duration}
+          </Typography>
           <Box display="flex">
             <Button startIcon={<PlayArrowIcon />} variant="contained">
               Přehrát celý playlist
@@ -59,7 +75,7 @@ export function Playlist() {
             {(provided: DroppableProvided) => (
               <Grid
                 container
-                paddingLeft="calc(100% / 3)"
+                paddingLeft="calc(100% / 3.3)"
                 item
                 spacing={2}
                 xs={12}
@@ -84,7 +100,13 @@ export function Playlist() {
                               <ReorderIcon />
                             </Box>
                           </Box>
-                          <VideoCard key={video.id} video={{ ...video }} large />
+                          <VideoCard
+                            key={video.id}
+                            video={{ ...video }}
+                            fullWidth
+                            smallThumbnail
+                            showDescription={false}
+                          />
                         </Grid>
                       )}
                     </Draggable>

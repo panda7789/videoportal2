@@ -14,7 +14,7 @@ function SearchResult() {
         {arr.map((video) => {
           return (
             <Grid key={video.id} item xs={8}>
-              <VideoCard key={video.id} video={{ ...video }} large />
+              <VideoCard key={video.id} video={{ ...video }} fullWidth />
             </Grid>
           );
         })}

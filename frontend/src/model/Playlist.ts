@@ -6,6 +6,7 @@ export interface Playlist {
   name: string;
   thumbnailUrl: string;
   videos: VideoThumbnail[];
+  duration: string;
 }
 
 export async function getPlaylistById(id: string): Promise<Playlist> {
@@ -18,6 +19,7 @@ export async function getPlaylistById(id: string): Promise<Playlist> {
     name: 'Přehrát později',
     thumbnailUrl: 'https://picsum.photos/1920/1080?grayscale',
     videos: await search('asdf'),
+    duration: '12:34:56',
   };
   return data;
 }
