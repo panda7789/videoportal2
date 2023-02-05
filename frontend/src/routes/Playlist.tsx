@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, IconButton, List, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import VideoCard from 'components/VideoThumbnail/VideoCard';
+import VideoCard from 'components/Thumbnail/VideoCard';
 import { useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReorderIcon from '@mui/icons-material/Reorder';
@@ -17,6 +17,7 @@ import {
   DroppableProvided,
   DropResult,
 } from 'react-beautiful-dnd';
+import { ScrollToTopOnMount } from 'components/Utils/ScrollOnTop';
 
 export async function loader({ params }: { params: any }) {
   return getPlaylistById(params);
@@ -43,6 +44,8 @@ export function Playlist() {
 
   return (
     <Box margin={4}>
+      <ScrollToTopOnMount />
+
       <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
         <Grid
           item
@@ -62,7 +65,7 @@ export function Playlist() {
             </IconButton>
           </Box>
           <Typography variant="body1" padding={1}>
-            {playlist.duration}
+            Celková délka: {playlist.duration}
           </Typography>
           <Box display="flex">
             <Button startIcon={<PlayArrowIcon />} variant="contained">

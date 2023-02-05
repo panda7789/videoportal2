@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import ChipLine from 'components/Chip/ChipLine';
-import VideoCard from 'components/VideoThumbnail/VideoCard';
+import VideoCard from 'components/Thumbnail/VideoCard';
 import { VideoThumbnail } from 'model/Video';
 
 function HomePage() {

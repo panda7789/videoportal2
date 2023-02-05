@@ -7,7 +7,6 @@ import {
   Grid,
   IconButton,
   IconButtonProps,
-  ImageList,
   TextField,
   Typography,
 } from '@mui/material';
@@ -22,12 +21,11 @@ import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { useLoaderData } from 'react-router-dom';
-import { NavigationContext } from './Root';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import 'videojs-hotkeys';
-import VideoCard from 'components/VideoThumbnail/VideoCard';
-import uuid from 'react-uuid';
+import ImageUrlGenerator from 'components/Utils/ImageUrlGenerator';
+import { v4 } from 'uuid';
+import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -39,19 +37,6 @@ const Users: User[] = [
   { id: '3', name: 'Thomas Reese', initials: 'TR', email: 'a@b.cz', rights: Privileges.user },
   { id: '4', name: 'Tillie Guzman', initials: 'TG', email: 'a@b.cz', rights: Privileges.user },
 ];
-
-const imgUrlGenerator = () => {
-  return `https://picsum.photos/id/${
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    Math.floor(Math.random() * 200)
-  }/500/280?grayscale`;
-};
-
-const RelatedVideos: VideoThumbnail[] = [];
-
-for (let i = 0; i < 10; i += 1) {
-  RelatedVideos.push({ id: uuid(), imageUrl: imgUrlGenerator(), name: 'LM', duration: '1:55' });
-}
 
 const Texts: string[] = [
   'Voluptate ullamco fugiat elit amet eu. 👍😁',
@@ -77,12 +62,9 @@ function VideoDetail() {
   const [expanded, setExpanded] = React.useState(true);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
+  const [relatedVideos, setRelatedVideos] = React.useState<VideoThumbnail[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
-
-  const relatedVideosRef = useRef<HTMLUListElement>(null);
-  const [showLeft, setShowLeft] = React.useState(false);
-  const [showRight, setShowRight] = React.useState(true);
 
   useEffect(() => {
     context?.setOpen(false);
@@ -167,36 +149,14 @@ function VideoDetail() {
     }
   };
 
-  const scrollByButton = () => {
-    setTimeout(() => {
-      if (!relatedVideosRef.current) {
-        return;
-      }
-      if (
-        relatedVideosRef.current.scrollLeft >
-        relatedVideosRef.current.scrollWidth - relatedVideosRef.current.clientWidth - 300
-      ) {
-        setShowRight(false);
-      } else {
-        setShowRight(true);
-      }
-      if (relatedVideosRef.current.scrollLeft < 300) {
-        setShowLeft(false);
-      } else {
-        setShowLeft(true);
-      }
-    }, 300);
-  };
-
-  const scroll = (scrollRight: boolean) => {
-    if (relatedVideosRef.current) {
-      if (scrollRight) {
-        relatedVideosRef.current.scrollLeft += relatedVideosRef.current.scrollWidth / 2;
-      } else {
-        relatedVideosRef.current.scrollLeft -= relatedVideosRef.current.scrollWidth / 2;
-      }
+  
+  useEffect(() => {
+    const localRelatedVideos: VideoThumbnail[] = [];
+    for (let i = 0; i < 10; i += 1) {
+      localRelatedVideos.push({ id: v4(), imageUrl: ImageUrlGenerator(), name: 'LM', duration: '1:55' });
     }
-  };
+    setRelatedVideos(localRelatedVideos);
+  }, []);
 
   return (
     <Box width="100%">
@@ -243,7 +203,6 @@ function VideoDetail() {
                       width: 48,
                       height: 48,
                       border: '0.1px solid lightgray',
-
                       padding: '4px',
                       img: { objectFit: 'fill', borderRadius: '50%' },
                     }}
@@ -257,91 +216,8 @@ function VideoDetail() {
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={2}>
             <Typography variant="body1">Podobná videa</Typography>
-            <Box display="flex" sx={{ maxWidth: '100%' }} mt={2} alignItems="center">
-              {showLeft && (
-                <Button
-                  sx={{
-                    position: 'absolute',
-                    zIndex: '100',
-                    height: '220px',
-                    '&:hover': {
-                      backgroundColor: '#ffffff99',
-                      '& .arrowButton': { backgroundColor: 'transparent' },
-                    },
-                  }}
-                  onClick={() => scroll(false)}
-                >
-                  <ArrowBackIosIcon
-                    className="arrowButton"
-                    sx={{
-                      padding: '10px',
-                      backgroundColor: '#ffffff99',
-                      borderRadius: '50px',
-                      transition:
-                        'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
-                    }}
-                  />
-                </Button>
-              )}
-              <ImageList
-                ref={relatedVideosRef}
-                onScroll={() => scrollByButton()}
-                sx={{
-                  scrollBehavior: 'smooth',
-                  gridAutoFlow: 'column',
-                  gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr)) !important',
-                  gridAutoColumns: 'minmax(280px, 1fr)',
-                  gap: '8px',
-                  width: '100%',
-                  overflowX: 'scroll',
-                  scrollbarWidth: 'thin',
-                  '&::-webkit-scrollbar': {
-                    width: '10px',
-                    height: '0.3em',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: '#f1f1f1',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background:
-                      'linear-gradient(to right, transparent 0%,#AAA 25%,#AAA 75%, transparent 100%)',
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    background: '#555',
-                  },
-                }}
-              >
-                {RelatedVideos.map((_video) => (
-                  <VideoCard key={_video.id} video={{ ..._video }} />
-                ))}
-                {showRight && (
-                  <Button
-                    sx={{
-                      position: 'absolute',
-                      zIndex: '100',
-                      right: '0',
-                      marginRight: '48px',
-                      height: '220px',
-                      '&:hover': {
-                        backgroundColor: '#ffffff99',
-                        '& .arrowButton': { backgroundColor: 'transparent' },
-                      },
-                    }}
-                    onClick={() => scroll(true)}
-                  >
-                    <ArrowForwardIosIcon
-                      className="arrowButton"
-                      sx={{
-                        padding: '10px',
-                        backgroundColor: '#ffffff99',
-                        borderRadius: '50px',
-                        transition:
-                          'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
-                      }}
-                    />
-                  </Button>
-                )}
-              </ImageList>
+            <Box mt={2}>
+              <VideoInlineList videos={relatedVideos} />
             </Box>
           </Box>
           <Divider sx={{ marginTop: 2 }} />

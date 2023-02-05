@@ -13,7 +13,15 @@ import { loader as historyLoader, History } from 'routes/MyPortal/History';
 import MyPortal from 'routes/MyPortal/MyPortal';
 import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
-import { Playlist, loader as playlistLoader } from 'routes/MyPortal/Playlist';
+import { Playlist, loader as playlistLoader } from 'routes/Playlist';
+import {
+  Channel,
+  ChannelInfo,
+  ChannelPlaylists,
+  ChannelVideos,
+  loader as channelLoader,
+} from 'routes/Channel/Channel';
+import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/Channel/ChannelHomePage';
 
 function App() {
   const router = createBrowserRouter([
@@ -39,6 +47,33 @@ function App() {
               path: 'history',
               element: <History />,
               loader: historyLoader,
+            },
+          ],
+        },
+        {
+          path: 'channel/:channelId',
+          element: <Channel />,
+          loader: channelLoader,
+          children: [
+            {
+              path: '',
+              element: <ChannelHomePage />,
+              loader: channelHomePageLoader,
+            },
+            {
+              path: 'videos',
+              element: <ChannelVideos />,
+              // loader: historyLoader,
+            },
+            {
+              path: 'playlists',
+              element: <ChannelPlaylists />,
+              // loader: historyLoader,
+            },
+            {
+              path: 'info',
+              element: <ChannelInfo />,
+              // loader: historyLoader,
             },
           ],
         },

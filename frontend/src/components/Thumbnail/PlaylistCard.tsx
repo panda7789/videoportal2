@@ -6,26 +6,27 @@ import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDo
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
+import { Playlist } from 'model/Playlist';
+import VideoCard from './VideoCard';
 
-interface Props {
-  video: VideoThumbnail;
+export interface Props {
+  playlist: Playlist;
   fullWidth?: boolean;
   smallThumbnail?: boolean;
-  showDescription?: boolean;
 }
 
-function VideoCard({ video, fullWidth, smallThumbnail, showDescription }: Props) {
-  const { imageUrl, name, id, duration, description } = video;
+export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
+  const { duration, id, name, thumbnailUrl, videos } = playlist;
 
   const dropdownActions: DropDownMenuAction[] = [
     {
-      name: 'Přehrát později',
+      name: 'asdf',
       onClick: () => console.log('lolíček'),
     },
   ];
 
   return (
-    <Grid container component={Link} to={`/video/${id}`} style={{ textDecoration: 'none' }}>
+    <Grid container component={Link} to={`/playlist/${id}`} style={{ textDecoration: 'none' }}>
       <Card
         variant="outlined"
         sx={{
@@ -44,7 +45,7 @@ function VideoCard({ video, fullWidth, smallThumbnail, showDescription }: Props)
           sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
         >
           <AspectRatio ratio={16 / 9}>
-            <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
+            <CardMedia component="img" draggable={false} image={thumbnailUrl} alt={thumbnailUrl} />
           </AspectRatio>
           <Typography
             variant={smallThumbnail ? 'caption' : 'body1'}
@@ -86,37 +87,24 @@ function VideoCard({ video, fullWidth, smallThumbnail, showDescription }: Props)
                   variant="subtitle2"
                   component="div"
                   width="100%"
-                  height={fullWidth ? 24 : 48}
+                  height={fullWidth ? 24 : 'auto'}
                   textOverflow="ellipsis"
                   overflow="hidden"
                   display="-webkit-box"
                   ml={1}
+                  pr={5}
                   sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
                 >
                   {name}
                 </Typography>
                 <DropDownMenu sx={{ position: 'absolute', right: 0 }} actions={dropdownActions} />
               </Box>
-              {(showDescription ?? true) && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    display: '-webkit-box',
-                    '-webkit-line-clamp': '2',
-                    '-webkit-box-orient': 'vertical',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {description}
-                </Typography>
-              )}
             </Box>
             <Box
               display="flex"
               alignItems="center"
               component={Link}
-              to="/profile/12345"
+              to="/channel/12345"
               sx={{
                 textDecoration: 'none',
                 color: 'unset',
@@ -126,17 +114,9 @@ function VideoCard({ video, fullWidth, smallThumbnail, showDescription }: Props)
                 borderRadius: '15px',
               }}
             >
-              <Avatar
-                sx={{
-                  width: 24,
-                  height: 24,
-                  border: '0.1px solid lightgray',
-                  padding: '4px',
-                  img: { objectFit: 'fill', borderRadius: '50%' },
-                }}
-                src="/upol.png"
-              />
-              <Typography paddingLeft={1}>Univerzita Palackého v Olomouci</Typography>
+
+              
+              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1' }>Přehrát vše</Typography>
             </Box>
           </CardContent>
         </Grid>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
-import VideoCard from 'components/VideoThumbnail/VideoCard';
+import VideoCard from 'components/Thumbnail/VideoCard';
 import { VideoThumbnail } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 
