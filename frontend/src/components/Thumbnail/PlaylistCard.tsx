@@ -1,12 +1,13 @@
 /* eslint-disable no-nested-ternary */
-import { Card, CardMedia, CardContent, Typography, Grid, Avatar } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
 import React from 'react';
-import { VideoThumbnail } from 'model/Video';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { Playlist } from 'model/Playlist';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import VideoCard from './VideoCard';
 
 export interface Props {
@@ -42,26 +43,52 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
         <Grid
           item
           xs={fullWidth ? (smallThumbnail ? 2.5 : 4) : 12}
-          sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
+          sx={{
+            position: 'relative',
+            ...(fullWidth && { display: 'flex' }),
+            '&:hover .overlay': { display: 'flex' },
+          }}
         >
           <AspectRatio ratio={16 / 9}>
             <CardMedia component="img" draggable={false} image={thumbnailUrl} alt={thumbnailUrl} />
           </AspectRatio>
-          <Typography
-            variant={smallThumbnail ? 'caption' : 'body1'}
-            padding={smallThumbnail ? 0.5 : 1}
+          <Box
+            className="overlay"
             sx={{
-              height: 16,
-              color: 'white',
               position: 'absolute',
-              right: 0,
-              bottom: 0,
-              backgroundColor: '#333333bb',
-              borderRadius: '10%',
+              color: 'white',
+              height: '100%',
+              width: '100%',
+              top: 0,
+              left: 0,
+              backgroundColor: '#333333ee',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1,
             }}
           >
-            {duration}
-          </Typography>
+            <PlayArrowIcon fontSize="large" />
+            <Typography variant="button">Přehrát vše</Typography>
+          </Box>
+          <Box
+            sx={{
+              height: '100%',
+              width: '40%',
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              backgroundColor: '#333333bb',
+              color: 'white',
+            }}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+          >
+            <Typography variant="body1">{playlist.videos.length}</Typography>
+            <PlaylistPlayIcon />
+          </Box>
         </Grid>
         <Grid item xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12} display="flex">
           <CardContent
@@ -114,9 +141,9 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 borderRadius: '15px',
               }}
             >
-
-              
-              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1' }>Přehrát vše</Typography>
+              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
+                Zobrazit celý playlist
+              </Typography>
             </Box>
           </CardContent>
         </Grid>
