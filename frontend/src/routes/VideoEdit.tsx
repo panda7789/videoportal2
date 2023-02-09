@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  Typography,
-  Grid,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Box,
-  Button,
-} from '@mui/material';
-import { getVideoById, getVideoThumbnailById, VideoEditModel } from 'model/Video';
+import { Typography, Grid, TextField, Box, Button } from '@mui/material';
+import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 import AspectRatio from 'components/Utils/AspectRatio';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -17,18 +9,11 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 export async function loader({ params }: { params: any }) {
-  const video = await getVideoById(params);
-  const thumbnail = await getVideoThumbnailById(params);
-  const mix: VideoEditModel = {
-    ...video,
-    imageUrl: thumbnail.imageUrl,
-    description: thumbnail.description,
-  };
-  return mix;
+  return getVideoById(params);
 }
 
 export function VideoEdit() {
-  const video = useLoaderData() as VideoEditModel;
+  const video = useLoaderData() as Video;
 
   const generateThumbnailFromVideo = () => {};
 

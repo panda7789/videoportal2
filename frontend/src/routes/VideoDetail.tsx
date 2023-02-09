@@ -11,9 +11,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
-import React, { useContext, useEffect, useRef } from 'react';
-import videojs, { VideoJsPlayer } from 'video.js';
-import 'video.js/dist/video-js.css';
+import React, { useContext, useEffect } from 'react';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getVideoById, UserVideoStats, Video, VideoThumbnail } from 'model/Video';
 import theme from 'Theme';
@@ -22,9 +21,9 @@ import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { useLoaderData } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
-import 'videojs-hotkeys';
 import ImageUrlGenerator from 'components/Utils/ImageUrlGenerator';
 import { v4 } from 'uuid';
+import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -57,8 +56,6 @@ export async function loader({ params }: { params: any }) {
 }
 
 function VideoDetail() {
-  const videoSrc = '/sampleVideo.mp4';
-  const playerRef = useRef<HTMLVideoElement>(null);
   const [expanded, setExpanded] = React.useState(true);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
@@ -96,37 +93,6 @@ function VideoDetail() {
     }
   };
 
-  useEffect(() => {
-    let player: VideoJsPlayer;
-    if (playerRef.current) {
-      player = videojs(
-        playerRef.current,
-        {
-          autoplay: false,
-          muted: true,
-          controls: true,
-          aspectRatio: '9:16',
-          responsive: true,
-          fluid: true,
-          plugins: {
-            hotkeys: {
-              volumeStep: 0.1,
-              seekStep: 5,
-              enableModifiersForNumbers: false,
-            },
-          },
-        },
-        () => {
-          player.src(videoSrc);
-        },
-      );
-    }
-
-    return () => {
-      player.dispose();
-    };
-  }, []);
-
   const ExpandMore = styled((props: ExpandMoreProps) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -149,23 +115,23 @@ function VideoDetail() {
     }
   };
 
-  
   useEffect(() => {
     const localRelatedVideos: VideoThumbnail[] = [];
     for (let i = 0; i < 10; i += 1) {
-      localRelatedVideos.push({ id: v4(), imageUrl: ImageUrlGenerator(), name: 'LM', duration: '1:55' });
+      localRelatedVideos.push({
+        id: v4(),
+        imageUrl: ImageUrlGenerator(),
+        name: 'LM',
+        duration: '1:55',
+        dataUrl: '/sampleVideo.mp4',
+      });
     }
     setRelatedVideos(localRelatedVideos);
   }, []);
 
   return (
     <Box width="100%">
-      <video
-        ref={playerRef}
-        className="video-js vjs-16-9 vjs-big-play-centered"
-        height="calc(100vh - 64px)"
-        width="100%"
-      />
+      <VideoPlayer videoSrc="/sampleVideo.mp4" />
       <Box display="flex" justifyContent="center" alignItems="center">
         <Box width="95%" mt={2}>
           <Grid container spacing={2} minHeight={170}>
@@ -181,10 +147,7 @@ function VideoDetail() {
               <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <Typography variant="caption">Popis:</Typography>
                 <Typography variant="subtitle1" paddingBottom="16px">
-                  Nulla esse esse deserunt nulla dolor nisi irure aute aliquip cillum ea occaecat
-                  amet. Tempor voluptate aliqua occaecat esse commodo laboris reprehenderit culpa
-                  deserunt nisi ex. Mollit qui excepteur labore officia nulla excepteur elit non
-                  enim et occaecat non.
+                  {video.description}
                 </Typography>
               </Collapse>
             </Grid>

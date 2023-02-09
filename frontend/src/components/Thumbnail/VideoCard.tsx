@@ -6,6 +6,7 @@ import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDo
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
+import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 
 interface Props {
   video: VideoThumbnail;
@@ -13,9 +14,17 @@ interface Props {
   smallThumbnail?: boolean;
   showDescription?: boolean;
   showAvatar?: boolean;
+  withPlayer?: boolean;
 }
 
-function VideoCard({ video, fullWidth, smallThumbnail, showDescription, showAvatar }: Props) {
+function VideoCard({
+  video,
+  fullWidth,
+  smallThumbnail,
+  showDescription,
+  showAvatar,
+  withPlayer,
+}: Props) {
   const { imageUrl, name, id, duration, description } = video;
 
   const dropdownActions: DropDownMenuAction[] = [
@@ -44,24 +53,30 @@ function VideoCard({ video, fullWidth, smallThumbnail, showDescription, showAvat
           xs={fullWidth ? (smallThumbnail ? 2.5 : 4) : 12}
           sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
         >
-          <AspectRatio ratio={16 / 9}>
-            <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
-          </AspectRatio>
-          <Typography
-            variant={smallThumbnail ? 'caption' : 'body1'}
-            padding={smallThumbnail ? 0.5 : 1}
-            sx={{
-              height: 16,
-              color: 'white',
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
-              backgroundColor: '#333333bb',
-              borderRadius: '10%',
-            }}
-          >
-            {duration}
-          </Typography>
+          {withPlayer ? (
+            <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
+          ) : (
+            <>
+              <AspectRatio ratio={16 / 9}>
+                <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
+              </AspectRatio>
+              <Typography
+                variant={smallThumbnail ? 'caption' : 'body1'}
+                padding={smallThumbnail ? 0.5 : 1}
+                sx={{
+                  height: 16,
+                  color: 'white',
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: '#333333bb',
+                  borderRadius: '10%',
+                }}
+              >
+                {duration}
+              </Typography>
+            </>
+          )}
         </Grid>
         <Grid item xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12} display="flex">
           <CardContent
@@ -128,18 +143,24 @@ function VideoCard({ video, fullWidth, smallThumbnail, showDescription, showAvat
                 borderRadius: '15px',
               }}
             >
-              {showAvatar ?? true ? (<Avatar
-                sx={{
-                  width: 24,
-                  height: 24,
-                  border: '0.1px solid lightgray',
-                  padding: '4px',
-                  img: { objectFit: 'fill', borderRadius: '50%' },
-                }}
-                src="/upol.png"
-              />): "" }
-              
-              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1' }>Univerzita Palackého v Olomouci</Typography>
+              {showAvatar ?? true ? (
+                <Avatar
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    border: '0.1px solid lightgray',
+                    padding: '4px',
+                    img: { objectFit: 'fill', borderRadius: '50%' },
+                  }}
+                  src="/upol.png"
+                />
+              ) : (
+                ''
+              )}
+
+              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
+                Univerzita Palackého v Olomouci
+              </Typography>
             </Box>
           </CardContent>
         </Grid>

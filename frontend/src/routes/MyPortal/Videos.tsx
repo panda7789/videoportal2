@@ -68,6 +68,7 @@ export async function loader() {
     name: `Implementace GUI ve Visual Studio (Janoštík)`,
     imageUrl: 'https://picsum.photos/1920/1080?grayscale',
     duration: '1:05',
+    dataUrl: '/sampleVideo.mp4',
     description:
       'Culpa commodo incididunt in sint amet quis deserunt excepteur nisi ex ad veniam nisi anim. Reprehenderit ipsum eiusmod aute sint ipsum deserunt officia id fugiat nostrud.',
   };
