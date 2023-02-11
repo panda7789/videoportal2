@@ -25,6 +25,7 @@ import ImageUrlGenerator from 'components/Utils/ImageUrlGenerator';
 import { v4 } from 'uuid';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import { NavigationContext } from './Root';
+import ScrollToTop from 'components/Utils/ScrollOnTop';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -128,6 +129,10 @@ function VideoDetail() {
     }
     setRelatedVideos(localRelatedVideos);
   }, []);
+
+  useEffect(() => {
+    ScrollToTop();
+  }, [video]);
 
   return (
     <Box width="100%">

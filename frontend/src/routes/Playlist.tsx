@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Button, Grid, IconButton, List, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
@@ -17,7 +17,7 @@ import {
   DroppableProvided,
   DropResult,
 } from 'react-beautiful-dnd';
-import { ScrollToTopOnMount } from 'components/Utils/ScrollOnTop';
+import ScrollToTop from 'components/Utils/ScrollOnTop';
 
 export async function loader({ params }: { params: any }) {
   return getPlaylistById(params);
@@ -42,10 +42,10 @@ export function Playlist() {
     setPlaylist({ ...playlist, videos: newList });
   };
 
+  useLayoutEffect(() => ScrollToTop(), [playlist]);
+
   return (
     <Box margin={4}>
-      <ScrollToTopOnMount />
-
       <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
         <Grid
           item

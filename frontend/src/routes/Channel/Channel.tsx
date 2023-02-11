@@ -28,6 +28,7 @@ export function Channel() {
       setChannelUserSpecificInfo(await getChannelUserSpecificInfo(channelBasicInfo.id));
     })();
   }, []);
+
   const [tab, setTab] = React.useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newTab: number) => {
@@ -115,15 +116,4 @@ export function Channel() {
       </Grid>
     </Box>
   );
-}
-
-
-export function ChannelVideos() {
-  return <Typography>Videos</Typography>;
-}
-export function ChannelPlaylists() {
-  return <Typography>Playlists</Typography>;
-}
-export function ChannelInfo() {
-  return <Typography>Info</Typography>;
 }

@@ -36,7 +36,7 @@ function HomePage() {
         {filteredVideos.map((video) => {
           return (
             <Grid item xs={12} md={3} key={video.id}>
-              <VideoCard key={video.id} video={{ ...video }} />
+              <VideoCard key={video.id} video={{ ...video }} showDescription={false} />
             </Grid>
           );
         })}

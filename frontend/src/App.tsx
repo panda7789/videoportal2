@@ -14,14 +14,14 @@ import MyPortal from 'routes/MyPortal/MyPortal';
 import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 import { Playlist, loader as playlistLoader } from 'routes/Playlist';
-import {
-  Channel,
-  ChannelInfo,
-  ChannelPlaylists,
-  ChannelVideos,
-  loader as channelLoader,
-} from 'routes/Channel/Channel';
+import { Channel, loader as channelLoader } from 'routes/Channel/Channel';
 import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/Channel/ChannelHomePage';
+import { ChannelVideos, loader as channelVideosLoader } from 'routes/Channel/ChannelVideos';
+import {
+  ChannelPlaylists,
+  loader as channelPlaylistsLoader,
+} from 'routes/Channel/ChannelPlaylists';
+import { ChannelInfo, loader as channelInfoLoader } from 'routes/Channel/ChannelInfo';
 
 function App() {
   const router = createBrowserRouter([
@@ -63,17 +63,17 @@ function App() {
             {
               path: 'videos',
               element: <ChannelVideos />,
-              // loader: historyLoader,
+              loader: channelVideosLoader,
             },
             {
               path: 'playlists',
               element: <ChannelPlaylists />,
-              // loader: historyLoader,
+              loader: channelPlaylistsLoader,
             },
             {
               path: 'info',
               element: <ChannelInfo />,
-              // loader: historyLoader,
+              loader: channelInfoLoader,
             },
           ],
         },

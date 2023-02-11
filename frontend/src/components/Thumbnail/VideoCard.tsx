@@ -13,6 +13,7 @@ interface Props {
   fullWidth?: boolean;
   smallThumbnail?: boolean;
   showDescription?: boolean;
+  showChannel?: boolean;
   showAvatar?: boolean;
   withPlayer?: boolean;
 }
@@ -23,6 +24,7 @@ function VideoCard({
   smallThumbnail,
   showDescription,
   showAvatar,
+  showChannel,
   withPlayer,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
@@ -129,39 +131,39 @@ function VideoCard({
                 </Typography>
               )}
             </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              component={Link}
-              to="/channel/12345"
-              sx={{
-                textDecoration: 'none',
-                color: 'unset',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-                borderRadius: '15px',
-              }}
-            >
-              {showAvatar ?? true ? (
-                <Avatar
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    border: '0.1px solid lightgray',
-                    padding: '4px',
-                    img: { objectFit: 'fill', borderRadius: '50%' },
-                  }}
-                  src="/upol.png"
-                />
-              ) : (
-                ''
-              )}
+            {(showChannel ?? true) && (
+              <Box
+                display="flex"
+                alignItems="center"
+                component={Link}
+                to="/channel/12345"
+                sx={{
+                  textDecoration: 'none',
+                  color: 'unset',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
+                  borderRadius: '15px',
+                }}
+              >
+                {(showAvatar ?? true) && (
+                  <Avatar
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      border: '0.1px solid lightgray',
+                      padding: '4px',
+                      img: { objectFit: 'fill', borderRadius: '50%' },
+                    }}
+                    src="/upol.png"
+                  />
+                )}
 
-              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
-                Univerzita Palackého v Olomouci
-              </Typography>
-            </Box>
+                <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
+                  Univerzita Palackého v Olomouci
+                </Typography>
+              </Box>
+            )}
           </CardContent>
         </Grid>
       </Card>

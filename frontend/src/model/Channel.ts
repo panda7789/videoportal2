@@ -13,7 +13,8 @@ export interface Channel {
 export interface ChannelAdvancedInfo {
   description: string;
   dateOfRegistration: number;
-  relatedChannelsID?: string[];
+  email?: string;
+  relatedChannels?: Channel[];
 }
 
 export interface ChannelUserSpecificInfo {
@@ -39,8 +40,9 @@ export async function getChannelAdvancedInfo(id: string): Promise<ChannelAdvance
   const data: ChannelAdvancedInfo = {
     dateOfRegistration: Date.now(),
     description:
-      'Oficiální YouTube kanál Olomouckého kraje. Přinášíme vám aktuality z dění v našem regionu.',
-    relatedChannelsID: ['12345', '6789'],
+      'Ea non nulla do pariatur ex dolore magna sit officia amet nostrud elit.Nostrud exercitation magna laborum incididunt consequat culpa et.Et adipisicing proident commodo deserunt sunt exercitation nostrud est sit proident aute non.',
+    email: 'kdojedana@kazma.cz',
+    relatedChannels: [await getChannelById('123'), await getChannelById('345')],
   };
   return data;
 }
