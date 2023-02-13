@@ -16,17 +16,23 @@ export function ChannelInfo() {
         <Typography variant="h6" mb={1}>
           Informace o kanálu
         </Typography>
-        <Box display="grid" gridTemplateColumns="1fr 3fr" gap={2}>
-          <Typography variant="caption">Popis:</Typography>
-          <Typography>{info.description}</Typography>
-          <Typography variant="caption">Datum registrace:</Typography>
-          <Typography>{info.dateOfRegistration}</Typography>
-          {info.email && (
-            <>
-              <Typography variant="caption">Kontaktní email:</Typography>
-              <Typography>{info.email}</Typography>
-            </>
-          )}
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Box>
+            <Typography variant="caption">Popis:</Typography>
+            <Typography>{info.description}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption">Datum registrace:</Typography>
+            <Typography>{info.dateOfRegistration}</Typography>
+          </Box>
+          <Box>
+            {info.email && (
+              <>
+                <Typography variant="caption">Kontaktní email:</Typography>
+                <Typography>{info.email}</Typography>
+              </>
+            )}
+          </Box>
         </Box>
       </Grid>
       <Grid item xs={5}>

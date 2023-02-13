@@ -18,6 +18,11 @@ code {
   transition-delay: 100ms;
 }
 
+a {
+  text-decoration: none !important;
+  color: inherit;
+} 
+
 .video-js.vjs-fluid,
 .video-js.vjs-16-9,
 .video-js.vjs-4-3,

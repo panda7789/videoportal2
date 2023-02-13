@@ -39,6 +39,23 @@ const themeComponents = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        button: {
+          color: 'rgba(0, 0, 0, 0.87)',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        subtitle2: {
+          lineHeight: 'normal',
+        },
+        caption: {
+          lineHeight: 'normal',
+        },
+      },
+    },
   },
 });
 
@@ -61,7 +78,7 @@ export enum Faculty {
   'Telesne_kultury',
   'Pravnicka',
   'Zdravotnich_ved',
-};
+}
 
 export const FacultyColors = {
   [Faculty.Cyrilometodejska]: '#9E82B5',

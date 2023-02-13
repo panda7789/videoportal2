@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import ChipLine from 'components/Chip/ChipLine';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import { getVideoThumbnailById, VideoThumbnail } from 'model/Video';
+import { getVideoById, Video } from 'model/Video';
 
 function HomePage() {
-  const [videos, setVideos] = useState<VideoThumbnail[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   // const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
 
   const loadVideoThumbnails = async () => {
-    const x: VideoThumbnail[] = [];
+    const x: Video[] = [];
     for (let i = 0; i < 15; i += 1) {
       // eslint-disable-next-line no-await-in-loop
-      const video = await getVideoThumbnailById('asdf');
+      const video = await getVideoById('asdf');
       x.push(video);
     }
     setVideos(x);
@@ -36,7 +36,7 @@ function HomePage() {
         {filteredVideos.map((video) => {
           return (
             <Grid item xs={12} md={3} key={video.id}>
-              <VideoCard key={video.id} video={{ ...video }} showDescription={false} />
+              <VideoCard key={video.id} video={{ ...video }} />
             </Grid>
           );
         })}

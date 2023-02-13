@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
-import { getVideoThumbnailById, search, VideoThumbnail } from 'model/Video';
+import { getVideoById, search, Video } from 'model/Video';
 import { Link, useLoaderData } from 'react-router-dom';
 import { PlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { Playlist } from 'model/Playlist';
@@ -11,15 +11,15 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 export interface Props {
   channelId: string;
-  latestVideos: VideoThumbnail[];
-  pinnedVideo?: VideoThumbnail;
+  latestVideos: Video[];
+  pinnedVideo?: Video;
 }
 
 export async function loader({ params }: { params: any }): Promise<Props> {
   return {
     channelId: params.channelId,
     latestVideos: await search('123'),
-    pinnedVideo: await getVideoThumbnailById('asdf'),
+    pinnedVideo: await getVideoById('asdf'),
   };
 }
 
@@ -37,7 +37,13 @@ export function ChannelHomePage() {
     <Grid container spacing={2}>
       {pinnedVideo && (
         <Grid item xs={12} mt={2} mb={2}>
-          <VideoCard key={pinnedVideo.id} video={{ ...pinnedVideo }} fullWidth withPlayer />
+          <VideoCard
+            key={pinnedVideo.id}
+            video={{ ...pinnedVideo }}
+            fullWidth
+            withPlayer
+            showChannel={false}
+          />
         </Grid>
       )}
 

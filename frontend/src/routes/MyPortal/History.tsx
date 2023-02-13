@@ -2,11 +2,11 @@ import { Grid } from '@mui/material';
 import React from 'react';
 import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import { getVideoThumbnailById, VideoThumbnail } from 'model/Video';
+import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 
 export function History() {
-  const arr = useLoaderData() as VideoThumbnail[];
+  const arr = useLoaderData() as Video[];
 
   return (
     <Box marginTop={4} marginBottom={4}>
@@ -24,10 +24,9 @@ export function History() {
 }
 
 export async function loader() {
-  const video = await getVideoThumbnailById('asdf');
-  const arr: VideoThumbnail[] = [];
+  const video = await getVideoById('asdf');
+  const arr: Video[] = [];
 
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 10; i++) {
     arr.push(video);
   }

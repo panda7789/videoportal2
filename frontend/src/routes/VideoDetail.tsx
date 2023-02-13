@@ -14,18 +14,16 @@ import { Box, styled } from '@mui/system';
 import React, { useContext, useEffect } from 'react';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { getVideoById, UserVideoStats, Video, VideoThumbnail } from 'model/Video';
+import { getVideoById, UserVideoStats, Video } from 'model/Video';
 import theme from 'Theme';
 import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { useLoaderData } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
-import ImageUrlGenerator from 'components/Utils/ImageUrlGenerator';
-import { v4 } from 'uuid';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
-import { NavigationContext } from './Root';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
+import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -60,7 +58,7 @@ function VideoDetail() {
   const [expanded, setExpanded] = React.useState(true);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
-  const [relatedVideos, setRelatedVideos] = React.useState<VideoThumbnail[]>([]);
+  const [relatedVideos, setRelatedVideos] = React.useState<Video[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
 
@@ -117,17 +115,14 @@ function VideoDetail() {
   };
 
   useEffect(() => {
-    const localRelatedVideos: VideoThumbnail[] = [];
-    for (let i = 0; i < 10; i += 1) {
-      localRelatedVideos.push({
-        id: v4(),
-        imageUrl: ImageUrlGenerator(),
-        name: 'LM',
-        duration: '1:55',
-        dataUrl: '/sampleVideo.mp4',
-      });
-    }
-    setRelatedVideos(localRelatedVideos);
+    (async () => {
+      const localRelatedVideos: Video[] = [];
+      for (let i = 0; i < 10; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        localRelatedVideos.push(await getVideoById('1234'));
+      }
+      setRelatedVideos(localRelatedVideos);
+    })();
   }, []);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Card, CardMedia, CardContent, Typography, Grid, Avatar } from '@mui/material';
 import React from 'react';
-import { VideoThumbnail } from 'model/Video';
+import { Video } from 'model/Video';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
@@ -9,12 +9,13 @@ import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 
 interface Props {
-  video: VideoThumbnail;
+  video: Video;
   fullWidth?: boolean;
   smallThumbnail?: boolean;
   showDescription?: boolean;
   showChannel?: boolean;
   showAvatar?: boolean;
+  showStats?: boolean;
   withPlayer?: boolean;
 }
 
@@ -25,6 +26,7 @@ function VideoCard({
   showDescription,
   showAvatar,
   showChannel,
+  showStats,
   withPlayer,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
@@ -37,7 +39,7 @@ function VideoCard({
   ];
 
   return (
-    <Grid container component={Link} to={`/video/${id}`} style={{ textDecoration: 'none' }}>
+    <Grid container style={{ textDecoration: 'none' }}>
       <Card
         variant="outlined"
         sx={{
@@ -58,13 +60,13 @@ function VideoCard({
           {withPlayer ? (
             <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
           ) : (
-            <>
+            <Box component={Link} to={`/video/${id}`}>
               <AspectRatio ratio={16 / 9}>
                 <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
               </AspectRatio>
               <Typography
-                variant={smallThumbnail ? 'caption' : 'body1'}
-                padding={smallThumbnail ? 0.5 : 1}
+                variant="caption"
+                padding={0.5}
                 sx={{
                   height: 16,
                   color: 'white',
@@ -77,25 +79,35 @@ function VideoCard({
               >
                 {duration}
               </Typography>
-            </>
+            </Box>
           )}
         </Grid>
-        <Grid item xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12} display="flex">
+        <Grid
+          item
+          xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12}
+          display="flex"
+          component={Link}
+          to={`/video/${id}`}
+          style={{ textDecoration: 'none' }}
+        >
           <CardContent
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
+              display: 'grid',
+              paddingBottom: '4px !important',
+              width: '100%',
+              padding: 1,
+              paddingRight: 0,
+              paddingTop: 0,
               ...(!fullWidth && {
-                height: 64,
-                padding: '0 8px 0 8px',
+                minHeight: 64,
+              }),
+              ...(fullWidth && {
+                paddingRight: 1,
               }),
               ...(smallThumbnail && {
                 maxHeight: '100%',
-                padding: '4px',
                 paddingBottom: '4px !important',
               }),
-              width: '100%',
             }}
           >
             <Box>
@@ -108,17 +120,17 @@ function VideoCard({
                   textOverflow="ellipsis"
                   overflow="hidden"
                   display="-webkit-box"
-                  ml={1}
-                  pr={5}
+                  pb="4px"
+                  pt={1}
                   sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
                 >
                   {name}
                 </Typography>
-                <DropDownMenu sx={{ position: 'absolute', right: 0 }} actions={dropdownActions} />
+                <DropDownMenu actions={dropdownActions} />
               </Box>
-              {(showDescription ?? true) && (
+              {(showDescription ?? false) && (
                 <Typography
-                  variant="body2"
+                  variant="caption"
                   sx={{
                     display: '-webkit-box',
                     '-webkit-line-clamp': '2',
@@ -129,6 +141,14 @@ function VideoCard({
                 >
                   {description}
                 </Typography>
+              )}
+              {(showStats ?? true) && (
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="caption">{video.views} zhlédnutí</Typography>
+                  <Typography variant="caption" pr={1}>
+                    {video.uploadTimestamp}
+                  </Typography>
+                </Box>
               )}
             </Box>
             {(showChannel ?? true) && (

@@ -1,16 +1,16 @@
 import React from 'react';
 import { Box } from '@mui/system';
-import { VideoThumbnail } from 'model/Video';
+import { getVideoById, Video } from 'model/Video';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 export function MyVideos() {
-  const arr = useLoaderData() as VideoThumbnail[];
+  const arr = useLoaderData() as Video[];
   const navigate = useNavigate();
 
-  const attributes: Attribute<VideoThumbnail>[] = [
+  const attributes: Attribute<Video>[] = [
     {
       id: 'imageUrl',
       label: 'URL obrázku',
@@ -63,20 +63,11 @@ export function MyVideos() {
 }
 
 export async function loader() {
-  const data: VideoThumbnail = {
-    id: uuidv4(),
-    name: `Implementace GUI ve Visual Studio (Janoštík)`,
-    imageUrl: 'https://picsum.photos/1920/1080?grayscale',
-    duration: '1:05',
-    dataUrl: '/sampleVideo.mp4',
-    description:
-      'Culpa commodo incididunt in sint amet quis deserunt excepteur nisi ex ad veniam nisi anim. Reprehenderit ipsum eiusmod aute sint ipsum deserunt officia id fugiat nostrud.',
-  };
-  const arr: VideoThumbnail[] = [];
+  const arr: Video[] = [];
 
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 10; i++) {
-    arr.push({ ...data, id: uuidv4() });
+    // eslint-disable-next-line no-await-in-loop
+    arr.push(await getVideoById('1234'));
   }
 
   return arr;

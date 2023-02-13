@@ -2,11 +2,11 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import { VideoThumbnail } from 'model/Video';
+import { Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 
 function SearchResult() {
-  const arr = useLoaderData() as VideoThumbnail[];
+  const arr = useLoaderData() as Video[];
 
   return (
     <Box marginTop={4} marginBottom={4}>

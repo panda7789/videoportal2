@@ -1,11 +1,11 @@
-import { search, VideoThumbnail } from 'model/Video';
+import { search, Video } from 'model/Video';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Playlist {
   id: string;
   name: string;
   thumbnailUrl: string;
-  videos: VideoThumbnail[];
+  videos: Video[];
   duration: string;
   description?: string;
 }

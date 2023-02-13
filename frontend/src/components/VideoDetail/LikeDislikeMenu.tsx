@@ -22,8 +22,8 @@ import theme from 'Theme';
 import { UserVideoStats } from 'model/Video';
 
 export interface LikeDislikeMenuProps extends UserVideoStats {
-  likeCount: number;
-  dislikeCount: number;
+  likeCount: string;
+  dislikeCount: string;
 }
 
 const Item = styled(Box)(() => ({

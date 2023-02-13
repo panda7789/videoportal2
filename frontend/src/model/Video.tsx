@@ -1,3 +1,4 @@
+import { NumberToWords, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { v4 as uuidv4, v4 } from 'uuid';
 
 export type UserVideoStats = {
@@ -7,23 +8,22 @@ export type UserVideoStats = {
   timeWatchedSec?: number;
 };
 
-export type VideoThumbnail = {
+export type Video = {
   id: string;
   name: string;
   imageUrl: string;
   duration: string;
   description?: string;
   dataUrl: string;
+  likeCount: string;
+  dislikeCount: string;
+  views: string;
+  uploadTimestamp: string;
 };
 
-export interface Video extends VideoThumbnail {
-  likeCount: number;
-  dislikeCount: number;
-}
-
-export async function getVideoThumbnailById(id: string): Promise<VideoThumbnail> {
+export async function getVideoById(id: string): Promise<Video> {
   const random = Math.random() * 256;
-  const data: VideoThumbnail = {
+  const data: Video = {
     id: uuidv4(),
     name: `Implementace GUI ve Visual Studio (Janoštík)`,
     imageUrl: `https://picsum.photos/320/180?grayscale&random=${random}`,
@@ -31,32 +31,21 @@ export async function getVideoThumbnailById(id: string): Promise<VideoThumbnail>
     dataUrl: '/sampleVideo.mp4',
     description:
       'Culpa commodo incididunt in sint amet quis deserunt excepteur nisi ex ad veniam nisi anim. Reprehenderit ipsum eiusmod aute sint ipsum deserunt officia id fugiat nostrud.',
+    likeCount: NumberToWords(Math.random() * 12345),
+    dislikeCount: NumberToWords(Math.random() * 12345),
+    views: NumberToWords(Math.random() * 123456789),
+    uploadTimestamp: TimestampToAgoWords(Date.now()),
   };
   return data;
 }
 
-export async function getVideoById(id: string): Promise<Video> {
-  await Promise.all([
-    // eslint-disable-next-line no-promise-executor-return
-    new Promise((r) => setTimeout(r, 200)),
-  ]);
-  const videoThumb = await getVideoThumbnailById(id);
-  const data: Video = {
-    ...videoThumb,
-    dislikeCount: 0,
-    likeCount: 581,
-  };
-  return data;
-}
-
-export async function search(q: string): Promise<VideoThumbnail[]> {
+export async function search(q: string): Promise<Video[]> {
   console.log(`Searching for ${q}`);
-  const arr: VideoThumbnail[] = [];
+  const arr: Video[] = [];
 
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 10; i++) {
     // eslint-disable-next-line no-await-in-loop
-    const video = await getVideoThumbnailById(q);
+    const video = await getVideoById(q);
     arr.push({ ...video, id: uuidv4(), name: uuidv4() });
   }
 

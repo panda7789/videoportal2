@@ -1,12 +1,15 @@
-import React, { PropsWithChildren, useRef } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { Button, ImageList } from '@mui/material';
 import { Box } from '@mui/system';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
+export interface Props {
+  children: NonNullable<ReactNode>;
+}
 
 // eslint-disable-next-line import/prefer-default-export
-export function InlineList({ children }: PropsWithChildren) {
+export function InlineList({ children }: Props) {
   const videosListRef = useRef<HTMLUListElement>(null);
   const [showLeft, setShowLeft] = React.useState(false);
   const [showRight, setShowRight] = React.useState(true);
@@ -93,43 +96,50 @@ export function InlineList({ children }: PropsWithChildren) {
             background:
               'linear-gradient(to right, transparent 0%,#AAA 25%,#AAA 75%, transparent 100%)',
           },
+          ...(!showLeft && {
+            '&::-webkit-scrollbar-thumb': {
+              background: 'linear-gradient(to right, #AAA 0%,#AAA 25%,#AAA 75%, transparent 100%)',
+            },
+          }),
+          ...(!showRight && {
+            '&::-webkit-scrollbar-thumb': {
+              background: 'linear-gradient(to right, transparent 0%,#AAA 25%,#AAA 75%, #AAA 100%)',
+            },
+          }),
           '&::-webkit-scrollbar-thumb:hover': {
             background: '#555',
           },
         }}
       >
         {children}
-        {showRight && (
-          <Button
-            sx={{
-              position: 'absolute',
-              zIndex: '100',
-              right: '0',
-              marginRight: '48px',
-              height: '220px',
-              '&:hover': {
-                backgroundColor: '#ffffff99',
-                '& .arrowButton': { backgroundColor: 'transparent' },
-              },
-            }}
-            onClick={() => scroll(true)}
-          >
-            <ArrowForwardIosIcon
-              className="arrowButton"
-              sx={{
-                padding: '10px',
-                backgroundColor: '#ffffff99',
-                borderRadius: '50px',
-                transition:
-                  'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
-              }}
-            />
-          </Button>
-        )}
       </ImageList>
+      {showRight && (
+        <Button
+          sx={{
+            position: 'fixed',
+            zIndex: '100',
+            right: '0',
+            marginRight: '48px',
+            height: '220px',
+            '&:hover': {
+              backgroundColor: '#ffffff99',
+              '& .arrowButton': { backgroundColor: 'transparent' },
+            },
+          }}
+          onClick={() => scroll(true)}
+        >
+          <ArrowForwardIosIcon
+            className="arrowButton"
+            sx={{
+              padding: '10px',
+              backgroundColor: '#ffffff99',
+              borderRadius: '50px',
+              transition:
+                'background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;',
+            }}
+          />
+        </Button>
+      )}
     </Box>
   );
 }
-
-
-

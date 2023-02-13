@@ -17,7 +17,7 @@ export interface Props {
 }
 
 export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
-  const { duration, id, name, thumbnailUrl, videos } = playlist;
+  const { duration, id, name, thumbnailUrl, videos, description } = playlist;
 
   const dropdownActions: DropDownMenuAction[] = [
     {
@@ -93,39 +93,33 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
         <Grid item xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12} display="flex">
           <CardContent
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
+              display: 'grid',
+              paddingBottom: '4px !important',
+              width: '100%',
+              padding: 1,
               ...(!fullWidth && {
-                height: 64,
-                padding: '0 8px 0 8px',
+                minHeight: 64,
               }),
               ...(smallThumbnail && {
                 maxHeight: '100%',
-                padding: '4px',
                 paddingBottom: '4px !important',
               }),
-              width: '100%',
             }}
           >
-            <Box>
-              <Box display="flex" position="relative">
-                <Typography
-                  variant="subtitle2"
-                  component="div"
-                  width="100%"
-                  height={fullWidth ? 24 : 'auto'}
-                  textOverflow="ellipsis"
-                  overflow="hidden"
-                  display="-webkit-box"
-                  ml={1}
-                  pr={5}
-                  sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
-                >
-                  {name}
-                </Typography>
-                <DropDownMenu sx={{ position: 'absolute', right: 0 }} actions={dropdownActions} />
-              </Box>
+            <Box display="flex" position="relative">
+              <Typography
+                variant="subtitle2"
+                component="div"
+                width="100%"
+                height={fullWidth ? 24 : 'auto'}
+                textOverflow="ellipsis"
+                overflow="hidden"
+                display="-webkit-box"
+                mb="2px"
+                sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+              >
+                {name}
+              </Typography>
             </Box>
             <Box
               display="flex"
@@ -141,9 +135,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 borderRadius: '15px',
               }}
             >
-              <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
-                Zobrazit celý playlist
-              </Typography>
+              <Typography variant="caption">Zobrazit celý playlist</Typography>
             </Box>
           </CardContent>
         </Grid>

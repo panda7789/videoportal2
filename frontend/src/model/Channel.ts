@@ -1,4 +1,4 @@
-import { search, VideoThumbnail } from 'model/Video';
+import { search, Video } from 'model/Video';
 import { v4 } from 'uuid';
 import { getPlaylistById, Playlist } from './Playlist';
 
@@ -7,7 +7,7 @@ export interface Channel {
   name: string;
   subscribersCount: number;
   posterUrl: string;
-  pinnedVideo?: VideoThumbnail;
+  pinnedVideo?: Video;
 }
 
 export interface ChannelAdvancedInfo {
@@ -42,7 +42,7 @@ export async function getChannelAdvancedInfo(id: string): Promise<ChannelAdvance
     description:
       'Ea non nulla do pariatur ex dolore magna sit officia amet nostrud elit.Nostrud exercitation magna laborum incididunt consequat culpa et.Et adipisicing proident commodo deserunt sunt exercitation nostrud est sit proident aute non.',
     email: 'kdojedana@kazma.cz',
-    relatedChannels: [await getChannelById('123'), await getChannelById('345')],
+    relatedChannels: [await getChannelById(id), await getChannelById('345')],
   };
   return data;
 }
@@ -51,8 +51,8 @@ export async function getChannelUserSpecificInfo(id: string): Promise<ChannelUse
   return { subscribed: false };
 }
 
-export async function getChannelLatestVideos(id: string): Promise<VideoThumbnail[]> {
-  return search('asdf');
+export async function getChannelLatestVideos(id: string): Promise<Video[]> {
+  return search(id);
 }
 
 export async function getChannelPlaylists(id: string): Promise<Playlist[]> {
