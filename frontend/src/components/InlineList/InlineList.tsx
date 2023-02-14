@@ -2,7 +2,7 @@ import React, { ReactNode, useRef } from 'react';
 import { Button, ImageList } from '@mui/material';
 import { Box } from '@mui/system';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 export interface Props {
   children: NonNullable<ReactNode>;
@@ -46,13 +46,13 @@ export function InlineList({ children }: Props) {
   };
 
   return (
-    <Box display="flex" sx={{ maxWidth: '100%' }} alignItems="center">
+    <Box display="flex" sx={{ maxWidth: '100%' }} alignItems="center" position="relative">
       {showLeft && (
         <Button
           sx={{
             position: 'absolute',
             zIndex: '100',
-            height: '220px',
+            height: '100%',
             '&:hover': {
               backgroundColor: '#ffffff99',
               '& .arrowButton': { backgroundColor: 'transparent' },
@@ -60,7 +60,7 @@ export function InlineList({ children }: Props) {
           }}
           onClick={() => scroll(false)}
         >
-          <ArrowBackIosIcon
+          <ArrowBackIosNewIcon
             className="arrowButton"
             sx={{
               padding: '10px',
@@ -116,11 +116,10 @@ export function InlineList({ children }: Props) {
       {showRight && (
         <Button
           sx={{
-            position: 'fixed',
+            position: 'absolute',
             zIndex: '100',
             right: '0',
-            marginRight: '48px',
-            height: '220px',
+            height: '100%',
             '&:hover': {
               backgroundColor: '#ffffff99',
               '& .arrowButton': { backgroundColor: 'transparent' },

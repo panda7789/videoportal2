@@ -143,11 +143,9 @@ function VideoCard({
                 </Typography>
               )}
               {(showStats ?? true) && (
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="caption">{video.views} zhlédnutí</Typography>
-                  <Typography variant="caption" pr={1}>
-                    {video.uploadTimestamp}
-                  </Typography>
+                <Box pb="4px">
+                  <Typography variant="caption">{video.views} zhlédnutí • </Typography>
+                  <Typography variant="caption">{video.uploadTimestamp}</Typography>
                 </Box>
               )}
             </Box>

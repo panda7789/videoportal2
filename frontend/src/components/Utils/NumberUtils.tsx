@@ -33,7 +33,7 @@ export function TimestampToAgoWords(input: number): string {
     }
     return `před ${days} dny`;
   }
-  const hours = diff.getHours() - 1;
+  const hours = diff.getHours();
   if (hours > 0) {
     if (hours === 1) {
       return `před 1 hodinou`;

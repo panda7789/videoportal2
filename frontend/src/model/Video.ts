@@ -34,7 +34,7 @@ export async function getVideoById(id: string): Promise<Video> {
     likeCount: NumberToWords(Math.random() * 12345),
     dislikeCount: NumberToWords(Math.random() * 12345),
     views: NumberToWords(Math.random() * 123456789),
-    uploadTimestamp: TimestampToAgoWords(Date.now()),
+    uploadTimestamp: TimestampToAgoWords(Date.parse('2020-12-13T21:01:00.000Z')),
   };
   return data;
 }
