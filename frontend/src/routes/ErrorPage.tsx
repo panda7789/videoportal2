@@ -1,4 +1,4 @@
-import { Error } from 'model/Error';
+import type { Error } from 'model/Error';
 import React from 'react';
 import { useRouteError } from 'react-router-dom';
 

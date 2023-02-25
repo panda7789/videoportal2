@@ -1,4 +1,4 @@
 export interface Error {
-  statusText: string,
-  message: string,
+  statusText: string;
+  message: string;
 }
