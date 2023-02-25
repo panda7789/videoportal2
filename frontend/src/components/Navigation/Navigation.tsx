@@ -4,9 +4,9 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import UpdateIcon from '@mui/icons-material/Update';
 import theme from 'Theme';
 import HistoryIcon from '@mui/icons-material/History';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import AndroidNavigation from './AndroidNavigation';
 import DesktopNavigation from './DesktopNavigation';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
 export interface NavigationItem {
   route: string;

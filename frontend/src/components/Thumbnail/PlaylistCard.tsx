@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
 import React from 'react';
-import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
+import { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';

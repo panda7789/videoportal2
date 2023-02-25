@@ -20,7 +20,8 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "unused-imports"
     ],
     "rules": {
         "arrow-body-style": "off",
@@ -28,7 +29,8 @@
         "react/require-default-props": "off",
         "react/jsx-props-no-spreading": "off",
         "no-plusplus": "off",
-        "@typescript-eslint/no-unused-vars": "warn"
+        "@typescript-eslint/no-unused-vars": "warn",
+        "unused-imports/no-unused-imports-ts": "error"
 
     },
     "settings": {

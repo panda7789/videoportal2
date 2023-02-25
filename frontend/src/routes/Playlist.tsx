@@ -1,7 +1,6 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Button, Grid, IconButton, List, Typography } from '@mui/material';
+import React, { useLayoutEffect, useState } from 'react';
+import { Button, Grid, IconButton, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import VideoCard from 'components/Thumbnail/VideoCard';
 import { useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import EditIcon from '@mui/icons-material/Edit';

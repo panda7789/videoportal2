@@ -2,7 +2,6 @@ import React from 'react';
 import { Box } from '@mui/system';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 

@@ -2,14 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getUserPlaylistInfo, PlaylistModel, UserPlaylistInfo } from 'model/Playlist';
 import { PlaylistCard } from 'components/Thumbnail/PlaylistCard';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { Typography, Button, IconButton } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
-import { InlineList } from './InlineList';
-import { VideoInlineList } from './VideoInlineList';
 import { LinkButton } from 'components/Buttons/LinkButton';
 import { Video } from 'model/Video';
+import { InlineList } from './InlineList';
+import { VideoInlineList } from './VideoInlineList';
 
 export interface Props {
   playlists: PlaylistModel[];

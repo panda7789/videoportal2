@@ -10,13 +10,17 @@ export interface Props {
 }
 
 export function VideoPlayer({ videoSrc, autoplay, muted }: Props) {
-  const playerRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<VideoJsPlayer | null>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let player: VideoJsPlayer;
-    if (playerRef.current) {
-      player = videojs(
-        playerRef.current,
+    if (!playerRef.current) {
+      const videoElement = document.createElement('video-js');
+      videoElement.className = 'video-js vjs-16-9 vjs-big-play-centered';
+      videoRef.current?.appendChild(videoElement);
+
+      const player = videojs(
+        videoElement,
         {
           autoplay: autoplay ?? false,
           muted: muted ?? false,
@@ -36,20 +40,24 @@ export function VideoPlayer({ videoSrc, autoplay, muted }: Props) {
           player.src(videoSrc);
         },
       );
+      playerRef.current = player;
+    } else {
+      // const player = playerRef.current;
+      // player.autoplay(options.autoplay);
+      // player.src(options.sources);
     }
+  }, [videoRef]);
+
+  React.useEffect(() => {
+    const player = playerRef.current;
 
     return () => {
-      player.dispose();
+      if (player && !player.isDisposed()) {
+        player.dispose();
+        playerRef.current = null;
+      }
     };
-  }, []);
+  }, [playerRef]);
 
-  return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption
-    <video
-      ref={playerRef}
-      className="video-js vjs-16-9 vjs-big-play-centered"
-      height="calc(100vh - 64px)"
-      width="100%"
-    />
-  );
+  return <div ref={videoRef} style={{ height: '100vh - 64px' }} />;
 }

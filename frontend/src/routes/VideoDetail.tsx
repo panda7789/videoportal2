@@ -23,15 +23,12 @@ import { useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
-import { NavigationContext } from './Root';
 import { getPlaylistById, PlaylistModel } from 'model/Playlist';
-import { PlaylistDetail } from './Playlist';
-import { VerticalList } from 'components/VerticalList/VerticalList';
 import {
   ExpandedPlaylistInlineList,
-  PlaylistInlineList,
 } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
+import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;

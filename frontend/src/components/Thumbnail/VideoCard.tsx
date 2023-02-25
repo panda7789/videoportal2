@@ -4,7 +4,7 @@ import React from 'react';
 import { Video } from 'model/Video';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
-import { Box, useTheme } from '@mui/system';
+import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
