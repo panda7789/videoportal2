@@ -1,6 +1,6 @@
 import { search, Video } from 'model/Video';
 import { v4 } from 'uuid';
-import { getPlaylistById, Playlist } from './Playlist';
+import { getPlaylistById, PlaylistModel } from './Playlist';
 
 export interface Channel {
   id: string;
@@ -55,8 +55,8 @@ export async function getChannelLatestVideos(id: string): Promise<Video[]> {
   return search(id);
 }
 
-export async function getChannelPlaylists(id: string): Promise<Playlist[]> {
-  const playlists: Promise<Playlist>[] = [];
+export async function getChannelPlaylists(id: string): Promise<PlaylistModel[]> {
+  const playlists: Promise<PlaylistModel>[] = [];
   for (let i = 0; i < 10; i++) {
     playlists.push(getPlaylistById(id));
   }

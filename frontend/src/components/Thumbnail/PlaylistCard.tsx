@@ -5,13 +5,13 @@ import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDo
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
-import { Playlist } from 'model/Playlist';
+import { PlaylistModel } from 'model/Playlist';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import VideoCard from './VideoCard';
 
 export interface Props {
-  playlist: Playlist;
+  playlist: PlaylistModel;
   fullWidth?: boolean;
   smallThumbnail?: boolean;
 }

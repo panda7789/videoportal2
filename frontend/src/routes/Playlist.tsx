@@ -4,45 +4,31 @@ import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
 import { useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import ReorderIcon from '@mui/icons-material/Reorder';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { getPlaylistById, Playlist as playlistModel } from 'model/Playlist';
+import { getPlaylistById, PlaylistModel as playlistModel } from 'model/Playlist';
 import AspectRatio from 'components/Utils/AspectRatio';
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-  DropResult,
-} from 'react-beautiful-dnd';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
+import { VerticalList } from 'components/VerticalList/VerticalList';
+import { Video } from 'model/Video';
 
 export async function loader({ params }: { params: any }) {
   return getPlaylistById(params);
 }
 
-export function Playlist() {
+export interface Props {
+  playlist?: playlistModel;
+}
+
+export function PlaylistDetail({ playlist: playlistProp }: Props) {
   const playlistFromLoader = useLoaderData() as playlistModel;
-  const [playlist, setPlaylist] = useState<playlistModel>(playlistFromLoader);
+  const [playlist, setPlaylist] = useState<playlistModel>(playlistProp ?? playlistFromLoader);
 
-  const onDragEnd = (result: DropResult) => {
-    const { destination, source } = result;
-    if (destination?.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-    if (!destination) {
-      return;
-    }
-    const newList = Array.from(playlist.videos);
-    const removed = newList.splice(source.index, 1);
-    newList.splice(destination.index, 0, removed[0]);
+  useLayoutEffect(() => ScrollToTop(), [playlist.id]);
 
-    setPlaylist({ ...playlist, videos: newList });
+  const onListDragEnd = (videos: Video[]) => {
+    setPlaylist({ ...playlist, videos });
   };
-
-  useLayoutEffect(() => ScrollToTop(), [playlist]);
 
   return (
     <Box margin={4}>
@@ -73,52 +59,7 @@ export function Playlist() {
             </Button>
           </Box>
         </Grid>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="playlistOrder">
-            {(provided: DroppableProvided) => (
-              <Grid
-                container
-                paddingLeft="calc(100% / 3.3)"
-                item
-                spacing={2}
-                xs={12}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {playlist.videos.map((video, index) => {
-                  return (
-                    <Draggable key={video.id} draggableId={video.id} index={index}>
-                      {(draggableProvided: DraggableProvided) => (
-                        <Grid
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.draggableProps}
-                          key={video.id}
-                          item
-                          xs={12}
-                          display="flex"
-                          alignItems="stretch"
-                        >
-                          <Box {...draggableProvided.dragHandleProps} padding={2} display="flex">
-                            <Box alignSelf="center">
-                              <ReorderIcon />
-                            </Box>
-                          </Box>
-                          <VideoCard
-                            key={video.id}
-                            video={{ ...video }}
-                            fullWidth
-                            smallThumbnail
-                            showDescription={false}
-                          />
-                        </Grid>
-                      )}
-                    </Draggable>
-                  );
-                })}
-              </Grid>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <VerticalList videos={playlist.videos} onDragEnd={onListDragEnd} />
       </Grid>
     </Box>
   );

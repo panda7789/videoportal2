@@ -13,7 +13,7 @@ import { loader as historyLoader, History } from 'routes/MyPortal/History';
 import MyPortal from 'routes/MyPortal/MyPortal';
 import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
-import { Playlist, loader as playlistLoader } from 'routes/Playlist';
+import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
 import { Channel, loader as channelLoader } from 'routes/Channel/Channel';
 import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/Channel/ChannelHomePage';
 import { ChannelVideos, loader as channelVideosLoader } from 'routes/Channel/ChannelVideos';
@@ -94,7 +94,7 @@ function App() {
         },
         {
           path: 'playlist/:playlistId',
-          element: <Playlist />,
+          element: <PlaylistDetail />,
           loader: playlistLoader,
         },
       ],

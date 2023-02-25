@@ -19,11 +19,19 @@ import theme from 'Theme';
 import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { NavigationContext } from './Root';
+import { getPlaylistById, PlaylistModel } from 'model/Playlist';
+import { PlaylistDetail } from './Playlist';
+import { VerticalList } from 'components/VerticalList/VerticalList';
+import {
+  ExpandedPlaylistInlineList,
+  PlaylistInlineList,
+} from 'components/InlineList/PlaylistInlineList';
+import { TailSpin } from 'react-loader-spinner';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -61,6 +69,22 @@ function VideoDetail() {
   const [relatedVideos, setRelatedVideos] = React.useState<Video[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
+  const [searchParams] = useSearchParams();
+  const [playlist, setPlaylist] = React.useState<PlaylistModel | undefined>(undefined);
+  const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
+  const [commentsLoading, setCommentsLoading] = React.useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(searchParams.toString());
+    const playlistId = searchParams.get('playlist');
+    const index = searchParams.get('index') ?? '0';
+    (async () => {
+      if (playlistId) {
+        setPlaylist(await getPlaylistById(playlistId));
+        setPlaylistIndex(parseInt(index, 10));
+      }
+    })();
+  }, [searchParams]);
 
   useEffect(() => {
     context?.setOpen(false);
@@ -76,8 +100,9 @@ function VideoDetail() {
     });
     setComments(commentsApi);
   }, []);
-  const addComment = (commentText: string | undefined) => {
+  const addComment = async (commentText: string | undefined) => {
     if (commentText) {
+      setCommentsLoading(true);
       const comment: CommentProps = {
         text: commentText,
         user: {
@@ -88,7 +113,15 @@ function VideoDetail() {
           rights: Privileges.user,
         }, // TODO Current user
       };
+      await Promise.all([
+        // eslint-disable-next-line no-promise-executor-return
+        new Promise((r) => setTimeout(r, 500)),
+      ]);
       setComments((prevState) => [comment, ...prevState]);
+      if (commentInput && commentInput.current) {
+        commentInput.current.value = '';
+      }
+      setCommentsLoading(false);
     }
   };
 
@@ -108,12 +141,6 @@ function VideoDetail() {
     setExpanded(!expanded);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      addComment(commentInput.current?.value);
-    }
-  };
-
   useEffect(() => {
     (async () => {
       const localRelatedVideos: Video[] = [];
@@ -130,9 +157,11 @@ function VideoDetail() {
   }, [video]);
 
   return (
-    <Box width="100%">
-      <VideoPlayer videoSrc="/sampleVideo.mp4" />
-      <Box display="flex" justifyContent="center" alignItems="center">
+    <Grid container xs={12}>
+      <Grid item xs={12}>
+        <VideoPlayer videoSrc="/sampleVideo.mp4" />
+      </Grid>
+      <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
         <Box width="95%" mt={2}>
           <Grid container spacing={2} minHeight={170}>
             <Grid item xs={8}>
@@ -176,6 +205,19 @@ function VideoDetail() {
               </Grid>
             </Grid>
           </Grid>
+          {playlist && (
+            <>
+              <Divider sx={{ marginTop: 2 }} />
+              <Box mt={2}>
+                <ExpandedPlaylistInlineList
+                  playlist={playlist}
+                  currentlyPlaying={playlistIndex}
+                  showPlayAllButton={false}
+                  editable
+                />
+              </Box>
+            </>
+          )}
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={2}>
             <Typography variant="body1">Podobná videa</Typography>
@@ -183,21 +225,33 @@ function VideoDetail() {
               <VideoInlineList videos={relatedVideos} />
             </Box>
           </Box>
+
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={1}>
             <Typography variant="body1">Komentáře ({comments.length})</Typography>
             <Box display="flex" mt={2}>
               <Avatar>LL</Avatar>
-              <TextField
-                sx={{ ml: 1 }}
-                fullWidth
-                id="outlined-basic"
-                label=""
-                variant="outlined"
-                multiline
-                inputRef={commentInput}
-                onKeyUp={handleKeyPress}
-              />
+              {commentsLoading ? (
+                <TailSpin
+                  height="80"
+                  width="80"
+                  color="#4fa94d"
+                  ariaLabel="tail-spin-loading"
+                  radius="1"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                />
+              ) : (
+                <TextField
+                  sx={{ ml: 1 }}
+                  fullWidth
+                  id="outlined-basic"
+                  label=""
+                  variant="outlined"
+                  multiline
+                  inputRef={commentInput}
+                />
+              )}
               <Button variant="text" onClick={() => addComment(commentInput.current?.value)}>
                 Odeslat
               </Button>
@@ -212,8 +266,8 @@ function VideoDetail() {
             ))}
           </Box>
         </Box>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 }
 

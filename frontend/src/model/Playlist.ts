@@ -1,7 +1,7 @@
 import { search, Video } from 'model/Video';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface Playlist {
+export interface PlaylistModel {
   id: string;
   name: string;
   thumbnailUrl: string;
@@ -10,12 +10,16 @@ export interface Playlist {
   description?: string;
 }
 
-export async function getPlaylistById(id: string): Promise<Playlist> {
+export type UserPlaylistInfo = {
+  editable: boolean;
+};
+
+export async function getPlaylistById(id: string): Promise<PlaylistModel> {
   await Promise.all([
     // eslint-disable-next-line no-promise-executor-return
     new Promise((r) => setTimeout(r, 200)),
   ]);
-  const data: Playlist = {
+  const data: PlaylistModel = {
     id: uuidv4(),
     name: 'Přehrát později',
     thumbnailUrl: 'https://picsum.photos/1920/1080?grayscale',
@@ -24,4 +28,8 @@ export async function getPlaylistById(id: string): Promise<Playlist> {
     description: 'Commodo irure amet eu magna veniam incididunt do exercitation laboris.',
   };
   return data;
+}
+
+export async function getUserPlaylistInfo(id: string): Promise<UserPlaylistInfo> {
+  return { editable: true };
 }

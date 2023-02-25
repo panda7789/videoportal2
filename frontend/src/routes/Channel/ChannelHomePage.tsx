@@ -3,11 +3,13 @@ import { Button, Grid, Typography } from '@mui/material';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { getVideoById, search, Video } from 'model/Video';
 import { Link, useLoaderData } from 'react-router-dom';
-import { PlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
-import { Playlist } from 'model/Playlist';
+import {
+  ExpandedPlaylistInlineList,
+  PlaylistInlineList,
+} from 'components/InlineList/PlaylistInlineList';
+import { PlaylistModel } from 'model/Playlist';
 import { getChannelPlaylists } from 'model/Channel';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 export interface Props {
   channelId: string;
@@ -25,7 +27,7 @@ export async function loader({ params }: { params: any }): Promise<Props> {
 
 export function ChannelHomePage() {
   const { channelId, latestVideos, pinnedVideo } = useLoaderData() as Props;
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [playlists, setPlaylists] = useState<PlaylistModel[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -51,28 +53,17 @@ export function ChannelHomePage() {
         <Typography variant="h6">Videa</Typography>
         <VideoInlineList videos={latestVideos} />
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant="h6">Playlisty</Typography>
-        <PlaylistInlineList playlists={playlists} />
-      </Grid>
-      <Grid item xs={12}>
-        <Typography variant="h6" display="inline-block" sx={{ verticalAlign: 'middle' }}>
-          Rozložený playlist
-        </Typography>
-        <Button
-          sx={{ marginLeft: 2, fontSize: 11, color: 'black', borderColor: 'black' }}
-          startIcon={<PlayArrowIcon />}
-          variant="outlined"
-          component={Link}
-          to={'/playlist/12345'}
-        >
-          Přehrát vše
-        </Button>
-        <Typography variant="body2" pt={1}>
-          Labore consequat occaecat duis ut dolore sint anim culpa sit.
-        </Typography>
-        <VideoInlineList videos={latestVideos} />
-      </Grid>
+      {playlists.length > 0 && (
+        <>
+          <Grid item xs={12}>
+            <Typography variant="h6">Playlisty</Typography>
+            <PlaylistInlineList playlists={playlists} />
+          </Grid>
+          <Grid item xs={12}>
+            <ExpandedPlaylistInlineList playlist={playlists[0]} />
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 }

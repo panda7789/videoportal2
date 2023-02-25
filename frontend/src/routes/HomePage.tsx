@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
-import ChipLine from 'components/Chip/ChipLine';
 import VideoCard from 'components/Thumbnail/VideoCard';
 import { getVideoById, Video } from 'model/Video';
 
 function HomePage() {
   const [videos, setVideos] = useState<Video[]>([]);
-  // const [filteredSubject, setFilteredSubject] = useState<string | null>(null);
 
   const loadVideoThumbnails = async () => {
     const x: Video[] = [];
@@ -28,11 +26,7 @@ function HomePage() {
 
   return (
     <Box>
-      <ChipLine
-        chipData={['tag1', 'tag2', 'tag3'].map((x) => ({ color: '123', text: x }))}
-        setActiveChipCallback={() => {}}
-      />
-      <Grid container spacing={1}>
+      <Grid container spacing={1} p={2}>
         {filteredVideos.map((video) => {
           return (
             <Grid item xs={12} md={3} key={video.id}>

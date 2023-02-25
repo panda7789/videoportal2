@@ -1,6 +1,6 @@
 // AspectRatio.tsx
 import * as React from 'react';
-import { Box } from '@mui/system';
+import { Box, SxProps, Theme } from '@mui/system';
 
 interface Props {
   children?: any;
@@ -10,11 +10,13 @@ interface Props {
    * simply pass `ratio={16/9}`.
    */
   ratio: number;
+  sx?: SxProps<Theme>;
 }
-function AspectRatio({ children, ratio }: Props) {
+function AspectRatio({ children, ratio, sx }: Props) {
   return (
     <Box
       sx={{
+        ...sx,
         position: 'relative',
         width: '100%',
         height: 0,

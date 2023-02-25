@@ -4,9 +4,11 @@ import React from 'react';
 import { Video } from 'model/Video';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
-import { Box } from '@mui/system';
+import { Box, useTheme } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import theme from 'Theme';
 
 interface Props {
   video: Video;
@@ -17,6 +19,8 @@ interface Props {
   showAvatar?: boolean;
   showStats?: boolean;
   withPlayer?: boolean;
+  currentlyPlaying?: boolean;
+  urlParams?: string;
 }
 
 function VideoCard({
@@ -28,6 +32,8 @@ function VideoCard({
   showChannel,
   showStats,
   withPlayer,
+  currentlyPlaying,
+  urlParams,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
 
@@ -60,9 +66,43 @@ function VideoCard({
           {withPlayer ? (
             <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
           ) : (
-            <Box component={Link} to={`/video/${id}`}>
-              <AspectRatio ratio={16 / 9}>
-                <CardMedia component="img" draggable={false} image={imageUrl} alt={imageUrl} />
+            <Box component={Link} to={`/video/${id}${urlParams || ''}`}>
+              <AspectRatio ratio={16 / 9} sx={{ position: 'relative' }}>
+                <CardMedia
+                  component="img"
+                  draggable={false}
+                  image={imageUrl}
+                  alt={imageUrl}
+                  sx={{
+                    ...(currentlyPlaying && {
+                      boxSizing: 'border-box',
+                      border: `3px solid ${theme.palette.primary.main}}`,
+                    }),
+                  }}
+                />
+                {currentlyPlaying && (
+                  <Box
+                    className="overlay"
+                    sx={{
+                      position: 'absolute',
+                      display: 'flex',
+
+                      color: `${theme.palette.primary.main}`,
+                      height: '100%',
+                      width: '100%',
+                      top: 0,
+                      left: 0,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 1,
+                    }}
+                  >
+                    <SkipNextIcon
+                      fontSize="large"
+                      sx={{ backgroundColor: '#ffffffdd', padding: '0.25em', borderRadius: '50%' }}
+                    />
+                  </Box>
+                )}
               </AspectRatio>
               <Typography
                 variant="caption"
