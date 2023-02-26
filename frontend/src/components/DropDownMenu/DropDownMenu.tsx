@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Popper,
   Grow,
@@ -9,20 +10,24 @@ import {
   Box,
   SxProps,
   Theme,
+  ListItemIcon,
+  ListItemText,
+  Typography,
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import React from 'react';
 
 export interface Props {
   actions: DropDownMenuAction[];
+  icon: JSX.Element;
+  text?: string;
   sx?: SxProps<Theme>;
 }
 export interface DropDownMenuAction {
   name: string;
+  icon?: JSX.Element;
   onClick(): void;
 }
 
-function DropDownMenu({ actions, sx }: Props) {
+function DropDownMenu({ actions, sx, icon, text }: Props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -66,8 +71,9 @@ function DropDownMenu({ actions, sx }: Props) {
         onClick={handleToggle}
         ref={anchorRef}
       >
-        <MoreVertIcon />
+        {icon}
       </IconButton>
+      {text && <Typography>{text}</Typography>}
       <Popper
         open={open}
         anchorEl={anchorRef.current}
@@ -99,7 +105,8 @@ function DropDownMenu({ actions, sx }: Props) {
                           action.onClick();
                         }}
                       >
-                        {action.name}
+                        {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
+                        <ListItemText>{action.name}</ListItemText>
                       </MenuItem>
                     );
                   })}

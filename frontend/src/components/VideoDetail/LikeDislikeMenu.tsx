@@ -16,10 +16,13 @@ import {
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ShareIcon from '@mui/icons-material/Share';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import QueueIcon from '@mui/icons-material/Queue';
 import React from 'react';
 import theme from 'Theme';
 import { UserVideoStats } from 'model/Video';
+import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 
 export interface LikeDislikeMenuProps extends UserVideoStats {
   likeCount: string;
@@ -32,6 +35,19 @@ const Item = styled(Box)(() => ({
   color: theme.palette.text.secondary,
   width: '48px',
 }));
+
+const dropdownActions: DropDownMenuAction[] = [
+  {
+    name: 'Přehrát později',
+    icon: <WatchLaterIcon />,
+    onClick: () => console.log('přidat do přehrát později'),
+  },
+  {
+    name: 'Přidat do playlistu',
+    icon: <PlaylistAddIcon />,
+    onClick: () => console.log('přidat do playlistu'),
+  },
+];
 
 function LikeDislikeMenu({
   likeCount,
@@ -97,68 +113,7 @@ function LikeDislikeMenu({
         <Typography>Sdílení</Typography>
       </Item>
       <Item>
-        <IconButton
-          color={addedToPlaylist ? 'primary' : 'default'}
-          id="basic-button"
-          aria-controls={open ? 'basic-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleAddToPlaylistClick}
-        >
-          <QueueIcon />
-        </IconButton>
-        <Typography>Uložit</Typography>
-        <Paper sx={{ width: 320, maxWidth: '100%' }}>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleAddToPlaylistClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-          >
-            <MenuItem>
-              <ListItemIcon>
-                <ContentCut fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Cut</ListItemText>
-              <Typography variant="body2" color="text.secondary">
-                ⌘X
-              </Typography>
-            </MenuItem>
-            <MenuItem>
-              <ListItemIcon>
-                <ContentCopy fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Copy</ListItemText>
-              <Typography variant="body2" color="text.secondary">
-                ⌘C
-              </Typography>
-            </MenuItem>
-            <MenuItem>
-              <ListItemIcon>
-                <ContentPaste fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Paste</ListItemText>
-              <Typography variant="body2" color="text.secondary">
-                ⌘V
-              </Typography>
-            </MenuItem>
-            <Divider />
-            <MenuItem>
-              <ListItemIcon>
-                <Cloud fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Web Clipboard</ListItemText>
-            </MenuItem>
-          </Menu>
-        </Paper>
+        <DropDownMenu actions={dropdownActions} text="Uložit" icon={<QueueIcon />} />
       </Item>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

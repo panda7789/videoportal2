@@ -8,6 +8,9 @@ import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
 
 interface Props {
@@ -40,7 +43,13 @@ function VideoCard({
   const dropdownActions: DropDownMenuAction[] = [
     {
       name: 'Přehrát později',
-      onClick: () => console.log('lolíček'),
+      icon: <WatchLaterIcon />,
+      onClick: () => console.log('přidat do přehrát později'),
+    },
+    {
+      name: 'Přidat do playlistu',
+      icon: <PlaylistAddIcon />,
+      onClick: () => console.log('přidat do playlistu'),
     },
   ];
 
@@ -166,7 +175,7 @@ function VideoCard({
                 >
                   {name}
                 </Typography>
-                <DropDownMenu actions={dropdownActions} />
+                <DropDownMenu actions={dropdownActions} icon={<MoreVertIcon />} />
               </Box>
               {(showDescription ?? false) && (
                 <Typography
