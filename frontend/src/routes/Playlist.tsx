@@ -58,7 +58,7 @@ export function PlaylistDetail({ playlist: playlistProp }: Props) {
             </Button>
           </Box>
         </Grid>
-        <VerticalList videos={playlist.videos} onDragEnd={onListDragEnd} />
+        <VerticalList videos={playlist.videos} onDragEnd={onListDragEnd} draggable />
       </Grid>
     </Box>
   );

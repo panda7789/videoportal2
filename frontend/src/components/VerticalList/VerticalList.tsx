@@ -12,6 +12,7 @@ import {
 } from 'react-beautiful-dnd';
 import ReorderIcon from '@mui/icons-material/Reorder';
 import { Video } from 'model/Video';
+import { StrictModeDroppable } from 'components/Utils/StrictModeDroppable';
 
 export interface Props {
   videos: Video[];
@@ -42,7 +43,7 @@ export function VerticalList({ videos: videosProp, draggable, onDragEnd }: Props
 
   return (
     <DragDropContext onDragEnd={onDragEndLocal}>
-      <Droppable droppableId="playlistOrder" isDropDisabled={!draggable}>
+      <StrictModeDroppable droppableId="playlistOrder" isDropDisabled={!draggable}>
         {(provided: DroppableProvided) => (
           <Grid
             container
@@ -92,7 +93,7 @@ export function VerticalList({ videos: videosProp, draggable, onDragEnd }: Props
             })}
           </Grid>
         )}
-      </Droppable>
+      </StrictModeDroppable>
     </DragDropContext>
   );
 }

@@ -75,7 +75,7 @@ function VideoCard({
           {withPlayer ? (
             <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
           ) : (
-            <Box component={Link} to={`/video/${id}${urlParams || ''}`}>
+            <Box component={Link} to={`/video/${id}${urlParams || ''}`} width="100%">
               <AspectRatio ratio={16 / 9} sx={{ position: 'relative' }}>
                 <CardMedia
                   component="img"
