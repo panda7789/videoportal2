@@ -1,7 +1,7 @@
-import React from 'react';
-import { Avatar, Box, Grid, Typography } from '@mui/material';
-import { Link, useLoaderData } from 'react-router-dom';
+import { Box, Grid, Typography } from '@mui/material';
+import { useLoaderData } from 'react-router-dom';
 import { ChannelAdvancedInfo, getChannelAdvancedInfo } from 'model/Channel';
+import { AvatarButton } from 'components/Buttons/AvatarButton';
 
 export async function loader({ params }: { params: any }) {
   return getChannelAdvancedInfo('asdf');
@@ -41,34 +41,12 @@ export function ChannelInfo() {
         </Typography>
         <Box display="flex" flexDirection="column">
           {info.relatedChannels?.map((channel) => (
-            <Box
+            <AvatarButton
               key={channel.id}
-              display="flex"
-              alignItems="center"
-              component={Link}
-              to={`/channel/${channel.id}`}
-              padding="4px !important"
-              sx={{
-                textDecoration: 'none',
-                color: 'unset',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-                borderRadius: '15px',
-              }}
-            >
-              <Avatar
-                sx={{
-                  width: 48,
-                  height: 48,
-                  border: '0.1px solid lightgray',
-                  padding: '4px',
-                  img: { objectFit: 'fill', borderRadius: '50%' },
-                }}
-                src="/upol.png"
-              />
-              <Typography paddingLeft={1}>{channel.name}</Typography>
-            </Box>
+              url={`/channel/${channel.id}`}
+              text={channel.name}
+              image={channel.avatar}
+            />
           ))}
         </Box>
       </Grid>

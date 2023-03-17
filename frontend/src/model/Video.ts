@@ -19,7 +19,26 @@ export type Video = {
   dislikeCount: string;
   views: string;
   uploadTimestamp: string;
+  tags: string[];
 };
+const tags = [
+  'Aplikovaná informatika',
+  'Přednáška',
+  'Konference',
+  'Matematika',
+  'Akce',
+  'Ostatní',
+  'XBP1',
+  'KTE2',
+  'MAT4',
+];
+export function getTags() {
+  const res = [];
+  for (let i = 0; i < Math.floor(Math.random() * 5); i++) {
+    res.push(tags[Math.floor(Math.random() * tags.length)]);
+  }
+  return res;
+}
 
 export async function getVideoById(id: string): Promise<Video> {
   const random = Math.random() * 256;
@@ -35,6 +54,7 @@ export async function getVideoById(id: string): Promise<Video> {
     dislikeCount: NumberToWords(Math.random() * 12345),
     views: NumberToWords(Math.random() * 123456789),
     uploadTimestamp: TimestampToAgoWords(Date.parse('2020-12-13T21:01:00.000Z')),
+    tags: getTags(),
   };
   return data;
 }

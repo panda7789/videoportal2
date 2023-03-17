@@ -7,6 +7,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import ChipEditLine from 'components/Chip/ChipEditLine';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params);
@@ -57,6 +58,12 @@ export function VideoEdit() {
                 minRows={7}
                 maxRows={14}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="caption" pl={2}>
+                Tagy
+              </Typography>
+              <ChipEditLine />
             </Grid>
           </Grid>
         </Grid>

@@ -43,11 +43,6 @@ function App() {
               element: <MyVideos />,
               loader: myVideosLoader,
             },
-            {
-              path: 'history',
-              element: <History />,
-              loader: historyLoader,
-            },
           ],
         },
         {

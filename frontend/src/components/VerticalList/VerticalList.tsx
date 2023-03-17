@@ -4,7 +4,6 @@ import VideoCard from 'components/Thumbnail/VideoCard';
 import React, { useState } from 'react';
 import {
   DragDropContext,
-  Droppable,
   DroppableProvided,
   Draggable,
   DraggableProvided,

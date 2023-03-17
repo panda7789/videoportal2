@@ -20,16 +20,20 @@
     "eslint": "^8.34.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.32.2",
+    "font-color-contrast": "^11.1.0",
     "material-ui-search-bar": "^1.0.0",
     "prettier": "^2.8.4",
+    "randomcolor": "^0.6.2",
     "react": "^18.2.0",
     "react-aspect-ratio": "^1.1.4",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.4.3",
+    "react-transition-group": "^4.4.5",
     "react-uuid": "^2.0.0",
     "styled-components": "^5.3.6",
+    "use-best-color": "^1.1.6",
     "uuid": "^9.0.0",
     "video.js": "^7.20.3",
     "videojs-hotkeys": "^0.2.28",
@@ -38,7 +42,8 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "fixAll": "eslint --fix ."
   },
   "eslintConfig": {
     "extends": [

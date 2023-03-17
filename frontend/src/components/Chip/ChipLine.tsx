@@ -4,7 +4,7 @@ import { SxProps } from '@mui/system';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import theme from 'Theme';
-import CustomChip, { CustomChipInterface } from './CustomChip';
+import CustomChip, { Props } from './CustomChip';
 
 enum ScrollState {
   FullyLeft = 0,
@@ -54,7 +54,7 @@ function ScrollArrow({ direction, onClickProp, sx }: ScrollArrowInterface) {
 }
 
 interface ChipLineInterface {
-  chipData: CustomChipInterface[];
+  chipData: Props[];
   setActiveChipCallback?: (chipName: string | null) => void;
 }
 

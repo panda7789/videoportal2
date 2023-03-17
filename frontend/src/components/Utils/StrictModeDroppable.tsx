@@ -3,7 +3,7 @@ import { Droppable, DroppableProps } from 'react-beautiful-dnd';
 
 // fix for react 18 and JS strict mode - https://github.com/atlassian/react-beautiful-dnd/issues/2399
 
-export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
+export function StrictModeDroppable({ children, ...props }: DroppableProps) {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
@@ -20,4 +20,4 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   }
 
   return <Droppable {...props}>{children}</Droppable>;
-};
+}

@@ -1,31 +1,49 @@
 import { Chip } from '@mui/material';
+import { GetRandomColor } from 'components/Utils/CoolColors';
 import React from 'react';
 
-export interface CustomChipInterface {
-  text: string;
+export interface Props {
+  text?: string;
+  icon?: JSX.Element;
   onClick?: React.MouseEventHandler;
-  color: string;
+  onDelete?: React.MouseEventHandler;
+  color?: string;
+  bgColor?: string;
   active?: boolean;
 }
 
-function CustomChip({ text, onClick, color, active = false }: CustomChipInterface) {
+function CustomChip({ text, icon, onClick, onDelete, color, bgColor, active = false }: Props) {
+  // eslint-disable-next-line no-param-reassign
+  bgColor = bgColor ?? GetRandomColor();
+  // eslint-disable-next-line no-param-reassign
+  color = color ?? bgColor;
   return (
     <Chip
       key={text}
       label={text}
+      icon={icon}
       variant="outlined"
-      onClick={onClick} // () => setActiveChip(index)
-      className={active ? 'chip--selected' : 'chip'}
+      onClick={onClick}
+      onDelete={onDelete}
       sx={{
         color,
-        borderColor: color,
-        '&.chip--selected': {
+        borderColor: bgColor,
+        '&:hover': {
+          backgroundColor: `${bgColor}55`,
+        },
+        ...(active && {
           color: '#FFF',
-          backgroundColor: color,
-        },
-        '&.chip--selected:hover': {
-          backgroundColor: color,
-        },
+          backgroundColor: bgColor,
+          '&:hover': {
+            color: bgColor,
+            '& .MuiChip-deleteIcon': {
+              color: '#00000042',
+            },
+          },
+          '& .MuiChip-deleteIcon': {
+            color: 'white',
+          },
+        }),
       }}
     />
   );

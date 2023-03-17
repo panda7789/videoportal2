@@ -8,6 +8,7 @@ export interface Channel {
   subscribersCount: number;
   posterUrl: string;
   pinnedVideo?: Video;
+  avatar?: string;
 }
 
 export interface ChannelAdvancedInfo {
@@ -30,6 +31,7 @@ export async function getChannelById(id: string): Promise<Channel> {
     id: v4(),
     name: 'Olomoucký kraj',
     subscribersCount: 100000,
+    avatar: '/upol.png',
     posterUrl:
       'https://yt3.googleusercontent.com/5tWmaHeKMT5J18RwhZqIOIyeF4R5zv6-5-8JYZSPbNJgj_9kiVh4t0anH-ZW8xXG4DquECIenK0=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
   };

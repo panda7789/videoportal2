@@ -24,10 +24,9 @@ import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { getPlaylistById, PlaylistModel } from 'model/Playlist';
-import {
-  ExpandedPlaylistInlineList,
-} from 'components/InlineList/PlaylistInlineList';
+import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
+import CustomChip from 'components/Chip/CustomChip';
 import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -175,6 +174,16 @@ function VideoDetail() {
                 <Typography variant="subtitle1" paddingBottom="16px">
                   {video.description}
                 </Typography>
+                {video.tags.length > 0 && (
+                  <>
+                    <Typography variant="caption">Tagy:</Typography>
+                    <Grid container gap={0.5} pt={1}>
+                      {video.tags.map((tag) => (
+                        <CustomChip key={tag} text={tag} />
+                      ))}
+                    </Grid>
+                  </>
+                )}
               </Collapse>
             </Grid>
             <Grid container item xs={4} direction="column" justifyContent="flex-start" height={170}>
