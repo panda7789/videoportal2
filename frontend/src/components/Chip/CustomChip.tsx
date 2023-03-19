@@ -1,4 +1,5 @@
-import { Chip } from '@mui/material';
+import { Box, Chip, Link } from '@mui/material';
+import { searchTagsUrl } from 'components/AppBar/Search';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import React from 'react';
 
@@ -10,9 +11,19 @@ export interface Props {
   color?: string;
   bgColor?: string;
   active?: boolean;
+  linkTo?: string;
 }
 
-function CustomChip({ text, icon, onClick, onDelete, color, bgColor, active = false }: Props) {
+function CustomChip({
+  text,
+  icon,
+  onClick,
+  onDelete,
+  color,
+  bgColor,
+  linkTo,
+  active = false,
+}: Props) {
   // eslint-disable-next-line no-param-reassign
   bgColor = bgColor ?? GetRandomColor();
   // eslint-disable-next-line no-param-reassign
@@ -25,6 +36,9 @@ function CustomChip({ text, icon, onClick, onDelete, color, bgColor, active = fa
       variant="outlined"
       onClick={onClick}
       onDelete={onDelete}
+      component="a"
+      href={linkTo ?? (text && searchTagsUrl([text]))}
+      clickable
       sx={{
         color,
         borderColor: bgColor,

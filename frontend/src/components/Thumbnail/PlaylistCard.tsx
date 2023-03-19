@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { PlaylistModel } from 'model/Playlist';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { videoUrl, playlistParams } from 'model/Video';
 import VideoCard from './VideoCard';
 
 export interface Props {
@@ -27,7 +28,12 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
   ];
 
   return (
-    <Grid container component={Link} to={`/playlist/${id}`} style={{ textDecoration: 'none' }}>
+    <Grid
+      container
+      component={Link}
+      to={videoUrl(playlist.videos[0]) + playlistParams(playlist, 0)}
+      style={{ textDecoration: 'none' }}
+    >
       <Card
         variant="outlined"
         sx={{
@@ -125,7 +131,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
               display="flex"
               alignItems="center"
               component={Link}
-              to="/channel/12345"
+              to={`/playlist/${playlist.id}`}
               sx={{
                 textDecoration: 'none',
                 color: 'unset',

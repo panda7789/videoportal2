@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getUserPlaylistInfo, PlaylistModel, UserPlaylistInfo } from 'model/Playlist';
 import { PlaylistCard } from 'components/Thumbnail/PlaylistCard';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -6,7 +6,7 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import EditIcon from '@mui/icons-material/Edit';
 import { LinkButton } from 'components/Buttons/LinkButton';
-import { Video } from 'model/Video';
+import { playlistParams, videoUrl } from 'model/Video';
 import { InlineList } from './InlineList';
 import { VideoInlineList } from './VideoInlineList';
 
@@ -45,10 +45,6 @@ export function ExpandedPlaylistInlineList({
     })();
   }, [editable, playlist]);
 
-  const playlistUrlGenerator = useCallback((video: Video, index: number) => {
-    return `?playlist=${playlist.id}&index=${index}`;
-  }, []);
-
   return (
     <Box>
       <Typography variant="h6" display="inline-block" sx={{ verticalAlign: 'middle' }}>
@@ -58,7 +54,11 @@ export function ExpandedPlaylistInlineList({
         {`[${(currentlyPlaying ?? 0) + 1}/${playlist.videos.length}]`}
       </Typography>
       {(showPlayAllButton ?? true) && (
-        <LinkButton to="/playlist/123" text="Přehrát vše" icon={<PlayArrowIcon />} />
+        <LinkButton
+          to={videoUrl(playlist.videos[0]) + playlistParams(playlist, 0)}
+          text="Přehrát vše"
+          icon={<PlayArrowIcon />}
+        />
       )}
       {editable && (userPlaylistInfo?.editable ?? false) && (
         <LinkButton to="/playlist/123" text="Upravit" icon={<EditIcon />} />
@@ -69,7 +69,7 @@ export function ExpandedPlaylistInlineList({
       <VideoInlineList
         videos={playlist.videos}
         currentlyPlaying={currentlyPlaying}
-        urlGenerator={playlistUrlGenerator}
+        urlParamsGenerator={(_, index) => playlistParams(playlist, index)}
       />
     </Box>
   );

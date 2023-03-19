@@ -19,7 +19,7 @@ import theme from 'Theme';
 import Comment, { CommentProps } from 'components/Comment/Comment';
 import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
-import { useLoaderData, useSearchParams } from 'react-router-dom';
+import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
@@ -27,6 +27,7 @@ import { getPlaylistById, PlaylistModel } from 'model/Playlist';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import CustomChip from 'components/Chip/CustomChip';
+import ChipLine from 'components/Chip/ChipLine';
 import { NavigationContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -178,9 +179,7 @@ function VideoDetail() {
                   <>
                     <Typography variant="caption">Tagy:</Typography>
                     <Grid container gap={0.5} pt={1}>
-                      {video.tags.map((tag) => (
-                        <CustomChip key={tag} text={tag} />
-                      ))}
+                      <ChipLine chipData={video.tags} />
                     </Grid>
                   </>
                 )}
@@ -195,7 +194,15 @@ function VideoDetail() {
                 />
               </Grid>
               <Grid item xs={6} height={65} width="100%">
-                <Box display="flex" mt={2} ml="10px" mr={2} alignItems="center">
+                <Box
+                  display="flex"
+                  component={Link}
+                  to={`/channel/${video.channelId}`}
+                  mt={2}
+                  ml="10px"
+                  mr={2}
+                  alignItems="center"
+                >
                   <Avatar
                     sx={{
                       width: 48,

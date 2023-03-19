@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { Card, CardMedia, CardContent, Typography, Grid, Avatar } from '@mui/material';
 import React from 'react';
-import { Video } from 'model/Video';
+import { Video, videoUrl } from 'model/Video';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
@@ -12,6 +12,7 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
+import ChipLine from 'components/Chip/ChipLine';
 
 interface Props {
   video: Video;
@@ -21,6 +22,7 @@ interface Props {
   showChannel?: boolean;
   showAvatar?: boolean;
   showStats?: boolean;
+  showTags?: boolean;
   withPlayer?: boolean;
   currentlyPlaying?: boolean;
   urlParams?: string;
@@ -34,6 +36,7 @@ function VideoCard({
   showAvatar,
   showChannel,
   showStats,
+  showTags,
   withPlayer,
   currentlyPlaying,
   urlParams,
@@ -75,7 +78,7 @@ function VideoCard({
           {withPlayer ? (
             <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
           ) : (
-            <Box component={Link} to={`/video/${id}${urlParams || ''}`} width="100%">
+            <Box component={Link} to={`${videoUrl(video)}${urlParams || ''}`} width="100%">
               <AspectRatio ratio={16 / 9} sx={{ position: 'relative' }}>
                 <CardMedia
                   component="img"
@@ -143,10 +146,11 @@ function VideoCard({
             sx={{
               display: 'grid',
               paddingBottom: '4px !important',
-              width: '100%',
+              width: 'calc(100% - 8px)', // 8px => left padding
               padding: 1,
               paddingRight: 0,
               paddingTop: 0,
+              gridTemplateColumns: '100%',
               ...(!fullWidth && {
                 minHeight: 64,
               }),
@@ -197,6 +201,7 @@ function VideoCard({
                   <Typography variant="caption">{video.uploadTimestamp}</Typography>
                 </Box>
               )}
+              {(showTags ?? true) && <ChipLine chipData={video.tags} />}
             </Box>
             {(showChannel ?? true) && (
               <Box

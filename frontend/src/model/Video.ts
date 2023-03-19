@@ -1,5 +1,6 @@
 import { NumberToWords, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { v4 as uuidv4 } from 'uuid';
+import { PlaylistModel } from './Playlist';
 
 export type UserVideoStats = {
   like?: boolean;
@@ -20,8 +21,9 @@ export type Video = {
   views: string;
   uploadTimestamp: string;
   tags: string[];
+  channelId: string;
 };
-const tags = [
+const tagsExamples = [
   'Aplikovaná informatika',
   'Přednáška',
   'Konference',
@@ -35,7 +37,7 @@ const tags = [
 export function getTags() {
   const res = [];
   for (let i = 0; i < Math.floor(Math.random() * 5); i++) {
-    res.push(tags[Math.floor(Math.random() * tags.length)]);
+    res.push(tagsExamples[Math.floor(Math.random() * tagsExamples.length)]);
   }
   return res;
 }
@@ -55,6 +57,7 @@ export async function getVideoById(id: string): Promise<Video> {
     views: NumberToWords(Math.random() * 123456789),
     uploadTimestamp: TimestampToAgoWords(Date.parse('2020-12-13T21:01:00.000Z')),
     tags: getTags(),
+    channelId: uuidv4(),
   };
   return data;
 }
@@ -70,4 +73,25 @@ export async function search(q: string): Promise<Video[]> {
   }
 
   return arr;
+}
+
+export async function searchTags(tags: string[]): Promise<Video[]> {
+  console.log(`Searching for tags: ${tags.toString()}`);
+  const arr: Video[] = [];
+
+  for (let i = 0; i < 10; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const video = await getVideoById('A');
+    arr.push({ ...video, id: uuidv4(), name: uuidv4() });
+  }
+
+  return arr;
+}
+
+export function videoUrl(video: Video) {
+  return `/video/${video.id}`;
+}
+
+export function playlistParams(playlist: PlaylistModel, index: number) {
+  return `?playlist=${playlist.id}&index=${index}`;
 }
