@@ -26,9 +26,8 @@ import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { getPlaylistById, PlaylistModel } from 'model/Playlist';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
-import CustomChip from 'components/Chip/CustomChip';
 import ChipLine from 'components/Chip/ChipLine';
-import { NavigationContext } from './Root';
+import { NavigationContext, UserContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -70,6 +69,7 @@ function VideoDetail() {
   const [playlist, setPlaylist] = React.useState<PlaylistModel | undefined>(undefined);
   const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
   const [commentsLoading, setCommentsLoading] = React.useState<boolean>(false);
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
     console.log(searchParams.toString());
@@ -242,8 +242,9 @@ function VideoDetail() {
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={1}>
             <Typography variant="body1">Komentáře ({comments.length})</Typography>
+
             <Box display="flex" mt={2}>
-              <Avatar>LL</Avatar>
+              <Avatar>{userContext?.user.initials}</Avatar>
               {commentsLoading ? (
                 <TailSpin
                   height="80"
@@ -262,10 +263,16 @@ function VideoDetail() {
                   label=""
                   variant="outlined"
                   multiline
+                  disabled={!userContext}
+                  placeholder={!userContext ? 'Pro přidání komentáře se nejprve přihlaste.' : ''}
                   inputRef={commentInput}
                 />
               )}
-              <Button variant="text" onClick={() => addComment(commentInput.current?.value)}>
+              <Button
+                variant="text"
+                disabled={!userContext}
+                onClick={() => addComment(commentInput.current?.value)}
+              >
                 Odeslat
               </Button>
             </Box>

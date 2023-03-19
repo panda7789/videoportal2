@@ -1,5 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SwitchAccountIcon from '@mui/icons-material/SwitchAccount';
 import {
@@ -9,10 +10,6 @@ import {
   Divider,
   IconButton,
   List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Slide,
   Toolbar,
   Typography,
@@ -20,12 +17,11 @@ import {
 } from '@mui/material';
 import MUIAvatar from '@mui/material/Avatar';
 import { TransitionProps } from '@mui/material/transitions';
-import React from 'react';
+import React, { useContext } from 'react';
+// eslint-disable-next-line import/no-cycle
+import { UserContext } from 'routes/Root';
 import theme from 'Theme';
-
-type AvatarProps = {
-  inicials: string;
-};
+import { SimpleListItem } from 'components/DropDownMenu/ListItem';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -39,9 +35,10 @@ const Transition = React.forwardRef(
   },
 );
 
-function Avatar({ inicials }: AvatarProps) {
+function Avatar() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const userContext = useContext(UserContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -63,7 +60,7 @@ function Avatar({ inicials }: AvatarProps) {
       }}
     >
       <MUIAvatar sx={{ height: '32px', width: '32px' }} onClick={handleClickOpen}>
-        {inicials}
+        {userContext?.user.initials}
       </MUIAvatar>
       <Dialog
         fullScreen={!isDesktop}
@@ -84,42 +81,31 @@ function Avatar({ inicials }: AvatarProps) {
           </Toolbar>
         </AppBar>
         <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-          <MUIAvatar sx={{ height: '64px', width: '64px', m: 2 }}>{inicials}</MUIAvatar>
+          <MUIAvatar sx={{ height: '64px', width: '64px', m: 2 }}>
+            {userContext?.user.initials}
+          </MUIAvatar>
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h6" component="div">
-              Lukáš Linhart
+              {userContext?.user.name ?? 'Nepřihlášený uživatel'}
             </Typography>
-            <Typography variant="body1" component="div">
-              Spravovat účet
-            </Typography>
+            {userContext && (
+              <Typography variant="body1" component="div">
+                Spravovat účet
+              </Typography>
+            )}
           </Box>
         </Box>
         <Divider variant="middle" />
         <List>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <SwitchAccountIcon />
-              </ListItemIcon>
-              <ListItemText primary="Přepnout účet" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Nastavení" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Odhlásit se" />
-            </ListItemButton>
-          </ListItem>
+          {userContext ? (
+            <>
+              <SimpleListItem text="Přepnout účet" icon={<SwitchAccountIcon />} />
+              <SimpleListItem text="Nastavení" icon={<SettingsIcon />} />
+              <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} />
+            </>
+          ) : (
+            <SimpleListItem text="Přihlásit se" icon={<LoginIcon />} />
+          )}
         </List>
       </Dialog>
     </Box>

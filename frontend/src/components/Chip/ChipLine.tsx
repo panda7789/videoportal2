@@ -25,7 +25,6 @@ function ChipLine({ chipData }: Props) {
       <Box
         sx={{
           right: 0,
-          backgroundColor: 'red',
           width: '25px',
           height: '100%',
           position: 'absolute',

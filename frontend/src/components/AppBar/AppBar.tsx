@@ -40,7 +40,7 @@ function AppBarModified() {
         >
           <Logo />
           <Search />
-          <Avatar inicials="LL" />
+          <Avatar />
         </Toolbar>
       </AppBar>
     </HideOnScroll>
