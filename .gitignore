@@ -23,3 +23,40 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 frontend/package-lock.json
+/backend/Backend/.vs
+/backend/Backend/Backend/bin/Debug/net6.0
+/backend/Backend/Backend/obj
+
+/backend/Backend/*.swp
+/backend/Backend/*.*~
+/backend/Backend/project.lock.json
+/backend/Backend/.DS_Store
+/backend/Backend/*.pyc
+/backend/Backend/nupkg/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+/backend/Backend/[Dd]ebug/
+/backend/Backend/[Dd]ebugPublic/
+/backend/Backend/[Rr]elease/
+/backend/Backend/[Rr]eleases/
+/backend/Backend/x64/
+/backend/Backend/x86/
+/backend/Backend/build/
+/backend/Backend/bld/
+/backend/Backend/[Bb]in/
+/backend/Backend/[Oo]bj/
+/backend/Backend/[Oo]ut/
+/backend/Backend/msbuild.log
+/backend/Backend/msbuild.err
+/backend/Backend/msbuild.wrn
+
+# Visual Studio 2015
+/backend/Backend/.vs/
+
+
