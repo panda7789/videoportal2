@@ -60,3 +60,5 @@ frontend/package-lock.json
 /backend/Backend/.vs/
 
 
+/backend/Backend/Backend/appsettings.json
+/backend/Backend/Backend/appsettings.json
