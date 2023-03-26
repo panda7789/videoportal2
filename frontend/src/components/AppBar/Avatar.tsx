@@ -1,8 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
 import SettingsIcon from '@mui/icons-material/Settings';
-import SwitchAccountIcon from '@mui/icons-material/SwitchAccount';
 import {
   AppBar,
   Box,
@@ -22,6 +20,7 @@ import React, { useContext } from 'react';
 import { UserContext } from 'routes/Root';
 import theme from 'Theme';
 import { SimpleListItem } from 'components/DropDownMenu/ListItem';
+import LoginForm from 'components/Forms/LoginForm';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -48,6 +47,10 @@ function Avatar() {
     setOpen(false);
   };
 
+  const handleLogout = () => {
+    userContext?.setUser(undefined);
+  };
+
   return (
     <Box
       sx={{
@@ -60,7 +63,7 @@ function Avatar() {
       }}
     >
       <MUIAvatar sx={{ height: '32px', width: '32px' }} onClick={handleClickOpen}>
-        {userContext?.user.initials}
+        {userContext?.user?.initials}
       </MUIAvatar>
       <Dialog
         fullScreen={!isDesktop}
@@ -82,13 +85,13 @@ function Avatar() {
         </AppBar>
         <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
           <MUIAvatar sx={{ height: '64px', width: '64px', m: 2 }}>
-            {userContext?.user.initials}
+            {userContext?.user?.initials}
           </MUIAvatar>
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h6" component="div">
-              {userContext?.user.name ?? 'Nepřihlášený uživatel'}
+              {userContext?.user?.name ?? 'Nepřihlášený uživatel'}
             </Typography>
-            {userContext && (
+            {userContext?.user && (
               <Typography variant="body1" component="div">
                 Spravovat účet
               </Typography>
@@ -97,14 +100,13 @@ function Avatar() {
         </Box>
         <Divider variant="middle" />
         <List>
-          {userContext ? (
+          {userContext?.user ? (
             <>
-              <SimpleListItem text="Přepnout účet" icon={<SwitchAccountIcon />} />
               <SimpleListItem text="Nastavení" icon={<SettingsIcon />} />
-              <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} />
+              <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} onClick={handleLogout} />
             </>
           ) : (
-            <SimpleListItem text="Přihlásit se" icon={<LoginIcon />} />
+            <LoginForm />
           )}
         </List>
       </Dialog>

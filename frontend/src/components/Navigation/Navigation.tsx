@@ -4,6 +4,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import theme from 'Theme';
 import HomeIcon from '@mui/icons-material/Home';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AndroidNavigation from './AndroidNavigation';
 import DesktopNavigation from './DesktopNavigation';
 
@@ -17,6 +18,7 @@ export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Domů', icon: <HomeIcon /> },
   { route: '/myportal', title: 'Můj portál', icon: <AccountBoxIcon /> },
   { route: '/playlist/playLater', title: 'Přehrát později', icon: <WatchLaterIcon /> },
+  { route: '/upload', title: 'Nahrát video', icon: <CloudUploadIcon /> },
 ];
 
 function Navigation() {

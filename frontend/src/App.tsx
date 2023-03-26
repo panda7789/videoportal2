@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import Theme from 'Theme';
-import Root from 'routes/Root';
+import Root, { UserContext } from 'routes/Root';
 import ErrorPage from 'routes/ErrorPage';
 import { ThemeProvider } from '@emotion/react';
 import { Box } from '@mui/system';
@@ -81,6 +81,10 @@ function App() {
           path: 'videoedit/:videoId',
           element: <VideoEdit />,
           loader: videoEditLoader,
+        },
+        {
+          path: 'upload',
+          element: <VideoEdit newVideo />,
         },
         {
           path: 'search',

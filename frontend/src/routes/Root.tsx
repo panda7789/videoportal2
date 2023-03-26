@@ -13,15 +13,25 @@ interface NavigationContextInterface {
 }
 
 interface UserContextInterface {
-  user: User;
+  user: User | undefined;
+  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
 
 export const NavigationContext = React.createContext<NavigationContextInterface | null>(null);
-export const UserContext = React.createContext<UserContextInterface | undefined>(undefined);
+export const UserContext = React.createContext<UserContextInterface | null>(null);
 
 export default function Root() {
   const navigation = useNavigation();
   const [navigationOpen, setNavigationOpen] = useState(true);
+  const [user, setUser] = useState<User | undefined>();
+
+  const userContextMemo = useMemo<UserContextInterface>(
+    () => ({
+      user,
+      setUser,
+    }),
+    [user, setUser],
+  );
 
   const navigationContextMemo = useMemo<NavigationContextInterface>(
     () => ({
@@ -33,7 +43,7 @@ export default function Root() {
 
   return (
     <NavigationContext.Provider value={navigationContextMemo}>
-      <UserContext.Provider value={undefined}>
+      <UserContext.Provider value={userContextMemo}>
         <AppBarModified />
         <Box padding={{ xs: 0, md: 0 }} width="100%">
           <Toolbar />
