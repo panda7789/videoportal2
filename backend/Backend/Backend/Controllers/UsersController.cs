@@ -8,12 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -36,28 +38,33 @@ namespace Backend.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] RegisterDTO request)
+        public async Task<ActionResult<string>> Register([FromBody] RegisterDTO request)
         {
             var response = await _authenticationService.Register(request);
             return Ok(response);
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        // GET: api/users/me
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            var user = await _context.Users.FindAsync(id.ToString());
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            if (userId == null)
+            {
+                return Unauthorized("kokotina");
+            }
+            var user = await _context.Users.FindAsync(userId.ToString());
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return user.ToDTO();
         }
     }
 }

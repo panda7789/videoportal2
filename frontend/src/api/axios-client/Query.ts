@@ -20,13 +20,9 @@ import { createClient, getClientFactory } from './helpers';
 export const Client = () => getClientFactory()(ClientClass);
 import type { AxiosRequestConfig } from 'axios';
 
-export type UsersQueryParameters = {
-  id: string;
-};
-
     
 export function loginUrl(): string {
-  let url_ = getBaseUrl() + "/api/Users/login";
+  let url_ = getBaseUrl() + "/api/users/login";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -53,7 +49,7 @@ export function useLoginMutation<TContext>(options?: Omit<UseMutationOptions<str
   
     
 export function registerUrl(): string {
-  let url_ = getBaseUrl() + "/api/Users/register";
+  let url_ = getBaseUrl() + "/api/users/register";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -69,7 +65,7 @@ export function registerMutationKey(): MutationKey {
  * @param body (optional) 
  * @return Success
  */
-export function useRegisterMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.RegisterDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.RegisterDTO, TContext> {
+export function useRegisterMutation<TContext>(options?: Omit<UseMutationOptions<string, unknown, Types.RegisterDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<string, unknown, Types.RegisterDTO, TContext> {
   const key = registerMutationKey();
   
   const metaContext = useContext(QueryMetaContext);
@@ -79,68 +75,45 @@ export function useRegisterMutation<TContext>(options?: Omit<UseMutationOptions<
 }
   
     
-export function usersUrl(id: string): string {
-  let url_ = getBaseUrl() + "/api/Users/{id}";
-
-if (id === undefined || id === null)
-  throw new Error("The parameter 'id' must be defined.");
-url_ = url_.replace("{id}", encodeURIComponent("" + id));
+export function meUrl(): string {
+  let url_ = getBaseUrl() + "/api/users/me";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-let usersDefaultOptions: UseQueryOptions<Types.User, unknown, Types.User> = {
-  queryFn: __users,
+let meDefaultOptions: UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO> = {
+  queryFn: __me,
 };
-export function getUsersDefaultOptions(): UseQueryOptions<Types.User, unknown, Types.User> {
-  return usersDefaultOptions;
+export function getMeDefaultOptions(): UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO> {
+  return meDefaultOptions;
 };
-export function setUsersDefaultOptions(options: UseQueryOptions<Types.User, unknown, Types.User>) {
-  usersDefaultOptions = options;
+export function setMeDefaultOptions(options: UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO>) {
+  meDefaultOptions = options;
 }
 
-export function usersQueryKey(id: string): QueryKey;
-export function usersQueryKey(...params: any[]): QueryKey {
-  if (params.length === 1 && isParameterObject(params[0])) {
-    const { id,  } = params[0] as UsersQueryParameters;
-
-    return trimArrayEnd([
-        'Client',
-        'users',
-        id as any,
-      ]);
-  } else {
-    return trimArrayEnd([
-        'Client',
-        'users',
-        ...params
-      ]);
-  }
+export function meQueryKey(): QueryKey;
+export function meQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'me',
+    ]);
 }
-function __users(context: QueryFunctionContext) {
-  return Client().users(
-      context.queryKey[2] as string    );
+function __me() {
+  return Client().me(
+    );
 }
 
-export function useUsersQuery<TSelectData = Types.User, TError = unknown>(dto: UsersQueryParameters, options?: UseQueryOptions<Types.User, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useUsersQuery<TSelectData = Types.User, TError = unknown>(id: string, options?: UseQueryOptions<Types.User, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useUsersQuery<TSelectData = Types.User, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.User, TError, TSelectData> | undefined = undefined;
+export function useMeQuery<TSelectData = Types.UserDTO, TError = unknown>(options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useMeQuery<TSelectData = Types.UserDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserDTO, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
-  let id: any = undefined;
   
-  if (params.length > 0) {
-    if (isParameterObject(params[0])) {
-      ({ id,  } = params[0] as UsersQueryParameters);
-      options = params[1];
-      axiosConfig = params[2];
-    } else {
-      [id, options, axiosConfig] = params;
-    }
-  }
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
 
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
@@ -149,18 +122,18 @@ export function useUsersQuery<TSelectData = Types.User, TError = unknown>(...par
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.User, TError, TSelectData>({
-    queryFn: __users,
-    queryKey: usersQueryKey(id),
-    ...usersDefaultOptions as unknown as UseQueryOptions<Types.User, TError, TSelectData>,
+  return useQuery<Types.UserDTO, TError, TSelectData>({
+    queryFn: __me,
+    queryKey: meQueryKey(),
+    ...meDefaultOptions as unknown as UseQueryOptions<Types.UserDTO, TError, TSelectData>,
     ...options,
   });
 }
 /**
  * @return Success
  */
-export function setUsersData(queryClient: QueryClient, updater: (data: Types.User | undefined) => Types.User, id: string) {
-  queryClient.setQueryData(usersQueryKey(id),
+export function setMeData(queryClient: QueryClient, updater: (data: Types.UserDTO | undefined) => Types.UserDTO, ) {
+  queryClient.setQueryData(meQueryKey(),
     updater
   );
 }
@@ -168,6 +141,6 @@ export function setUsersData(queryClient: QueryClient, updater: (data: Types.Use
 /**
  * @return Success
  */
-export function setUsersDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.User | undefined) => Types.User) {
+export function setMeDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO | undefined) => Types.UserDTO) {
   queryClient.setQueryData(queryKey, updater);
 }

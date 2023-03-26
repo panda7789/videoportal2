@@ -1,12 +1,15 @@
 using Backend.Models;
 using Backend.Services;
+using Backend.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +19,8 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
+    c.SupportNonNullableReferenceTypes();
+    c.SchemaFilter<MarkAsRequiredIfNonNullable>();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -105,6 +110,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowReactClient");
 app.UseHttpsRedirection();
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // claim not overwriten
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

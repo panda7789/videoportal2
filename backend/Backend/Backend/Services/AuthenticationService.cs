@@ -20,18 +20,18 @@ namespace Backend.Services
         public async Task<string> Register(RegisterDTO request)
         {
             var userByEmail = await _userManager.FindByEmailAsync(request.Email);
-            var userByUsername = await _userManager.FindByNameAsync(request.Username);
-            if (userByEmail is not null || userByUsername is not null)
+            if (userByEmail is not null)
             {
-                throw new ArgumentException($"User with email {request.Email} or username {request.Username} already exists.");
+                throw new ArgumentException($"User with email {request.Email} already exists.");
             }
 
             User user = new()
             {
+                UserName = request.Email,
+                Name = request.Name,
                 Email = request.Email,
-                UserName = request.Username,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                Initials = $"{request.Username[0]}{request.Email[0]}",
+                Initials = (request.Name.IndexOf(" ") is int spaceIndex) && spaceIndex > 0 ? $"{request.Name[0]}{request.Name[spaceIndex + 1]}" : request.Name[..2],
                 Rights = Privileges.user
             };
 
@@ -39,32 +39,27 @@ namespace Backend.Services
 
             if (!result.Succeeded)
             {
-                throw new ArgumentException($"Unable to register user {request.Username} errors: {GetErrorsText(result.Errors)}");
+                throw new ArgumentException($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
             }
 
-            return await Login(new LoginDTO { Username = request.Email, Password = request.Password });
+            return await Login(new LoginDTO { Email = request.Email, Password = request.Password });
         }
 
         public async Task<string> Login(LoginDTO request)
         {
-            var user = await _userManager.FindByNameAsync(request.Username);
-
-            if (user is null)
-            {
-                user = await _userManager.FindByEmailAsync(request.Username);
-            }
+            var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
             {
-                throw new ArgumentException($"Unable to authenticate user {request.Username}");
+                throw new ArgumentException($"Unable to authenticate user {request.Email}");
             }
 
             var authClaims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Email, user.Email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        };
+            {
+                new(ClaimTypes.Email, user.Email),
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
             var token = GetToken(authClaims);
 

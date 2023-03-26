@@ -41,7 +41,7 @@ export class Client {
      * @return Success
      */
     login(body: LoginDTO | undefined , cancelToken?: CancelToken | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Users/login";
+        let url_ = this.baseUrl + "/api/users/login";
           url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -97,8 +97,8 @@ export class Client {
      * @param body (optional) 
      * @return Success
      */
-    register(body: RegisterDTO | undefined , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Users/register";
+    register(body: RegisterDTO | undefined , cancelToken?: CancelToken | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/users/register";
           url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -109,6 +109,7 @@ export class Client {
             url: url_,
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "text/plain"
             },
             cancelToken
         };
@@ -124,7 +125,7 @@ export class Client {
         });
     }
 
-    protected processRegister(response: AxiosResponse): Promise<void> {
+    protected processRegister(response: AxiosResponse): Promise<string> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -136,24 +137,24 @@ export class Client {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 
     /**
      * @return Success
      */
-    users(id: string , cancelToken?: CancelToken | undefined): Promise<User> {
-        let url_ = this.baseUrl + "/api/Users/{id}";
-
-        if (id === undefined || id === null)
-          throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    me(  cancelToken?: CancelToken | undefined): Promise<UserDTO> {
+        let url_ = this.baseUrl + "/api/users/me";
           url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -172,11 +173,11 @@ export class Client {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processUsers(_response);
+            return this.processMe(_response);
         });
     }
 
-    protected processUsers(response: AxiosResponse): Promise<User> {
+    protected processMe(response: AxiosResponse): Promise<UserDTO> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -190,14 +191,14 @@ export class Client {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = User.fromJS(resultData200);
-            return Promise.resolve<User>(result200);
+            result200 = UserDTO.fromJS(resultData200);
+            return Promise.resolve<UserDTO>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<User>(null as any);
+        return Promise.resolve<UserDTO>(null as any);
     }
 }
 
@@ -209,8 +210,8 @@ export * as Query from './axios-client/Query';
 
 //-----Types.File-----
 export class LoginDTO implements ILoginDTO {
-    username?: string | undefined;
-    password?: string | undefined;
+    email!: string;
+    password!: string;
 
     constructor(data?: ILoginDTO) {
         if (data) {
@@ -223,7 +224,7 @@ export class LoginDTO implements ILoginDTO {
 
     init(_data?: any) {
         if (_data) {
-            this.username = _data["username"];
+            this.email = _data["email"];
             this.password = _data["password"];
         }
     }
@@ -237,15 +238,15 @@ export class LoginDTO implements ILoginDTO {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["username"] = this.username;
+        data["email"] = this.email;
         data["password"] = this.password;
         return data;
     }
 }
 
 export interface ILoginDTO {
-    username?: string | undefined;
-    password?: string | undefined;
+    email: string;
+    password: string;
 }
 
 export enum Privileges {
@@ -255,9 +256,9 @@ export enum Privileges {
 }
 
 export class RegisterDTO implements IRegisterDTO {
-    username?: string | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
+    name!: string;
+    email!: string;
+    password!: string;
 
     constructor(data?: IRegisterDTO) {
         if (data) {
@@ -270,7 +271,7 @@ export class RegisterDTO implements IRegisterDTO {
 
     init(_data?: any) {
         if (_data) {
-            this.username = _data["username"];
+            this.name = _data["name"];
             this.email = _data["email"];
             this.password = _data["password"];
         }
@@ -285,7 +286,7 @@ export class RegisterDTO implements IRegisterDTO {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["username"] = this.username;
+        data["name"] = this.name;
         data["email"] = this.email;
         data["password"] = this.password;
         return data;
@@ -293,31 +294,19 @@ export class RegisterDTO implements IRegisterDTO {
 }
 
 export interface IRegisterDTO {
-    username?: string | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
+    name: string;
+    email: string;
+    password: string;
 }
 
-export class User implements IUser {
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    emailConfirmed?: boolean;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
-    phoneNumberConfirmed?: boolean;
-    twoFactorEnabled?: boolean;
-    lockoutEnd?: Date | undefined;
-    lockoutEnabled?: boolean;
-    accessFailedCount?: number;
-    initials?: string | undefined;
-    rights?: Privileges;
+export class UserDTO implements IUserDTO {
+    id!: string;
+    name!: string;
+    email!: string;
+    initials!: string;
+    rights!: Privileges;
 
-    constructor(data?: IUser) {
+    constructor(data?: IUserDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -329,28 +318,16 @@ export class User implements IUser {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.userName = _data["userName"];
-            this.normalizedUserName = _data["normalizedUserName"];
+            this.name = _data["name"];
             this.email = _data["email"];
-            this.normalizedEmail = _data["normalizedEmail"];
-            this.emailConfirmed = _data["emailConfirmed"];
-            this.passwordHash = _data["passwordHash"];
-            this.securityStamp = _data["securityStamp"];
-            this.concurrencyStamp = _data["concurrencyStamp"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.phoneNumberConfirmed = _data["phoneNumberConfirmed"];
-            this.twoFactorEnabled = _data["twoFactorEnabled"];
-            this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : <any>undefined;
-            this.lockoutEnabled = _data["lockoutEnabled"];
-            this.accessFailedCount = _data["accessFailedCount"];
             this.initials = _data["initials"];
             this.rights = _data["rights"];
         }
     }
 
-    static fromJS(data: any): User {
+    static fromJS(data: any): UserDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new User();
+        let result = new UserDTO();
         result.init(data);
         return result;
     }
@@ -358,44 +335,20 @@ export class User implements IUser {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["userName"] = this.userName;
-        data["normalizedUserName"] = this.normalizedUserName;
+        data["name"] = this.name;
         data["email"] = this.email;
-        data["normalizedEmail"] = this.normalizedEmail;
-        data["emailConfirmed"] = this.emailConfirmed;
-        data["passwordHash"] = this.passwordHash;
-        data["securityStamp"] = this.securityStamp;
-        data["concurrencyStamp"] = this.concurrencyStamp;
-        data["phoneNumber"] = this.phoneNumber;
-        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
-        data["twoFactorEnabled"] = this.twoFactorEnabled;
-        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
-        data["lockoutEnabled"] = this.lockoutEnabled;
-        data["accessFailedCount"] = this.accessFailedCount;
         data["initials"] = this.initials;
         data["rights"] = this.rights;
         return data;
     }
 }
 
-export interface IUser {
-    id?: string | undefined;
-    userName?: string | undefined;
-    normalizedUserName?: string | undefined;
-    email?: string | undefined;
-    normalizedEmail?: string | undefined;
-    emailConfirmed?: boolean;
-    passwordHash?: string | undefined;
-    securityStamp?: string | undefined;
-    concurrencyStamp?: string | undefined;
-    phoneNumber?: string | undefined;
-    phoneNumberConfirmed?: boolean;
-    twoFactorEnabled?: boolean;
-    lockoutEnd?: Date | undefined;
-    lockoutEnabled?: boolean;
-    accessFailedCount?: number;
-    initials?: string | undefined;
-    rights?: Privileges;
+export interface IUserDTO {
+    id: string;
+    name: string;
+    email: string;
+    initials: string;
+    rights: Privileges;
 }
 //-----/CustomTypes.File-----
 
@@ -525,7 +478,7 @@ export function getResultTypeClassKey(queryKey: QueryKey): string {
 
 export function initPersister() {
   
-  addResultTypeFactory('Client___users', (data: any) => { const result = new User(); result.init(data); return result; });
+  addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
 
 
 }

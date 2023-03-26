@@ -21,6 +21,7 @@ import { UserContext } from 'routes/Root';
 import theme from 'Theme';
 import { SimpleListItem } from 'components/DropDownMenu/ListItem';
 import LoginForm from 'components/Forms/LoginForm';
+import RegistrationForm from 'components/Forms/RegistationForm';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -38,6 +39,7 @@ function Avatar() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const userContext = useContext(UserContext);
+  const [openRegistration, setOpenRegistration] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -49,6 +51,7 @@ function Avatar() {
 
   const handleLogout = () => {
     userContext?.setUser(undefined);
+    localStorage.removeItem('token');
   };
 
   return (
@@ -100,14 +103,19 @@ function Avatar() {
         </Box>
         <Divider variant="middle" />
         <List>
-          {userContext?.user ? (
-            <>
-              <SimpleListItem text="Nastavení" icon={<SettingsIcon />} />
-              <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} onClick={handleLogout} />
-            </>
-          ) : (
-            <LoginForm />
-          )}
+          {
+            // eslint-disable-next-line no-nested-ternary
+            userContext?.user ? (
+              <>
+                <SimpleListItem text="Nastavení" icon={<SettingsIcon />} />
+                <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} onClick={handleLogout} />
+              </>
+            ) : openRegistration ? (
+              <RegistrationForm handleLoginClick={() => setOpenRegistration(false)} />
+            ) : (
+              <LoginForm handleRegisterClick={() => setOpenRegistration(true)} />
+            )
+          }
         </List>
       </Dialog>
     </Box>
