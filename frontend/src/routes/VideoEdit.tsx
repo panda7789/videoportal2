@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Grid, TextField, Box, Button } from '@mui/material';
+import { Typography, Grid, TextField, Box, Button, MenuItem } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 import AspectRatio from 'components/Utils/AspectRatio';
@@ -10,6 +10,9 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import ChipEditLine from 'components/Chip/ChipEditLine';
 import FileUpload from 'react-mui-fileuploader';
 import { ExtendedFileProps } from 'react-mui-fileuploader/dist/types/index.types';
+import nanoMetadata from 'nano-metadata';
+import { AxiosQuery } from 'api';
+import { v4 } from 'uuid';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params);
@@ -25,20 +28,40 @@ export function VideoEdit({ newVideo = false }: Props) {
     video = useLoaderData() as Video;
   }
   const [fileToUpload, setFileToUpload] = useState<ExtendedFileProps>();
+  const [imageToUpload, setImageToUpload] = useState<File>();
+  const uploadVideoMutation = AxiosQuery.Query.useVideosPOSTMutation();
+  const myChannels = AxiosQuery.Query.useMyChannelsQuery();
 
   const generateThumbnailFromVideo = () => {};
-  const handleFilesChange = (file: ExtendedFileProps) => {
-    setFileToUpload(file);
+  const handleFilesChange = (files: ExtendedFileProps[]) => {
+    setFileToUpload(files[0]);
+  };
+  const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target?.files?.length === 1) {
+      setImageToUpload(e.target.files[0]);
+    }
   };
 
-  const submitHandler: React.FormEventHandler<HTMLFormElement> = (event) => {
-    // Create a form and post it to server
-    const formData = new FormData(event.currentTarget);
-    fileToUpload((file) => formData.append('file', file));
+  const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
 
-    fetch('/file/upload', {
-      method: 'POST',
-      body: formData,
+    const data = new FormData(event.currentTarget);
+    const description = data.get('description')?.toString()!;
+    const name = data.get('name')?.toString()!;
+
+    if (!fileToUpload) {
+      return;
+    }
+    const dur = await nanoMetadata.video.duration(fileToUpload);
+
+    uploadVideoMutation.mutate({
+      channelId: v4(),
+      description,
+      durationSec: Math.floor(dur),
+      name,
+      tags: [],
+      file: { data: fileToUpload, fileName: fileToUpload.name },
+      image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload?.name } : undefined,
     });
   };
 
@@ -62,9 +85,24 @@ export function VideoEdit({ newVideo = false }: Props) {
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
               <TextField
+                fullWidth
+                name="channelSelect"
+                select
+                label="Kanál"
+                defaultValue={myChannels.data?.length === 1 && myChannels.data[0].id}
+              >
+                {myChannels.data?.map((channel) => (
+                  <MenuItem key={channel.id} value={channel.id}>
+                    {channel.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
                 required
-                id="nazev"
-                name="nazev"
+                id="name"
+                name="name"
                 label="Název"
                 fullWidth
                 defaultValue={video?.name}
@@ -73,8 +111,8 @@ export function VideoEdit({ newVideo = false }: Props) {
             <Grid item xs={12}>
               <TextField
                 required
-                id="popis"
-                name="popis"
+                id="description"
+                name="description"
                 label="Popis"
                 fullWidth
                 defaultValue={video?.description}
@@ -108,12 +146,6 @@ export function VideoEdit({ newVideo = false }: Props) {
                 />
               </Grid>
             )}
-            <Grid item xs={12}>
-              <Typography variant="caption" pl={2}>
-                Tagy
-              </Typography>
-              <ChipEditLine />
-            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -123,7 +155,7 @@ export function VideoEdit({ newVideo = false }: Props) {
           </AspectRatio>
           <Box display="flex" justifyContent="center" gap={2} padding={2}>
             <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
-              <input hidden accept="image/*" type="file" />
+              <input hidden accept="image/*" type="file" onChange={handleImageChange} />
               Nahrát
             </Button>
             <Button
@@ -134,6 +166,12 @@ export function VideoEdit({ newVideo = false }: Props) {
               Vygenerovat
             </Button>
           </Box>
+          <Grid item xs={12}>
+            <Typography variant="caption" pl={2}>
+              Tagy
+            </Typography>
+            <ChipEditLine />
+          </Grid>
         </Grid>
       </Grid>
     </Box>

@@ -12,6 +12,7 @@ export interface Props {
   bgColor?: string;
   active?: boolean;
   linkTo?: string;
+  link?: boolean;
 }
 
 function CustomChip({
@@ -22,6 +23,7 @@ function CustomChip({
   color,
   bgColor,
   linkTo,
+  link,
   active = false,
 }: Props) {
   // eslint-disable-next-line no-param-reassign
@@ -37,7 +39,7 @@ function CustomChip({
       onClick={onClick}
       onDelete={onDelete}
       component="a"
-      href={linkTo ?? (text && searchTagsUrl([text]))}
+      href={link ? linkTo ?? (text && searchTagsUrl([text])) : undefined}
       clickable
       sx={{
         color,

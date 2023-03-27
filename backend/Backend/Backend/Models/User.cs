@@ -2,7 +2,9 @@
 
 namespace Backend.Models
 {
-    public class User: IdentityUser
+    public class Role : IdentityRole<Guid> { }
+
+    public class User: IdentityUser<Guid>
     {
         public string Name { get; set; }
         public string Initials { get; set; }
@@ -20,7 +22,7 @@ namespace Backend.Models
 
     public class UserDTO
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Initials { get; set; }

@@ -22,6 +22,8 @@ import {
   loader as channelPlaylistsLoader,
 } from 'routes/Channel/ChannelPlaylists';
 import { ChannelInfo, loader as channelInfoLoader } from 'routes/Channel/ChannelInfo';
+import { MyChannels } from 'routes/MyChannels';
+import { ChannelEdit, loader as channelEditLoader } from 'routes/ChannelEdit';
 
 function App() {
   const router = createBrowserRouter([
@@ -69,6 +71,24 @@ function App() {
               path: 'info',
               element: <ChannelInfo />,
               loader: channelInfoLoader,
+            },
+          ],
+        },
+        {
+          path: 'mychannels',
+          children: [
+            {
+              path: '',
+              element: <MyChannels />,
+            },
+            {
+              path: 'create',
+              element: <ChannelEdit newChannel />,
+            },
+            {
+              path: ':Id',
+              element: <ChannelEdit />,
+              loader: channelEditLoader,
             },
           ],
         },

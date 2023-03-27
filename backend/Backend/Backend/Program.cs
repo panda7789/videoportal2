@@ -4,6 +4,7 @@ using Backend.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -19,8 +20,9 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
+    c.CustomSchemaIds(x => x.FullName);
     c.SupportNonNullableReferenceTypes();
-    c.SchemaFilter<MarkAsRequiredIfNonNullable>();
+    c.OperationFilter<SwaggerOptionalFormDataFilter>();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -51,8 +53,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-//builder.Services.AddDbContext<MyDbContext>();
-builder.Services.AddIdentity<User, IdentityRole>(options =>
+
+builder.Services.AddIdentity<User, Role>(options =>
 {
     options.Password.RequiredLength = 1;
     options.Password.RequireNonAlphanumeric = false;

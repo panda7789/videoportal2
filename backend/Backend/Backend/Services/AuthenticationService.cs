@@ -57,7 +57,7 @@ namespace Backend.Services
             var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Email, user.Email),
-                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 

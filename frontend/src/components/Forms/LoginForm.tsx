@@ -34,7 +34,7 @@ export default function LoginForm({ handleRegisterClick }: Props) {
           name: user.name,
           rights: user.rights as unknown as Privileges,
         });
-      }, 1500);
+      }, 500);
     },
     onError: (error) => {
       console.log(error);

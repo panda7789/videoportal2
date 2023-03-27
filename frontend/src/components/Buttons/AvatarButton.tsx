@@ -4,10 +4,10 @@ import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 
 export interface Props {
-  key: string;
-  url: string;
+  key?: string;
+  url?: string;
   image?: string;
-  text: string;
+  text?: string;
 }
 
 export function AvatarButton({ key, url, image, text }: Props) {

@@ -19,7 +19,7 @@ namespace Backend.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string ImageUrl { get; set; }
-        public string Duration { get; set; }
+        public TimeSpan Duration { get; set; }
         public string? Description { get; set; }
         public string DataUrl { get; set; }
         public int LikeCount { get; set; }
@@ -28,6 +28,7 @@ namespace Backend.Models
         public DateTime UploadTimestamp { get; set; }
         public Tag[]? Tags { get; set; }
         public Guid ChannelId { get; set; }
+
 
     }
 }

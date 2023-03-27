@@ -10,6 +10,7 @@ using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Backend.Utils;
 
 namespace Backend.Controllers
 {
@@ -52,12 +53,12 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized("kokotina");
+                return Unauthorized();
             }
-            var user = await _context.Users.FindAsync(userId.ToString());
+            var user = await _context.Users.FindAsync(userId);
 
             if (user == null)
             {

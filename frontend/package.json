@@ -25,6 +25,7 @@
     "eslint-plugin-react": "^7.32.2",
     "font-color-contrast": "^11.1.0",
     "material-ui-search-bar": "^1.0.0",
+    "nano-metadata": "^0.1.2",
     "prettier": "^2.8.4",
     "randomcolor": "^0.6.2",
     "react": "^18.2.0",
@@ -48,7 +49,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "fixAll": "eslint --fix .",
-    "apiGenerate": "react-query-swagger /tanstack /input:https://localhost:7287/swagger/v1/swagger.json /output:src/api/axios-client.ts /template:Axios"
+    "apiGenerate": "react-query-swagger /tanstack /input:https://localhost:7287/swagger/v1/swagger.json /output:src/api/axios-client.ts /template:Axios /use-recommended-configuration"
   },
   "eslintConfig": {
     "extends": [

@@ -126,6 +126,7 @@ export default function ChipEditLine() {
               bgColor={data.bgColor}
               onDelete={data.active ? handleDelete(data) : undefined}
               onClick={data.active ? handleDelete(data) : handleClick(data)}
+              link={false}
             />
           </ListItem>
         );
