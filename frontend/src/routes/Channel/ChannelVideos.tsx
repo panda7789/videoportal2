@@ -1,25 +1,56 @@
 import React from 'react';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import { Grid } from '@mui/material';
-import { search, Video } from 'model/Video';
+import { Button, Grid } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { AxiosQuery } from 'api';
+import { Video } from 'model/Video';
 
 export async function loader({ params }: { params: any }) {
-  return search('asdf');
+  return params.channelId;
 }
 
+const pageSize = 1;
+
 export function ChannelVideos() {
-  const videos = useLoaderData() as Video[];
+  const channelId = useLoaderData() as string;
+
+  const videos = useInfiniteQuery({
+    queryKey: [...AxiosQuery.Query.channelVideosQueryKey({ id: channelId }), 'infinite'],
+    queryFn: async (params) => {
+      const pageParam = params.pageParam ?? (0 as number);
+      return AxiosQuery.Client.channelVideos(channelId, pageSize, pageParam * pageSize);
+    },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.totalCount > pages.length * pageSize;
+    },
+  });
 
   return (
-    <Grid container spacing={1}>
-      {videos.map((video) => {
-        return (
-          <Grid item xs={12} md={3} key={video.id}>
-            <VideoCard key={video.id} video={{ ...video }} showChannel={false} />
-          </Grid>
-        );
-      })}
-    </Grid>
+    <>
+      <Grid container spacing={1}>
+        {videos?.data?.pages?.map((group, i) => (
+          <React.Fragment key={i}>
+            {group?.items.map((video) => {
+              return (
+                <Grid item xs={12} md={3} key={video.id}>
+                  <VideoCard key={video.id} video={video} showChannel={false} />
+                </Grid>
+              );
+            })}
+          </React.Fragment>
+        ))}
+      </Grid>
+      {videos.hasNextPage && (
+        <Button
+          sx={{ width: '100%', mt: '1em' }}
+          variant="outlined"
+          onClick={() => videos.fetchNextPage()}
+          disabled={!videos.hasNextPage || videos.isFetchingNextPage}
+        >
+          {videos.isFetchingNextPage ? 'Načítání...' : 'Načíst další'}
+        </Button>
+      )}
+    </>
   );
 }

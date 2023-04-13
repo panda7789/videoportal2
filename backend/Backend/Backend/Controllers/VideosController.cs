@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using NuGet.DependencyResolver;
 using Backend.Utils;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
@@ -24,44 +27,132 @@ namespace Backend.Controllers
 
         // GET: api/Videos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
+        public async Task<ActionResult<IEnumerable<VideoDTO>>> GetVideos([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
         {
             if (_context.Videos == null)
             {
                 return NotFound();
             }
-            return await _context.Videos.ToListAsync();
+            IQueryable<Video> query = _context.Videos;
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string[] orderByParts = orderBy?.Split(':') ?? Array.Empty<string>();
+                if (orderByParts.Length == 0 ) {
+                    return BadRequest();
+                }
+                PropertyInfo propertyInfo = typeof(Video).GetProperty(orderByParts[0], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (propertyInfo != null)
+                {
+                    if (orderByParts.Length == 2 && orderByParts[1].ToLowerInvariant() == "desc")
+                    {
+                        query = query.OrderByDescending(x => propertyInfo.GetValue(x));
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => propertyInfo.GetValue(x));
+                    }
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.Id);
+            }
+
+            if (limit.HasValue)
+            {
+                query = query.Take(limit.Value);
+            }
+            else
+            {
+                query = query.Take(5);
+            }
+
+            if (offset.HasValue)
+            {
+                query = query.Skip(offset.Value);
+            }
+            return await query.Include(x => x.Channel).Select(x => x.ToDTO()).ToListAsync();
         }
+
 
         // GET: api/Videos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Video>> GetVideo(Guid id)
+        public async Task<ActionResult<VideoDTO>> GetVideo(Guid id)
         {
             if (_context.Videos == null)
             {
                 return NotFound();
             }
-            var video = await _context.Videos.FindAsync(id);
+            var video = await _context.Videos.Include(x => x.Channel).FirstOrDefaultAsync(x => x.Id == id);
 
             if (video == null)
             {
                 return NotFound();
             }
 
-            return video;
+            return video.ToDTO();
         }
 
+        [HttpGet("{id}/related-videos")]
+        public async Task<ActionResult<IEnumerable<VideoDTO>>> GetRelatedVideos(Guid id)
+        {
+            if (_context.Videos == null)
+            {
+                return NotFound();
+            }
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            var shortedVideoDescription = video?.Description == null ? null : String.Join(' ', video.Description.Split().Take(5));
+            var relatedVideos = _context.Videos.FromSql($@"SELECT
+                      (MATCH(name) AGAINST('{video.Name}') +
+                       MATCH(description) AGAINST('{shortedVideoDescription}')) as Relevance,
+                      v.*
+                    FROM Videos as v
+                    WHERE v.id <> {video.Id}
+                    ORDER BY Relevance desc
+                    LIMIT 10")
+                .AsNoTracking()
+                .Include(x => x.Channel)
+                .Select(x => x.ToDTO())
+                .ToListAsync();
+            return await relatedVideos;
+        }
+
+        public class ModifyVideoDTO
+        {
+            public string Name { get; set; }
+            public string? Description { get; set; }
+            public IFormFile? Image { get; set; }
+            public Guid ChannelId { get; set; }
+            public Tag[]? Tags { get; set; }
+
+        }
         // PUT: api/Videos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVideo(Guid id, Video video)
+        public async Task<IActionResult> PutVideo(Guid id, ModifyVideoDTO modifiedVideo)
         {
-            if (id != video.Id)
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
             _context.Entry(video).State = EntityState.Modified;
+            video.Name = modifiedVideo.Name;
+            video.Description = modifiedVideo.Description;
+            video.ChannelId = modifiedVideo.ChannelId;
+            video.Tags = modifiedVideo.Tags;
+            if (modifiedVideo.Image != null)
+            {
+                var thumbnailUrl = await SaveThumbnailAsync(modifiedVideo.ChannelId, modifiedVideo.Image);
+                video.ImageUrl = thumbnailUrl;
+            }
 
             try
             {
@@ -88,7 +179,6 @@ namespace Backend.Controllers
             public string? Description { get; set; }
             public int DurationSec { get; set; }
             public IFormFile Image { get; set; }
-            // přidat na formulář
             public Guid ChannelId { get; set; }
             public Tag[]? Tags { get; set; }
 
@@ -109,11 +199,7 @@ namespace Backend.Controllers
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, video.File);
 
 
-            // upload image
-            string imageName = $"{video.ChannelId}[GUID].{video.Image.FileName.Split(".")[1]}";
-            string imageUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, imageName, video.Image);
-
-
+            var thumbnailUrl = await SaveThumbnailAsync(video.ChannelId, video.Image);
 
             var videoDB = new Video()
             {
@@ -127,12 +213,12 @@ namespace Backend.Controllers
                 Views = 0,
                 UploadTimestamp = DateTime.UtcNow,
                 DataUrl = videoUrl,
-                ImageUrl = imageUrl,
+                ImageUrl = thumbnailUrl,
             };
             _context.Videos.Add(videoDB);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVideo", new { id = videoDB }, video);
+            return Ok();
         }
 
         // DELETE: api/Videos/5
@@ -159,6 +245,13 @@ namespace Backend.Controllers
         private bool VideoExists(Guid id)
         {
             return (_context.Videos?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private static async Task<string> SaveThumbnailAsync(Guid channelId, IFormFile image)
+        {
+            // upload image
+            string imageName = $"{channelId}[GUID].{image.FileName.Split(".")[1]}";
+            return await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, imageName, image);
         }
     }
 }

@@ -1,4 +1,14 @@
-import { Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
+import {
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import React, { useContext } from 'react';
 import theme from 'Theme';
@@ -16,7 +26,7 @@ function DesktopNavigation({ items }: Props) {
 
   const handleOpenClose = () => {
     context?.setOpen(!context?.open);
-  }
+  };
   const drawerWidth = 256;
   return (
     <Drawer
@@ -54,27 +64,25 @@ function DesktopNavigation({ items }: Props) {
     >
       <Toolbar />
       <div>
-        <IconButton onClick={handleOpenClose} sx={{p:2}}>
-            <MenuIcon />
-          </IconButton>
-        </div>
-        <Divider />
+        <IconButton onClick={handleOpenClose} sx={{ p: 2 }}>
+          <MenuIcon />
+        </IconButton>
+      </div>
+      <Divider />
       <List>
         {items.map((item) => (
-          <ListItem key={item.route} disablePadding sx={{display: 'block'}}>
-            <ListItemButton component={CustomNavLink} to={item.route} key={item.route} >
+          <ListItem key={item.route} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton component={CustomNavLink} to={item.route} key={item.route}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.title} />
             </ListItemButton>
           </ListItem>
-          ))}
-        </List>
-      
+        ))}
+      </List>
     </Drawer>
   );
 }
 export default DesktopNavigation;
-
 
 /*
 <List>

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class begin : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,7 +42,9 @@ namespace Backend.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Initials = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Rights = table.Column<int>(type: "int", nullable: false),
+                    Roles_User = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Roles_VideoEditor = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Roles_Administrator = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -78,9 +80,9 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ChannelId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
+                    Description = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateOfRegistration = table.Column<long>(type: "bigint", nullable: false),
+                    DateOfRegistration = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Email = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -240,6 +242,7 @@ namespace Backend.Migrations
                     SubscribersCount = table.Column<long>(type: "bigint", nullable: false),
                     PosterUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    PinnedVideoId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     AvatarUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -278,7 +281,7 @@ namespace Backend.Migrations
                     DislikeCount = table.Column<int>(type: "int", nullable: false),
                     Views = table.Column<int>(type: "int", nullable: false),
                     UploadTimestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ChannelId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    ChannelId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
@@ -288,7 +291,7 @@ namespace Backend.Migrations
                         column: x => x.ChannelId,
                         principalTable: "Channels",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -361,6 +364,11 @@ namespace Backend.Migrations
                 column: "IdOwner");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Channels_PinnedVideoId",
+                table: "Channels",
+                column: "PinnedVideoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tags_VideoId",
                 table: "Tags",
                 column: "VideoId");
@@ -368,13 +376,32 @@ namespace Backend.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Videos_ChannelId",
                 table: "Videos",
-                column: "ChannelId",
-                unique: true);
+                column: "ChannelId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Channels_Videos_PinnedVideoId",
+                table: "Channels",
+                column: "PinnedVideoId",
+                principalTable: "Videos",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Channels_AspNetUsers_IdOwner",
+                table: "Channels");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Channels_ChannelAdvancedInfos_ChannelAdvancedInfoId",
+                table: "Channels");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Channels_Videos_PinnedVideoId",
+                table: "Channels");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -400,16 +427,16 @@ namespace Backend.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Videos");
-
-            migrationBuilder.DropTable(
-                name: "Channels");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "ChannelAdvancedInfos");
+
+            migrationBuilder.DropTable(
+                name: "Videos");
+
+            migrationBuilder.DropTable(
+                name: "Channels");
         }
     }
 }

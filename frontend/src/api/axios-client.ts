@@ -18,14 +18,149 @@ export * as Query from './axios-client/Query';
 
 
 //-----Types.File-----
+export class Channel implements IChannel {
+    id!: string;
+    name!: string;
+    subscribersCount!: number;
+    posterUrl?: string | undefined;
+    pinnedVideoId?: string | undefined;
+    pinnedVideo?: Video | undefined;
+    avatarUrl?: string | undefined;
+    owner!: User;
+    idOwner!: string;
+
+    constructor(data?: IChannel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.owner = new User();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.subscribersCount = _data["subscribersCount"];
+            this.posterUrl = _data["posterUrl"];
+            this.pinnedVideoId = _data["pinnedVideoId"];
+            this.pinnedVideo = _data["pinnedVideo"] ? Video.fromJS(_data["pinnedVideo"]) : <any>undefined;
+            this.avatarUrl = _data["avatarUrl"];
+            this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
+            this.idOwner = _data["idOwner"];
+        }
+    }
+
+    static fromJS(data: any): Channel {
+        data = typeof data === 'object' ? data : {};
+        let result = new Channel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["subscribersCount"] = this.subscribersCount;
+        data["posterUrl"] = this.posterUrl;
+        data["pinnedVideoId"] = this.pinnedVideoId;
+        data["pinnedVideo"] = this.pinnedVideo ? this.pinnedVideo.toJSON() : <any>undefined;
+        data["avatarUrl"] = this.avatarUrl;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["idOwner"] = this.idOwner;
+        return data;
+    }
+}
+
+export interface IChannel {
+    id: string;
+    name: string;
+    subscribersCount: number;
+    posterUrl?: string | undefined;
+    pinnedVideoId?: string | undefined;
+    pinnedVideo?: Video | undefined;
+    avatarUrl?: string | undefined;
+    owner: User;
+    idOwner: string;
+}
+
+export class ChannelAdvancedInfo implements IChannelAdvancedInfo {
+    id!: string;
+    channelId!: string;
+    description?: string | undefined;
+    dateOfRegistration!: Date;
+    email?: string | undefined;
+    relatedChannels?: Channel[] | undefined;
+
+    constructor(data?: IChannelAdvancedInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.channelId = _data["channelId"];
+            this.description = _data["description"];
+            this.dateOfRegistration = _data["dateOfRegistration"] ? new Date(_data["dateOfRegistration"].toString()) : <any>undefined;
+            this.email = _data["email"];
+            if (Array.isArray(_data["relatedChannels"])) {
+                this.relatedChannels = [] as any;
+                for (let item of _data["relatedChannels"])
+                    this.relatedChannels!.push(Channel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ChannelAdvancedInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChannelAdvancedInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["channelId"] = this.channelId;
+        data["description"] = this.description;
+        data["dateOfRegistration"] = this.dateOfRegistration ? this.dateOfRegistration.toISOString() : <any>undefined;
+        data["email"] = this.email;
+        if (Array.isArray(this.relatedChannels)) {
+            data["relatedChannels"] = [];
+            for (let item of this.relatedChannels)
+                data["relatedChannels"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IChannelAdvancedInfo {
+    id: string;
+    channelId: string;
+    description?: string | undefined;
+    dateOfRegistration: Date;
+    email?: string | undefined;
+    relatedChannels?: Channel[] | undefined;
+}
+
 export class ChannelDTO implements IChannelDTO {
-    id?: string;
-    name?: string;
-    subscribersCount?: number;
-    posterUrl?: string | null;
-    pinnedVideoId?: string | null;
-    pinnedVideo?: Video;
-    avatarUrl?: string | null;
+    id!: string;
+    name!: string;
+    subscribersCount!: number;
+    posterUrl?: string | undefined;
+    pinnedVideoId?: string | undefined;
+    pinnedVideo?: Video | undefined;
+    avatarUrl?: string | undefined;
 
     constructor(data?: IChannelDTO) {
         if (data) {
@@ -43,7 +178,7 @@ export class ChannelDTO implements IChannelDTO {
             this.subscribersCount = _data["subscribersCount"];
             this.posterUrl = _data["posterUrl"];
             this.pinnedVideoId = _data["pinnedVideoId"];
-            this.pinnedVideo = _data["pinnedVideo"] ? Video.fromJS(_data["pinnedVideo"]) : <any>null;
+            this.pinnedVideo = _data["pinnedVideo"] ? Video.fromJS(_data["pinnedVideo"]) : <any>undefined;
             this.avatarUrl = _data["avatarUrl"];
         }
     }
@@ -62,25 +197,61 @@ export class ChannelDTO implements IChannelDTO {
         data["subscribersCount"] = this.subscribersCount;
         data["posterUrl"] = this.posterUrl;
         data["pinnedVideoId"] = this.pinnedVideoId;
-        data["pinnedVideo"] = this.pinnedVideo ? this.pinnedVideo.toJSON() : <any>null;
+        data["pinnedVideo"] = this.pinnedVideo ? this.pinnedVideo.toJSON() : <any>undefined;
         data["avatarUrl"] = this.avatarUrl;
         return data;
     }
 }
 
 export interface IChannelDTO {
-    id?: string;
-    name?: string;
-    subscribersCount?: number;
-    posterUrl?: string | null;
-    pinnedVideoId?: string | null;
-    pinnedVideo?: Video;
-    avatarUrl?: string | null;
+    id: string;
+    name: string;
+    subscribersCount: number;
+    posterUrl?: string | undefined;
+    pinnedVideoId?: string | undefined;
+    pinnedVideo?: Video | undefined;
+    avatarUrl?: string | undefined;
+}
+
+export class ChannelUserSpecificInfoDTO implements IChannelUserSpecificInfoDTO {
+    subscribed!: boolean;
+
+    constructor(data?: IChannelUserSpecificInfoDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.subscribed = _data["subscribed"];
+        }
+    }
+
+    static fromJS(data: any): ChannelUserSpecificInfoDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChannelUserSpecificInfoDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["subscribed"] = this.subscribed;
+        return data;
+    }
+}
+
+export interface IChannelUserSpecificInfoDTO {
+    subscribed: boolean;
 }
 
 export class LoginDTO implements ILoginDTO {
-    email?: string;
-    password?: string;
+    email!: string;
+    password!: string;
 
     constructor(data?: ILoginDTO) {
         if (data) {
@@ -114,20 +285,74 @@ export class LoginDTO implements ILoginDTO {
 }
 
 export interface ILoginDTO {
-    email?: string;
-    password?: string;
+    email: string;
+    password: string;
 }
 
-export enum Privileges {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
+export class ModifyVideoDTO implements IModifyVideoDTO {
+    name!: string;
+    description?: string | undefined;
+    image?: string | undefined;
+    channelId!: string;
+    tags?: Tag[] | undefined;
+
+    constructor(data?: IModifyVideoDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.image = _data["image"];
+            this.channelId = _data["channelId"];
+            if (Array.isArray(_data["tags"])) {
+                this.tags = [] as any;
+                for (let item of _data["tags"])
+                    this.tags!.push(Tag.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ModifyVideoDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ModifyVideoDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["image"] = this.image;
+        data["channelId"] = this.channelId;
+        if (Array.isArray(this.tags)) {
+            data["tags"] = [];
+            for (let item of this.tags)
+                data["tags"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IModifyVideoDTO {
+    name: string;
+    description?: string | undefined;
+    image?: string | undefined;
+    channelId: string;
+    tags?: Tag[] | undefined;
 }
 
 export class RegisterDTO implements IRegisterDTO {
-    name?: string;
-    email?: string;
-    password?: string;
+    name!: string;
+    email!: string;
+    password!: string;
 
     constructor(data?: IRegisterDTO) {
         if (data) {
@@ -163,14 +388,14 @@ export class RegisterDTO implements IRegisterDTO {
 }
 
 export interface IRegisterDTO {
-    name?: string;
-    email?: string;
-    password?: string;
+    name: string;
+    email: string;
+    password: string;
 }
 
 export class Tag implements ITag {
-    id?: number;
-    name?: string;
+    id!: number;
+    name!: string;
 
     constructor(data?: ITag) {
         if (data) {
@@ -204,16 +429,123 @@ export class Tag implements ITag {
 }
 
 export interface ITag {
-    id?: number;
-    name?: string;
+    id: number;
+    name: string;
+}
+
+export class User implements IUser {
+    id!: string;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    emailConfirmed!: boolean;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+    phoneNumberConfirmed!: boolean;
+    twoFactorEnabled!: boolean;
+    lockoutEnd?: Date | undefined;
+    lockoutEnabled!: boolean;
+    accessFailedCount!: number;
+    name!: string;
+    initials!: string;
+    roles!: UserRoles;
+
+    constructor(data?: IUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.roles = new UserRoles();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.normalizedUserName = _data["normalizedUserName"];
+            this.email = _data["email"];
+            this.normalizedEmail = _data["normalizedEmail"];
+            this.emailConfirmed = _data["emailConfirmed"];
+            this.passwordHash = _data["passwordHash"];
+            this.securityStamp = _data["securityStamp"];
+            this.concurrencyStamp = _data["concurrencyStamp"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.phoneNumberConfirmed = _data["phoneNumberConfirmed"];
+            this.twoFactorEnabled = _data["twoFactorEnabled"];
+            this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : <any>undefined;
+            this.lockoutEnabled = _data["lockoutEnabled"];
+            this.accessFailedCount = _data["accessFailedCount"];
+            this.name = _data["name"];
+            this.initials = _data["initials"];
+            this.roles = _data["roles"] ? UserRoles.fromJS(_data["roles"]) : new UserRoles();
+        }
+    }
+
+    static fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["normalizedUserName"] = this.normalizedUserName;
+        data["email"] = this.email;
+        data["normalizedEmail"] = this.normalizedEmail;
+        data["emailConfirmed"] = this.emailConfirmed;
+        data["passwordHash"] = this.passwordHash;
+        data["securityStamp"] = this.securityStamp;
+        data["concurrencyStamp"] = this.concurrencyStamp;
+        data["phoneNumber"] = this.phoneNumber;
+        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
+        data["twoFactorEnabled"] = this.twoFactorEnabled;
+        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
+        data["lockoutEnabled"] = this.lockoutEnabled;
+        data["accessFailedCount"] = this.accessFailedCount;
+        data["name"] = this.name;
+        data["initials"] = this.initials;
+        data["roles"] = this.roles ? this.roles.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUser {
+    id: string;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    emailConfirmed: boolean;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+    phoneNumberConfirmed: boolean;
+    twoFactorEnabled: boolean;
+    lockoutEnd?: Date | undefined;
+    lockoutEnabled: boolean;
+    accessFailedCount: number;
+    name: string;
+    initials: string;
+    roles: UserRoles;
 }
 
 export class UserDTO implements IUserDTO {
-    id?: string;
-    name?: string;
-    email?: string;
-    initials?: string;
-    rights?: Privileges;
+    id!: string;
+    name!: string;
+    email!: string;
+    initials!: string;
+    roles!: UserRoles;
 
     constructor(data?: IUserDTO) {
         if (data) {
@@ -221,6 +553,9 @@ export class UserDTO implements IUserDTO {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.roles = new UserRoles();
         }
     }
 
@@ -230,7 +565,7 @@ export class UserDTO implements IUserDTO {
             this.name = _data["name"];
             this.email = _data["email"];
             this.initials = _data["initials"];
-            this.rights = _data["rights"];
+            this.roles = _data["roles"] ? UserRoles.fromJS(_data["roles"]) : new UserRoles();
         }
     }
 
@@ -247,34 +582,25 @@ export class UserDTO implements IUserDTO {
         data["name"] = this.name;
         data["email"] = this.email;
         data["initials"] = this.initials;
-        data["rights"] = this.rights;
+        data["roles"] = this.roles ? this.roles.toJSON() : <any>undefined;
         return data;
     }
 }
 
 export interface IUserDTO {
-    id?: string;
-    name?: string;
-    email?: string;
-    initials?: string;
-    rights?: Privileges;
+    id: string;
+    name: string;
+    email: string;
+    initials: string;
+    roles: UserRoles;
 }
 
-export class Video implements IVideo {
-    id?: string;
-    name?: string;
-    imageUrl?: string;
-    duration?: TimeSpan;
-    description?: string | null;
-    dataUrl?: string;
-    likeCount?: number;
-    dislikeCount?: number;
-    views?: number;
-    uploadTimestamp?: Date;
-    tags?: Tag[] | null;
-    channelId?: string;
+export class UserRoles implements IUserRoles {
+    user!: boolean;
+    videoEditor!: boolean;
+    administrator!: boolean;
 
-    constructor(data?: IVideo) {
+    constructor(data?: IUserRoles) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -285,22 +611,136 @@ export class Video implements IVideo {
 
     init(_data?: any) {
         if (_data) {
+            this.user = _data["user"];
+            this.videoEditor = _data["videoEditor"];
+            this.administrator = _data["administrator"];
+        }
+    }
+
+    static fromJS(data: any): UserRoles {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserRoles();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["user"] = this.user;
+        data["videoEditor"] = this.videoEditor;
+        data["administrator"] = this.administrator;
+        return data;
+    }
+}
+
+export interface IUserRoles {
+    user: boolean;
+    videoEditor: boolean;
+    administrator: boolean;
+}
+
+export class UserVideoStats implements IUserVideoStats {
+    like!: boolean;
+    dislike!: boolean;
+    addedToPlaylist!: boolean;
+    timeWatchedSec!: number;
+    userId!: string;
+    videoId!: string;
+
+    constructor(data?: IUserVideoStats) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.like = _data["like"];
+            this.dislike = _data["dislike"];
+            this.addedToPlaylist = _data["addedToPlaylist"];
+            this.timeWatchedSec = _data["timeWatchedSec"];
+            this.userId = _data["userId"];
+            this.videoId = _data["videoId"];
+        }
+    }
+
+    static fromJS(data: any): UserVideoStats {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserVideoStats();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["like"] = this.like;
+        data["dislike"] = this.dislike;
+        data["addedToPlaylist"] = this.addedToPlaylist;
+        data["timeWatchedSec"] = this.timeWatchedSec;
+        data["userId"] = this.userId;
+        data["videoId"] = this.videoId;
+        return data;
+    }
+}
+
+export interface IUserVideoStats {
+    like: boolean;
+    dislike: boolean;
+    addedToPlaylist: boolean;
+    timeWatchedSec: number;
+    userId: string;
+    videoId: string;
+}
+
+export class Video implements IVideo {
+    id!: string;
+    name!: string;
+    imageUrl!: string;
+    duration!: string;
+    description?: string | undefined;
+    dataUrl!: string;
+    likeCount!: number;
+    dislikeCount!: number;
+    views!: number;
+    uploadTimestamp!: Date;
+    tags?: Tag[] | undefined;
+    channelId!: string;
+    channel!: Channel;
+
+    constructor(data?: IVideo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.channel = new Channel();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
             this.imageUrl = _data["imageUrl"];
-            this.duration = _data["duration"] ? TimeSpan.fromJS(_data["duration"]) : <any>null;
+            this.duration = _data["duration"];
             this.description = _data["description"];
             this.dataUrl = _data["dataUrl"];
             this.likeCount = _data["likeCount"];
             this.dislikeCount = _data["dislikeCount"];
             this.views = _data["views"];
-            this.uploadTimestamp = _data["uploadTimestamp"] ? new Date(_data["uploadTimestamp"].toString()) : <any>null;
+            this.uploadTimestamp = _data["uploadTimestamp"] ? new Date(_data["uploadTimestamp"].toString()) : <any>undefined;
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
                     this.tags!.push(Tag.fromJS(item));
             }
             this.channelId = _data["channelId"];
+            this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : new Channel();
         }
     }
 
@@ -316,112 +756,192 @@ export class Video implements IVideo {
         data["id"] = this.id;
         data["name"] = this.name;
         data["imageUrl"] = this.imageUrl;
-        data["duration"] = this.duration ? this.duration.toJSON() : <any>null;
+        data["duration"] = this.duration;
         data["description"] = this.description;
         data["dataUrl"] = this.dataUrl;
         data["likeCount"] = this.likeCount;
         data["dislikeCount"] = this.dislikeCount;
         data["views"] = this.views;
-        data["uploadTimestamp"] = this.uploadTimestamp && this.uploadTimestamp.toISOString();
+        data["uploadTimestamp"] = this.uploadTimestamp ? this.uploadTimestamp.toISOString() : <any>undefined;
         if (Array.isArray(this.tags)) {
             data["tags"] = [];
             for (let item of this.tags)
                 data["tags"].push(item.toJSON());
         }
         data["channelId"] = this.channelId;
+        data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
         return data;
     }
 }
 
 export interface IVideo {
-    id?: string;
-    name?: string;
-    imageUrl?: string;
-    duration?: TimeSpan;
-    description?: string | null;
-    dataUrl?: string;
-    likeCount?: number;
-    dislikeCount?: number;
-    views?: number;
-    uploadTimestamp?: Date;
-    tags?: Tag[] | null;
-    channelId?: string;
+    id: string;
+    name: string;
+    imageUrl: string;
+    duration: string;
+    description?: string | undefined;
+    dataUrl: string;
+    likeCount: number;
+    dislikeCount: number;
+    views: number;
+    uploadTimestamp: Date;
+    tags?: Tag[] | undefined;
+    channelId: string;
+    channel: Channel;
 }
 
-export class TimeSpan implements ITimeSpan {
-    ticks?: number;
-    readonly days?: number;
-    readonly hours?: number;
-    readonly milliseconds?: number;
-    readonly minutes?: number;
-    readonly seconds?: number;
-    readonly totalDays?: number;
-    readonly totalHours?: number;
-    readonly totalMilliseconds?: number;
-    readonly totalMinutes?: number;
-    readonly totalSeconds?: number;
+export class VideoDTO implements IVideoDTO {
+    id!: string;
+    name!: string;
+    imageUrl!: string;
+    duration!: string;
+    description?: string | undefined;
+    dataUrl!: string;
+    likeCount!: number;
+    dislikeCount!: number;
+    views!: number;
+    uploadTimestamp!: Date;
+    tags?: Tag[] | undefined;
+    channelId!: string;
+    channel!: Channel;
+    channelName!: string;
+    channelAvatarUrl?: string | undefined;
 
-    constructor(data?: ITimeSpan) {
+    constructor(data?: IVideoDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
         }
+        if (!data) {
+            this.channel = new Channel();
+        }
     }
 
     init(_data?: any) {
         if (_data) {
-            this.ticks = _data["ticks"];
-            (<any>this).days = _data["days"];
-            (<any>this).hours = _data["hours"];
-            (<any>this).milliseconds = _data["milliseconds"];
-            (<any>this).minutes = _data["minutes"];
-            (<any>this).seconds = _data["seconds"];
-            (<any>this).totalDays = _data["totalDays"];
-            (<any>this).totalHours = _data["totalHours"];
-            (<any>this).totalMilliseconds = _data["totalMilliseconds"];
-            (<any>this).totalMinutes = _data["totalMinutes"];
-            (<any>this).totalSeconds = _data["totalSeconds"];
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.imageUrl = _data["imageUrl"];
+            this.duration = _data["duration"];
+            this.description = _data["description"];
+            this.dataUrl = _data["dataUrl"];
+            this.likeCount = _data["likeCount"];
+            this.dislikeCount = _data["dislikeCount"];
+            this.views = _data["views"];
+            this.uploadTimestamp = _data["uploadTimestamp"] ? new Date(_data["uploadTimestamp"].toString()) : <any>undefined;
+            if (Array.isArray(_data["tags"])) {
+                this.tags = [] as any;
+                for (let item of _data["tags"])
+                    this.tags!.push(Tag.fromJS(item));
+            }
+            this.channelId = _data["channelId"];
+            this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : new Channel();
+            this.channelName = _data["channelName"];
+            this.channelAvatarUrl = _data["channelAvatarUrl"];
         }
     }
 
-    static fromJS(data: any): TimeSpan {
+    static fromJS(data: any): VideoDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new TimeSpan();
+        let result = new VideoDTO();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["ticks"] = this.ticks;
-        data["days"] = this.days;
-        data["hours"] = this.hours;
-        data["milliseconds"] = this.milliseconds;
-        data["minutes"] = this.minutes;
-        data["seconds"] = this.seconds;
-        data["totalDays"] = this.totalDays;
-        data["totalHours"] = this.totalHours;
-        data["totalMilliseconds"] = this.totalMilliseconds;
-        data["totalMinutes"] = this.totalMinutes;
-        data["totalSeconds"] = this.totalSeconds;
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["imageUrl"] = this.imageUrl;
+        data["duration"] = this.duration;
+        data["description"] = this.description;
+        data["dataUrl"] = this.dataUrl;
+        data["likeCount"] = this.likeCount;
+        data["dislikeCount"] = this.dislikeCount;
+        data["views"] = this.views;
+        data["uploadTimestamp"] = this.uploadTimestamp ? this.uploadTimestamp.toISOString() : <any>undefined;
+        if (Array.isArray(this.tags)) {
+            data["tags"] = [];
+            for (let item of this.tags)
+                data["tags"].push(item.toJSON());
+        }
+        data["channelId"] = this.channelId;
+        data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
+        data["channelName"] = this.channelName;
+        data["channelAvatarUrl"] = this.channelAvatarUrl;
         return data;
     }
 }
 
-export interface ITimeSpan {
-    ticks?: number;
-    days?: number;
-    hours?: number;
-    milliseconds?: number;
-    minutes?: number;
-    seconds?: number;
-    totalDays?: number;
-    totalHours?: number;
-    totalMilliseconds?: number;
-    totalMinutes?: number;
-    totalSeconds?: number;
+export interface IVideoDTO {
+    id: string;
+    name: string;
+    imageUrl: string;
+    duration: string;
+    description?: string | undefined;
+    dataUrl: string;
+    likeCount: number;
+    dislikeCount: number;
+    views: number;
+    uploadTimestamp: Date;
+    tags?: Tag[] | undefined;
+    channelId: string;
+    channel: Channel;
+    channelName: string;
+    channelAvatarUrl?: string | undefined;
+}
+
+export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {
+    items!: VideoDTO[];
+    totalCount!: number;
+
+    constructor(data?: IWithTotalCountOfVideoDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.items = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(VideoDTO.fromJS(item));
+            }
+            this.totalCount = _data["totalCount"];
+        }
+    }
+
+    static fromJS(data: any): WithTotalCountOfVideoDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new WithTotalCountOfVideoDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["totalCount"] = this.totalCount;
+        return data;
+    }
+}
+
+export interface IWithTotalCountOfVideoDTO {
+    items: VideoDTO[];
+    totalCount: number;
 }
 //-----/CustomTypes.File-----
 
@@ -558,9 +1078,14 @@ export function initPersister() {
   
   addResultTypeFactory('Client___myChannels', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelsGET', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelVideos', (data: any) => { const result = new WithTotalCountOfVideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfo(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelUserInfoGET', (data: any) => { const result = new ChannelUserSpecificInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___videosAll', (data: any) => { const result = new Video(); result.init(data); return result; });
-  addResultTypeFactory('Client___videosGET', (data: any) => { const result = new Video(); result.init(data); return result; });
+  addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
+  addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___relatedVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
 
 
 }

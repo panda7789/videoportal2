@@ -45,7 +45,7 @@ export function ChannelInfo() {
               key={channel.id}
               url={`/channel/${channel.id}`}
               text={channel.name}
-              image={channel.avatar}
+              image={ApiUrl(channel.avatar)}
             />
           ))}
         </Box>

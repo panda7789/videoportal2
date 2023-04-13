@@ -29,6 +29,7 @@ export function VideoEdit({ newVideo = false }: Props) {
   }
   const [fileToUpload, setFileToUpload] = useState<ExtendedFileProps>();
   const [imageToUpload, setImageToUpload] = useState<File>();
+  const [statusText, setStatusText] = useState<string>();
   const uploadVideoMutation = AxiosQuery.Query.useVideosPOSTMutation();
   const myChannels = AxiosQuery.Query.useMyChannelsQuery();
 
@@ -48,20 +49,26 @@ export function VideoEdit({ newVideo = false }: Props) {
     const data = new FormData(event.currentTarget);
     const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
+    const channelId = data.get('channelSelect')?.toString()!;
 
     if (!fileToUpload) {
+      setStatusText('Nebyl vybrát soubor s videem.');
+      return;
+    }
+    if (!imageToUpload) {
+      setStatusText('Nebyl vybrát náhledový obrázek.');
       return;
     }
     const dur = await nanoMetadata.video.duration(fileToUpload);
 
     uploadVideoMutation.mutate({
-      channelId: v4(),
+      channelId,
       description,
       durationSec: Math.floor(dur),
       name,
       tags: [],
       file: { data: fileToUpload, fileName: fileToUpload.name },
-      image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload?.name } : undefined,
+      image: { data: imageToUpload, fileName: imageToUpload.name },
     });
   };
 
@@ -81,6 +88,13 @@ export function VideoEdit({ newVideo = false }: Props) {
         </Box>
       </Box>
       <Grid container spacing={3}>
+        {statusText && (
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="error">
+              {statusText}
+            </Typography>
+          </Grid>
+        )}
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
@@ -88,6 +102,7 @@ export function VideoEdit({ newVideo = false }: Props) {
                 fullWidth
                 name="channelSelect"
                 select
+                required
                 label="Kanál"
                 defaultValue={myChannels.data?.length === 1 && myChannels.data[0].id}
               >
@@ -117,7 +132,7 @@ export function VideoEdit({ newVideo = false }: Props) {
                 fullWidth
                 defaultValue={video?.description}
                 multiline
-                minRows={7}
+                minRows={5}
                 maxRows={14}
               />
             </Grid>
@@ -151,7 +166,7 @@ export function VideoEdit({ newVideo = false }: Props) {
         <Grid item xs={12} sm={6}>
           <Typography>Náhledový obrázek:</Typography>
           <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={video?.imageUrl} />
+            <img width="100%" src={video?.imageUrl ?? imageToUpload} />
           </AspectRatio>
           <Box display="flex" justifyContent="center" gap={2} padding={2}>
             <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">

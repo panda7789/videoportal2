@@ -1,27 +1,39 @@
 import React from 'react';
 import VideoCard from 'components/Thumbnail/VideoCard';
 import { Video } from 'model/Video';
-import { InlineList } from './InlineList';
+import { Skeleton } from '@mui/material';
+import { InlineList } from 'components/InlineList/InlineList';
 
 export interface Props {
-  videos: Video[];
+  videos?: Video[];
+  skeletonCount?: number;
   currentlyPlaying?: number;
   urlParamsGenerator?: (video: Video, index: number) => string;
 }
-export function VideoInlineList({ videos, currentlyPlaying, urlParamsGenerator }: Props) {
+export function VideoInlineList({
+  videos,
+  currentlyPlaying,
+  urlParamsGenerator,
+  skeletonCount = 5,
+}: Props) {
   return (
     <InlineList>
-      {videos.map((_video, index) => (
-        <VideoCard
-          key={_video.id}
-          video={{ ..._video }}
-          showChannel={false}
-          showDescription={false}
-          smallThumbnail
-          currentlyPlaying={currentlyPlaying === index}
-          urlParams={urlParamsGenerator ? urlParamsGenerator(_video, index) : ''}
-        />
-      ))}
+      {videos
+        ? videos.map((_video, index) => (
+            <VideoCard
+              key={_video.id}
+              video={_video}
+              showChannel={false}
+              showDescription={false}
+              smallThumbnail
+              currentlyPlaying={currentlyPlaying === index}
+              urlParams={urlParamsGenerator ? urlParamsGenerator(_video, index) : ''}
+            />
+          ))
+        : [...Array(skeletonCount)].map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <Skeleton key={`skeleton-${i}`} variant="rounded" animation="wave" height={220} />
+          ))}
     </InlineList>
   );
 }

@@ -1,15 +1,13 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { FormEvent, useContext, useState } from 'react';
 import { Typography } from '@mui/material';
 import { UserContext } from 'routes/Root';
-import { Privileges } from 'model/User';
 import { AxiosQuery } from 'api';
-import { LoginDTO } from 'api/axios-client';
+import { LoginDTO, UserDTO } from 'api/axios-client';
 import { TailSpin } from 'react-loader-spinner';
 
 export interface Props {
@@ -27,13 +25,15 @@ export default function LoginForm({ handleRegisterClick }: Props) {
     onSuccess: (result) => {
       const user = result;
       setTimeout(() => {
-        userContext?.setUser({
-          email: user.email,
-          id: user.id,
-          initials: user.initials,
-          name: user.name,
-          rights: user.rights as unknown as Privileges,
-        });
+        userContext?.setUser(
+          new UserDTO({
+            email: user.email,
+            id: user.id,
+            initials: user.initials,
+            name: user.name,
+            roles: user.roles,
+          }),
+        );
       }, 500);
     },
     onError: (error) => {

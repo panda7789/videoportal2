@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Toolbar } from '@mui/material';
 import { Box } from '@mui/system';
 import AppBarModified from 'components/AppBar/AppBar';
 import Navigation from 'components/Navigation/Navigation';
 import { Outlet, useNavigation } from 'react-router-dom';
 import theme from 'Theme';
-import { User } from 'model/User';
+import { UserDTO as User, UserDTO } from 'api/axios-client';
+import { AxiosQuery } from 'api';
 
 interface NavigationContextInterface {
   open: boolean;
@@ -25,6 +26,25 @@ export default function Root() {
   const [navigationOpen, setNavigationOpen] = useState(true);
   const [user, setUser] = useState<User | undefined>();
 
+  const getCurrentUser = AxiosQuery.Query.useMeQuery({
+    enabled: false,
+    onSuccess: (result) => {
+      setUser(
+        new UserDTO({
+          email: result.email,
+          id: result.id,
+          initials: result.initials,
+          name: result.name,
+          roles: result.roles,
+        }),
+      );
+    },
+    onError: () => {
+      setUser(undefined);
+      localStorage.removeItem('token');
+    },
+  });
+
   const userContextMemo = useMemo<UserContextInterface>(
     () => ({
       user,
@@ -40,6 +60,12 @@ export default function Root() {
     }),
     [navigationOpen, setNavigationOpen],
   );
+
+  useEffect(() => {
+    if (!user && localStorage.getItem('token')) {
+      getCurrentUser.refetch();
+    }
+  }, [user]);
 
   return (
     <NavigationContext.Provider value={navigationContextMemo}>

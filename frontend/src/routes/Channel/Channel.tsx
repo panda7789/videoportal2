@@ -1,45 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Avatar, Button, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import {
-  Channel as ChannelModel,
-  ChannelUserSpecificInfo,
-  getChannelById,
-  getChannelUserSpecificInfo,
-} from 'model/Channel';
-
 import { Link, Outlet, useLoaderData } from 'react-router-dom';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 import HomeIcon from '@mui/icons-material/Home';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import InfoIcon from '@mui/icons-material/Info';
+import { ApiPath } from 'components/Utils/APIUtils';
+import { Channel as ChannelModel, getChannelById } from 'model/Channel';
+import { useChannelUserInfoGETQuery, useChannelUserInfoPUTMutation } from 'api/axios-client/Query';
+import { UserContext } from 'routes/Root';
+import { ChannelUserSpecificInfoDTO } from 'api/axios-client';
 
 export async function loader({ params }: { params: any }) {
-  return getChannelById(params);
+  return getChannelById(params.channelId);
 }
 
 export function Channel() {
   const channelBasicInfo = useLoaderData() as ChannelModel;
 
-  const [channelUserSpecificInfo, setChannelUserSpecificInfo] = useState<ChannelUserSpecificInfo>();
-  useEffect(() => {
-    (async () => {
-      setChannelUserSpecificInfo(await getChannelUserSpecificInfo(channelBasicInfo.id));
-    })();
-  }, []);
-
+  const userContext = useContext(UserContext);
+  const channelUserSpecificInfoQuery = useChannelUserInfoGETQuery(channelBasicInfo.id, {
+    enabled: !!userContext?.user,
+    staleTime: 1 * 60 * 1000,
+  });
+  const channelUserInfoPUTMutation = useChannelUserInfoPUTMutation(channelBasicInfo.id, {
+    onSuccess: () => {
+      channelUserSpecificInfoQuery.refetch();
+    },
+  });
   const [tab, setTab] = React.useState(0);
 
   const handleTabChange = (event: React.SyntheticEvent, newTab: number) => {
     setTab(newTab);
   };
 
+  const handleSubscribe = (_: any) => {
+    channelUserInfoPUTMutation.mutate(new ChannelUserSpecificInfoDTO({ subscribed: true }));
+  };
+
+  const handleUnsubscribe = (_: any) => {
+    channelUserInfoPUTMutation.mutate(new ChannelUserSpecificInfoDTO({ subscribed: false }));
+  };
+
   return (
     <Box>
       <Grid container justifyContent="center">
         <Grid item xs={12}>
-          <img width="100%" src={channelBasicInfo.posterUrl} alt="channel poster" />
+          {channelBasicInfo?.posterUrl ? (
+            <img width="100%" src={ApiPath(channelBasicInfo.posterUrl)} alt="channel poster" />
+          ) : (
+            <Box height="50px" />
+          )}
         </Grid>
         <Grid item xs={10} display="flex" justifyContent="space-between">
           <Box display="flex" alignItems="center">
@@ -61,10 +74,22 @@ export function Channel() {
             </Box>
           </Box>
           <Box display="flex" alignItems="center">
-            {channelUserSpecificInfo?.subscribed ?? false ? (
-              <Button variant="outlined">Zrušit odběr</Button>
+            {channelUserSpecificInfoQuery?.data?.subscribed ?? false ? (
+              <Button
+                variant="outlined"
+                onClick={handleUnsubscribe}
+                disabled={channelUserInfoPUTMutation?.isLoading}
+              >
+                Zrušit odběr
+              </Button>
             ) : (
-              <Button variant="contained">Odebírat</Button>
+              <Button
+                variant="contained"
+                disabled={!userContext?.user || channelUserInfoPUTMutation?.isLoading}
+                onClick={handleSubscribe}
+              >
+                Odebírat
+              </Button>
             )}
           </Box>
         </Grid>

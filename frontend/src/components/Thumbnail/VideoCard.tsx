@@ -13,6 +13,9 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
+import { ApiPath } from 'components/Utils/APIUtils';
+import { TimeSpanToReadableFormat } from 'components/Utils/NumberUtils';
+import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 
 interface Props {
   video: Video;
@@ -83,9 +86,12 @@ function VideoCard({
                 <CardMedia
                   component="img"
                   draggable={false}
-                  image={imageUrl}
+                  image={ApiPath(imageUrl)}
                   alt={imageUrl}
                   sx={{
+                    maxHeight: '100%',
+                    width: '100%',
+                    objectFit: 'cover',
                     ...(currentlyPlaying && {
                       boxSizing: 'border-box',
                       border: `3px solid ${theme.palette.primary.main}}`,
@@ -129,7 +135,7 @@ function VideoCard({
                   borderRadius: '10%',
                 }}
               >
-                {duration}
+                {TimeSpanToReadableFormat(duration)}
               </Typography>
             </Box>
           )}
@@ -198,17 +204,19 @@ function VideoCard({
               {(showStats ?? true) && (
                 <Box pb="4px">
                   <Typography variant="caption">{video.views} zhlédnutí • </Typography>
-                  <Typography variant="caption">{video.uploadTimestamp}</Typography>
+                  <Typography variant="caption">{video.uploadTimestamp.getUTCDate()}</Typography>
                 </Box>
               )}
-              {(showTags ?? true) && <ChipLine chipData={video.tags} />}
+              {(showTags ?? true) && video.tags?.length && (
+                <ChipLine chipData={video.tags?.map((x) => x.name)} />
+              )}
             </Box>
             {(showChannel ?? true) && (
               <Box
                 display="flex"
                 alignItems="center"
                 component={Link}
-                to="/channel/12345"
+                to={`/channel/${video.channelId}`}
                 sx={{
                   textDecoration: 'none',
                   color: 'unset',
@@ -219,20 +227,14 @@ function VideoCard({
                 }}
               >
                 {(showAvatar ?? true) && (
-                  <Avatar
-                    sx={{
-                      width: 24,
-                      height: 24,
-                      border: '0.1px solid lightgray',
-                      padding: '4px',
-                      img: { objectFit: 'fill', borderRadius: '50%' },
-                    }}
-                    src="/upol.png"
+                  <ChannelAvatar
+                    imageSrc={video?.channelAvatarUrl}
+                    avatarInitials={video.channelName}
                   />
                 )}
 
                 <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
-                  Univerzita Palackého v Olomouci
+                  {video.channelName}
                 </Typography>
               </Box>
             )}

@@ -10,6 +10,8 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Reflection.PortableExecutable;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Backend.Controllers
 {
@@ -37,7 +39,7 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            return await _context.Channels.Where(x => x.IdOwner == userId).ToListAsync();
+            return await _context.Channels.Where(x => x.IdOwner == userId).Select(x => x.ToDTO()).ToListAsync();
         }
 
         // GET: api/Channels/5
@@ -55,8 +57,138 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            return channelDTO;
+            return channelDTO.ToDTO();
         }
+
+        [HttpGet("{id}/channel-videos")]
+        public async Task<ActionResult<WithTotalCount<VideoDTO>>> GetChannelLatestVideos(Guid id, [FromQuery] int? limit = null, int? offset = null)
+        {
+            if (_context.Channels == null)
+            {
+                return NotFound();
+            }
+            IQueryable<Video> query = _context.Videos
+                .Include(x => x.Channel)
+                .Where(x => x.ChannelId == id)
+                .OrderByDescending(x => x.UploadTimestamp);
+
+            var totalCount = query.Count();
+
+
+            if (offset.HasValue)
+            {
+                query = query.Skip(offset.Value);
+            }
+            if (limit.HasValue)
+            {
+                query = query.Take(limit.Value);
+            }
+            else
+            {
+                query = query.Take(10);
+            }
+
+            var latestVideos = await query.Select(x => x.ToDTO())
+                .ToListAsync();
+            if (latestVideos == null)
+            {
+                return NotFound();
+            }
+            return new WithTotalCount<VideoDTO>() {
+                Items = latestVideos,
+                TotalCount = totalCount
+            };
+        }
+
+        [HttpGet("{id}/channel-advanced-info")]
+        public ActionResult<ChannelAdvancedInfo> GetChannelAdvancedInfo(Guid id)
+        {
+            if (_context.ChannelAdvancedInfos == null)
+            {
+                return NotFound();
+            }
+            var channelAdvancedInfo = _context.ChannelAdvancedInfos.Where(x => x.ChannelId == id).FirstOrDefault();
+            if (channelAdvancedInfo == null)
+            {
+                return NotFound();
+            }
+            return channelAdvancedInfo;
+        }
+
+        [HttpGet("{id}/channel-user-info")]
+        public ActionResult<ChannelUserSpecificInfoDTO> GetChannelUserSpecificInfo(Guid id)
+        {
+            if (_context.ChannelUserSpecificInfos == null)
+            {
+                return NotFound();
+            }
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var result = _context.ChannelUserSpecificInfos.Where(x => x.ChannelId == id && x.UserId == userId).FirstOrDefault();
+            if (result == null)
+            {
+                var newInfo = new ChannelUserSpecificInfoDTO()
+                {
+                    Subscribed = false
+                };
+                return newInfo;
+            }
+            return result.ToDTO();
+        }
+
+        [HttpPut("{id}/channel-user-info")]
+        public async Task<IActionResult> PutChannelUserInfo(Guid id, ChannelUserSpecificInfoDTO channelUser)
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = _context.ChannelUserSpecificInfos.Where(x => x.ChannelId == id && x.UserId == userId).FirstOrDefault();
+
+            if (result == null)
+            {
+                if (!channelUser.Subscribed)
+                {
+                    return Ok();
+                }
+                result = new ChannelUserSpecificInfo()
+                {
+                    ChannelId = id,
+                    UserId = (Guid)userId,
+                    Subscribed = channelUser.Subscribed
+                };
+                _context.ChannelUserSpecificInfos.Add(result);
+            }
+            else
+            {
+                if (!channelUser.Subscribed)
+                {
+                    _context.ChannelUserSpecificInfos.Remove(result);
+                }
+                else
+                {
+                    _context.Entry(result).State = EntityState.Modified;
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
+
+
 
         // PUT: api/Channels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -103,6 +235,7 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
             var channel = new Channel()
             {
@@ -110,6 +243,16 @@ namespace Backend.Controllers
                 PinnedVideoId = channelDTO.PinnedVideoId,
                 SubscribersCount = 0,
                 IdOwner = userId ?? Guid.Empty,
+            };
+
+            var channelAdvancedInfo = new ChannelAdvancedInfo()
+            {
+                ChannelId = channel.Id,
+                DateOfRegistration = DateTime.UtcNow,
+                Description = channelDTO.Description,
+                Email = userEmail,
+                RelatedChannels = channelDTO.RelatedChannels
+                
             };
 
             if (channelDTO.Poster != null)
@@ -127,7 +270,7 @@ namespace Backend.Controllers
             _context.Channels.Add(channel);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetChannelDTO", new { id = channel.Id }, channelDTO);
+            return Ok();
         }
 
         // DELETE: api/Channels/5

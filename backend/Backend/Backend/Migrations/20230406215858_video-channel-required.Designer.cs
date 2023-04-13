@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230326195111_init")]
-    partial class init
+    [Migration("20230406215858_video-channel-required")]
+    partial class videochannelrequired
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("PinnedVideoId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("PosterUrl")
                         .HasColumnType("longtext");
 
@@ -51,6 +54,8 @@ namespace Backend.Migrations
                     b.HasIndex("ChannelAdvancedInfoId");
 
                     b.HasIndex("IdOwner");
+
+                    b.HasIndex("PinnedVideoId");
 
                     b.ToTable("Channels");
                 });
@@ -64,11 +69,10 @@ namespace Backend.Migrations
                     b.Property<Guid>("ChannelId")
                         .HasColumnType("char(36)");
 
-                    b.Property<long>("DateOfRegistration")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("DateOfRegistration")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
@@ -177,9 +181,6 @@ namespace Backend.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("Rights")
-                        .HasColumnType("int");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -268,8 +269,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelId")
-                        .IsUnique();
+                    b.HasIndex("ChannelId");
 
                     b.ToTable("Videos");
                 });
@@ -385,7 +385,14 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.Video", "PinnedVideo")
+                        .WithMany()
+                        .HasForeignKey("PinnedVideoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Owner");
+
+                    b.Navigation("PinnedVideo");
                 });
 
             modelBuilder.Entity("Backend.Models.Tag", b =>
@@ -395,13 +402,43 @@ namespace Backend.Migrations
                         .HasForeignKey("VideoId");
                 });
 
+            modelBuilder.Entity("Backend.Models.User", b =>
+                {
+                    b.OwnsOne("Backend.Models.UserRoles", "Roles", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<bool>("Administrator")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.Property<bool>("User")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.Property<bool>("VideoEditor")
+                                .HasColumnType("tinyint(1)");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("AspNetUsers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Roles")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Backend.Models.Video", b =>
                 {
-                    b.HasOne("Backend.Models.Channel", null)
-                        .WithOne("PinnedVideo")
-                        .HasForeignKey("Backend.Models.Video", "ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Backend.Models.Channel", "Channel")
+                        .WithMany()
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Channel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -453,11 +490,6 @@ namespace Backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Models.Channel", b =>
-                {
-                    b.Navigation("PinnedVideo");
                 });
 
             modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>

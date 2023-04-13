@@ -1,8 +1,9 @@
 import { Box, Grid, Skeleton } from '@mui/material';
+import { Tag } from 'api/axios-client';
 import CustomChip from './CustomChip';
 
 interface Props {
-  chipData: string[];
+  chipData: Tag[];
 }
 
 function ChipLine({ chipData }: Props) {
@@ -15,7 +16,7 @@ function ChipLine({ chipData }: Props) {
       }}
     >
       {chipData
-        ? chipData.map((tag) => <CustomChip key={tag} text={tag} />)
+        ? chipData.map((tag) => <CustomChip key={tag.id} text={tag.name} />)
         : [...Array(6)].map(() => (
             // eslint-disable-next-line react/jsx-key
             <Grid item xs={6} p={0.5}>

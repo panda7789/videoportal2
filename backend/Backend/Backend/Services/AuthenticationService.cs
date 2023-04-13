@@ -32,7 +32,7 @@ namespace Backend.Services
                 Email = request.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 Initials = (request.Name.IndexOf(" ") is int spaceIndex) && spaceIndex > 0 ? $"{request.Name[0]}{request.Name[spaceIndex + 1]}" : request.Name[..2],
-                Rights = Privileges.user
+                Roles = new UserRoles(){ User = true}
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);

@@ -20,6 +20,7 @@ export interface Props {
   icon: JSX.Element;
   text?: string;
   sx?: SxProps<Theme>;
+  enabled?: boolean;
 }
 export interface DropDownMenuAction {
   name: string;
@@ -27,7 +28,7 @@ export interface DropDownMenuAction {
   onClick(): void;
 }
 
-function DropDownMenu({ actions, sx, icon, text }: Props) {
+function DropDownMenu({ actions, sx, icon, text, enabled = true }: Props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -70,6 +71,7 @@ function DropDownMenu({ actions, sx, icon, text }: Props) {
         aria-haspopup="true"
         onClick={handleToggle}
         ref={anchorRef}
+        disabled={!enabled}
       >
         {icon}
       </IconButton>

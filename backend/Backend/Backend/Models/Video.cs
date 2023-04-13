@@ -28,7 +28,33 @@ namespace Backend.Models
         public DateTime UploadTimestamp { get; set; }
         public Tag[]? Tags { get; set; }
         public Guid ChannelId { get; set; }
+        public Channel Channel { get; set; }
 
+        public VideoDTO ToDTO()
+        {
+            return new VideoDTO()
+            {
+                Id = Id,
+                Name = Name,
+                ImageUrl = ImageUrl,
+                Duration = Duration,
+                Description = Description,
+                DataUrl = DataUrl,
+                LikeCount = LikeCount,
+                DislikeCount = DislikeCount,
+                Views = Views,
+                UploadTimestamp = UploadTimestamp,
+                Tags = Tags,
+                ChannelId = ChannelId,
+                ChannelName = Channel.Name,
+                ChannelAvatarUrl = Channel.AvatarUrl,
+            };
+        }
+    }
 
+    public class VideoDTO: Video
+    {
+        public string ChannelName { get; set; }
+        public string? ChannelAvatarUrl { get; set; }
     }
 }

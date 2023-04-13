@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Models
 {
@@ -8,7 +9,7 @@ namespace Backend.Models
     {
         public string Name { get; set; }
         public string Initials { get; set; }
-        public Privileges Rights { get; set; }
+        public UserRoles Roles { get; set; }
 
         public UserDTO ToDTO() => new UserDTO
         {
@@ -16,7 +17,7 @@ namespace Backend.Models
             Id = Id,
             Name = Name,
             Initials = Initials,
-            Rights = Rights
+            Roles = Roles
         };
     }
 
@@ -26,14 +27,15 @@ namespace Backend.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string Initials { get; set; }
-        public Privileges Rights { get; set; }
+        public UserRoles Roles { get; set; }
     }
 
-    public enum Privileges
+    [Owned]
+    public class UserRoles
     {
-        user,
-        videoEditor,
-        admin
+        public bool User { get; set; }
+        public bool VideoEditor { get; set; }
+        public bool Administrator { get; set; }
     }
 
 }

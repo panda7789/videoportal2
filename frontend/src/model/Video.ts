@@ -1,28 +1,13 @@
-import { NumberToWords, TimestampToAgoWords } from 'components/Utils/NumberUtils';
+import { UserVideoStats } from 'api/axios-client';
 import { v4 as uuidv4 } from 'uuid';
+import { AxiosQuery } from 'api';
 import { PlaylistModel } from './Playlist';
+import { VideoDTO } from '../api/axios-client';
 
-export type UserVideoStats = {
-  like?: boolean;
-  dislike?: boolean;
-  addedToPlaylist?: boolean;
-  timeWatchedSec?: number;
-};
+export { UserVideoStats };
 
-export type Video = {
-  id: string;
-  name: string;
-  imageUrl: string;
-  duration: string;
-  description?: string;
-  dataUrl: string;
-  likeCount: string;
-  dislikeCount: string;
-  views: string;
-  uploadTimestamp: string;
-  tags: string[];
-  channelId: string;
-};
+export { VideoDTO as Video };
+
 const tagsExamples = [
   'Aplikovaná informatika',
   'Přednáška',
@@ -42,34 +27,18 @@ export function getTags() {
   return res;
 }
 
-export async function getVideoById(id: string): Promise<Video> {
-  const random = Math.random() * 256;
-  const data: Video = {
-    id: uuidv4(),
-    name: `Implementace GUI ve Visual Studio (Janoštík)`,
-    imageUrl: `https://picsum.photos/320/180?grayscale&random=${random}`,
-    duration: '1:05',
-    dataUrl: '/sampleVideo.mp4',
-    description:
-      'Culpa commodo incididunt in sint amet quis deserunt excepteur nisi ex ad veniam nisi anim. Reprehenderit ipsum eiusmod aute sint ipsum deserunt officia id fugiat nostrud.',
-    likeCount: NumberToWords(Math.random() * 12345),
-    dislikeCount: NumberToWords(Math.random() * 12345),
-    views: NumberToWords(Math.random() * 123456789),
-    uploadTimestamp: TimestampToAgoWords(Date.parse('2020-12-13T21:01:00.000Z')),
-    tags: getTags(),
-    channelId: uuidv4(),
-  };
-  return data;
+export async function getVideoById(id: string): Promise<VideoDTO> {
+  return AxiosQuery.Client.videosGET(id);
 }
 
-export async function search(q: string): Promise<Video[]> {
+export async function search(q: string): Promise<VideoDTO[]> {
   console.log(`Searching for ${q}`);
-  const arr: Video[] = [];
+  const arr: VideoDTO[] = [];
 
   for (let i = 0; i < 10; i++) {
     // eslint-disable-next-line no-await-in-loop
     const video = await getVideoById(q);
-    arr.push({ ...video, id: uuidv4(), name: uuidv4() });
+    arr.push(new Video({ ...video, id: uuidv4(), name: uuidv4() }));
   }
 
   return arr;
@@ -82,7 +51,7 @@ export async function searchTags(tags: string[]): Promise<Video[]> {
   for (let i = 0; i < 10; i++) {
     // eslint-disable-next-line no-await-in-loop
     const video = await getVideoById('A');
-    arr.push({ ...video, id: uuidv4(), name: uuidv4() });
+    arr.push(new Video({ ...video, id: uuidv4(), name: uuidv4() }));
   }
 
   return arr;

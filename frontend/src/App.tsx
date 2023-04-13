@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import React, { useContext, useEffect } from 'react';
 import Theme from 'Theme';
-import Root, { UserContext } from 'routes/Root';
+import Root from 'routes/Root';
 import ErrorPage from 'routes/ErrorPage';
 import { ThemeProvider } from '@emotion/react';
 import { Box } from '@mui/system';
@@ -9,9 +8,7 @@ import HomePage from 'routes/HomePage';
 import VideoDetail, { loader as videoLoader } from 'routes/VideoDetail';
 import SearchResult from 'routes/SearchResult';
 import { loader as searchLoader } from 'components/AppBar/Search';
-import { loader as historyLoader, History } from 'routes/MyPortal/History';
-import MyPortal from 'routes/MyPortal/MyPortal';
-import { MyVideos, loader as myVideosLoader } from 'routes/MyPortal/Videos';
+import { MyVideos, loader as myVideosLoader } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
 import { Channel, loader as channelLoader } from 'routes/Channel/Channel';
@@ -37,15 +34,9 @@ function App() {
           element: <HomePage />,
         },
         {
-          path: 'myportal',
-          element: <MyPortal />,
-          children: [
-            {
-              path: '',
-              element: <MyVideos />,
-              loader: myVideosLoader,
-            },
-          ],
+          path: 'myvideos',
+          element: <MyVideos />,
+          loader: myVideosLoader,
         },
         {
           path: 'channel/:channelId',

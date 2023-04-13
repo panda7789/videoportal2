@@ -5,9 +5,9 @@ import AspectRatio from 'components/Utils/AspectRatio';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import ChipEditLine from 'components/Chip/ChipEditLine';
 import { AxiosQuery } from 'api';
 import { Channel } from 'model/Channel';
+import { ApiPath } from 'components/Utils/APIUtils';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.channelsGET(params.Id);
@@ -86,32 +86,24 @@ export function ChannelEdit({ newChannel = false }: Props) {
                 defaultValue={channel?.name}
               />
             </Grid>
-            {/* <Grid item xs={12}>
+            <Grid item xs={12}>
               <TextField
-                required
                 id="description"
                 name="description"
                 label="Popis"
                 fullWidth
                 defaultValue={channel?.description}
                 multiline
-                minRows={7}
+                minRows={2}
                 maxRows={14}
               />
             </Grid>
-  */}
-            <Grid item xs={12}>
-              <Typography variant="caption" pl={2}>
-                Tagy
-              </Typography>
-              <ChipEditLine />
-            </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={3}>
           <Typography>Poster:</Typography>
           <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={channel?.posterUrl ?? posterToUpload} />
+            <img width="100%" src={ApiPath(channel?.posterUrl)} />
           </AspectRatio>
           <Box display="flex" justifyContent="center" gap={2} padding={2}>
             <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
@@ -120,10 +112,10 @@ export function ChannelEdit({ newChannel = false }: Props) {
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={3}>
           <Typography>Avatar:</Typography>
           <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={channel?.avatar ?? avatarToUpload} />
+            <img width="100%" src={ApiPath(channel?.avatar)} />
           </AspectRatio>
           <Box display="flex" justifyContent="center" gap={2} padding={2}>
             <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">

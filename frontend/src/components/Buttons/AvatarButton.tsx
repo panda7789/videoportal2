@@ -2,6 +2,8 @@ import React from 'react';
 import { Avatar, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
+import { GetInitials } from 'components/Utils/StringUtils';
+import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 
 export interface Props {
   key?: string;
@@ -28,16 +30,7 @@ export function AvatarButton({ key, url, image, text }: Props) {
         borderRadius: '15px',
       }}
     >
-      <Avatar
-        sx={{
-          width: 48,
-          height: 48,
-          border: '0.1px solid lightgray',
-          padding: '4px',
-          img: { objectFit: 'fill', borderRadius: '50%' },
-        }}
-        src={image}
-      />
+      <ChannelAvatar imageSrc={image} avatarInitials={text} large />
       <Typography paddingLeft={1}>{text}</Typography>
     </Box>
   );

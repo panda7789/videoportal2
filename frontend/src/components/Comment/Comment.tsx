@@ -1,10 +1,10 @@
 import React from 'react';
 import { Avatar, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { User } from 'model/User';
+import { UserDTO } from 'api/axios-client';
 
 export interface CommentProps {
-  user: User;
+  user: UserDTO;
   text: string;
 }
 

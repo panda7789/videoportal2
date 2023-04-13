@@ -3,13 +3,11 @@ export interface User {
   name: string;
   email: string;
   initials: string;
-  rights: Privileges;
+  rights: Privileges[];
 }
 
 export enum Privileges {
   user,
   videoEditor,
-  admin
+  admin,
 }
-
-

@@ -14,10 +14,9 @@ import { Box, styled } from '@mui/system';
 import React, { useContext, useEffect } from 'react';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { getVideoById, UserVideoStats, Video } from 'model/Video';
+import { getVideoById } from 'model/Video';
 import theme from 'Theme';
 import Comment, { CommentProps } from 'components/Comment/Comment';
-import { Privileges, User } from 'model/User';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
@@ -27,17 +26,46 @@ import { getPlaylistById, PlaylistModel } from 'model/Playlist';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
+import { UserDTO, UserRoles, VideoDTO as Video } from 'api/axios-client';
+import { NumberToWords } from 'components/Utils/NumberUtils';
+import { ApiPath } from 'components/Utils/APIUtils';
+import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
+import { AxiosQuery } from 'api';
 import { NavigationContext, UserContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 
-const Users: User[] = [
-  { id: '1', name: 'Lillie Myers', initials: 'LM', email: 'a@b.cz', rights: Privileges.user },
-  { id: '2', name: 'Gene Rose', initials: 'GR', email: 'a@b.cz', rights: Privileges.user },
-  { id: '3', name: 'Thomas Reese', initials: 'TR', email: 'a@b.cz', rights: Privileges.user },
-  { id: '4', name: 'Tillie Guzman', initials: 'TG', email: 'a@b.cz', rights: Privileges.user },
+const Users: UserDTO[] = [
+  new UserDTO({
+    id: '1',
+    name: 'Lillie Myers',
+    initials: 'LM',
+    email: 'a@b.cz',
+    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
+  }),
+  new UserDTO({
+    id: '2',
+    name: 'Gene Rose',
+    initials: 'GR',
+    email: 'a@b.cz',
+    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
+  }),
+  new UserDTO({
+    id: '3',
+    name: 'Thomas Reese',
+    initials: 'TR',
+    email: 'a@b.cz',
+    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
+  }),
+  new UserDTO({
+    id: '4',
+    name: 'Tillie Guzman',
+    initials: 'TG',
+    email: 'a@b.cz',
+    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
+  }),
 ];
 
 const Texts: string[] = [
@@ -50,19 +78,14 @@ const Texts: string[] = [
   'Aliquip laboris fugiat excepteur duis minim labore cillum commodo.😫',
 ];
 
-const videoUserStats: UserVideoStats = {
-  like: true,
-};
-
 export async function loader({ params }: { params: any }) {
-  return getVideoById(params);
+  return getVideoById(params.videoId);
 }
 
 function VideoDetail() {
   const [expanded, setExpanded] = React.useState(true);
   const commentInput = React.createRef<HTMLInputElement>();
   const [comments, setComments] = React.useState<CommentProps[]>([]);
-  const [relatedVideos, setRelatedVideos] = React.useState<Video[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
   const [searchParams] = useSearchParams();
@@ -70,6 +93,7 @@ function VideoDetail() {
   const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
   const [commentsLoading, setCommentsLoading] = React.useState<boolean>(false);
   const userContext = useContext(UserContext);
+  const relatedVideosQuery = AxiosQuery.Query.useRelatedVideosQuery({ id: video.id });
 
   useEffect(() => {
     console.log(searchParams.toString());
@@ -102,13 +126,13 @@ function VideoDetail() {
       setCommentsLoading(true);
       const comment: CommentProps = {
         text: commentText,
-        user: {
+        user: new UserDTO({
           id: '0',
           name: 'Lukáš Linhart',
           initials: 'LL',
           email: 'a@b.cz',
-          rights: Privileges.user,
-        }, // TODO Current user
+          roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
+        }), // TODO Current user
       };
       await Promise.all([
         // eslint-disable-next-line no-promise-executor-return
@@ -139,24 +163,17 @@ function VideoDetail() {
   };
 
   useEffect(() => {
-    (async () => {
-      const localRelatedVideos: Video[] = [];
-      for (let i = 0; i < 10; i += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        localRelatedVideos.push(await getVideoById('1234'));
-      }
-      setRelatedVideos(localRelatedVideos);
-    })();
-  }, []);
-
-  useEffect(() => {
     ScrollToTop();
   }, [video]);
 
   return (
     <Grid container xs={12}>
       <Grid item xs={12}>
-        <VideoPlayer videoSrc="/sampleVideo.mp4" />
+        {video?.dataUrl ? (
+          <VideoPlayer videoSrc={ApiPath(video.dataUrl)!} />
+        ) : (
+          <Typography variant="h1">Video nenalezeno.</Typography>
+        )}
       </Grid>
       <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
         <Box width="95%" mt={2}>
@@ -175,11 +192,11 @@ function VideoDetail() {
                 <Typography variant="subtitle1" paddingBottom="16px">
                   {video.description}
                 </Typography>
-                {video.tags.length > 0 && (
+                {(video?.tags?.length ?? 0) > 0 && (
                   <>
                     <Typography variant="caption">Tagy:</Typography>
                     <Grid container gap={0.5} pt={1}>
-                      <ChipLine chipData={video.tags} />
+                      <ChipLine chipData={video.tags!} />
                     </Grid>
                   </>
                 )}
@@ -188,9 +205,10 @@ function VideoDetail() {
             <Grid container item xs={4} direction="column" justifyContent="flex-start" height={170}>
               <Grid item xs={6} height={65} width="100%">
                 <LikeDislikeMenu
-                  {...videoUserStats}
-                  likeCount={video.likeCount}
-                  dislikeCount={video.dislikeCount}
+                  videoId={video.id}
+                  likeCount={NumberToWords(video.likeCount)}
+                  dislikeCount={NumberToWords(video.dislikeCount)}
+                  enabled={!!userContext?.user}
                 />
               </Grid>
               <Grid item xs={6} height={65} width="100%">
@@ -203,17 +221,12 @@ function VideoDetail() {
                   mr={2}
                   alignItems="center"
                 >
-                  <Avatar
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      border: '0.1px solid lightgray',
-                      padding: '4px',
-                      img: { objectFit: 'fill', borderRadius: '50%' },
-                    }}
-                    src="/upol.png"
+                  <ChannelAvatar
+                    imageSrc={video.channelAvatarUrl}
+                    avatarInitials={video.channelName}
+                    large
                   />
-                  <Typography paddingLeft={1}>Univerzita Palackého v Olomouci</Typography>
+                  <Typography paddingLeft={1}>{video.channelName}</Typography>
                 </Box>
               </Grid>
             </Grid>
@@ -232,19 +245,20 @@ function VideoDetail() {
             </>
           )}
           <Divider sx={{ marginTop: 2 }} />
-          <Box mt={2}>
-            <Typography variant="body1">Podobná videa</Typography>
+          {relatedVideosQuery?.data && (
             <Box mt={2}>
-              <VideoInlineList videos={relatedVideos} />
+              <Typography variant="body1">Podobná videa</Typography>
+              <Box mt={2}>
+                <VideoInlineList videos={relatedVideosQuery.data} />
+              </Box>
             </Box>
-          </Box>
-
+          )}
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={1}>
             <Typography variant="body1">Komentáře ({comments.length})</Typography>
 
             <Box display="flex" mt={2}>
-              <Avatar>{userContext?.user.initials}</Avatar>
+              <Avatar>{userContext?.user?.initials}</Avatar>
               {commentsLoading ? (
                 <TailSpin
                   height="80"

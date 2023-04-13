@@ -5,9 +5,10 @@ namespace Backend.Utils
 {
     public static class SaveFile
     {
-        public static string VideosPath = Path.Combine(@"C:\temp", "videoPortal", "videos");
-        public static string ThumbnailsPath = Path.Combine(@"C:\temp", "videoPortal", "thumbnails");
-        public static string ImagePath = Path.Combine(@"C:\temp", "videoPortal", "images");
+        public static string PathBase = Path.Combine(@"C:\temp", "videoPortal");
+        public static string VideosPath = "videos";
+        public static string ThumbnailsPath = "thumbnails";
+        public static string ImagePath = "images";
 
         public enum FileType {
             Video,
@@ -33,7 +34,7 @@ namespace Backend.Utils
                     break;
             }
             Directory.CreateDirectory(VideosPath);
-            using (var stream = new FileStream(path, FileMode.Create))
+            using (var stream = new FileStream(Path.Combine(PathBase, path), FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }

@@ -49,7 +49,8 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "fixAll": "eslint --fix .",
-    "apiGenerate": "react-query-swagger /tanstack /input:https://localhost:7287/swagger/v1/swagger.json /output:src/api/axios-client.ts /template:Axios /use-recommended-configuration"
+    "fileServer": "npx serve C:\\Temp\\videoPortal",
+    "apiGenerate": "react-query-swagger /tanstack /input:https://localhost:7287/swagger/v1/swagger.json /output:src/api/axios-client.ts /template:Axios /generateOptionalParameters:true /typeStyle:Class /markOptionalProperties:true /nullValue:undefined /generateConstructorInterface:true /modules"
   },
   "eslintConfig": {
     "extends": [

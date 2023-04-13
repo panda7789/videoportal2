@@ -22,11 +22,37 @@ export type ChannelsGETQueryParameters = {
   id: string;
 };
 
+export type ChannelVideosQueryParameters = {
+  id: string;
+  limit?: number | undefined;
+  offset?: number | undefined;
+};
+
+export type ChannelAdvancedInfoQueryParameters = {
+  id: string;
+};
+
+export type ChannelUserInfoGETQueryParameters = {
+  id: string;
+};
+
 export type ChannelsPOSTMutationParameters = {
   name?: string | null | undefined ; 
   poster?: Types.FileParameter | null | undefined ; 
   pinnedVideoId?: string | null | undefined ; 
   avatar?: Types.FileParameter | null | undefined ; 
+  description?: string | null | undefined ; 
+  relatedChannels?: Types.Channel[] | null | undefined ; 
+};
+
+export type UserVideoStatsGETQueryParameters = {
+  videoId: string;
+};
+
+export type VideosAllQueryParameters = {
+  orderBy?: string | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
 };
 
 export type VideosPOSTMutationParameters = {
@@ -40,6 +66,10 @@ export type VideosPOSTMutationParameters = {
 };
 
 export type VideosGETQueryParameters = {
+  id: string;
+};
+
+export type RelatedVideosQueryParameters = {
   id: string;
 };
 
@@ -272,6 +302,339 @@ export function useChannelsDELETEMutation<TContext>(id: string, options?: Omit<U
 }
   
     
+export function channelVideosUrl(id: string, limit?: number | undefined, offset?: number | undefined): string {
+  let url_ = getBaseUrl() + "/api/Channels/{id}/channel-videos?";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+if (limit === null)
+    throw new Error("The parameter 'limit' cannot be null.");
+else if (limit !== undefined)
+    url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+if (offset === null)
+    throw new Error("The parameter 'offset' cannot be null.");
+else if (offset !== undefined)
+    url_ += "offset=" + encodeURIComponent("" + offset) + "&";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let channelVideosDefaultOptions: UseQueryOptions<Types.WithTotalCountOfVideoDTO, unknown, Types.WithTotalCountOfVideoDTO> = {
+  queryFn: __channelVideos,
+};
+export function getChannelVideosDefaultOptions(): UseQueryOptions<Types.WithTotalCountOfVideoDTO, unknown, Types.WithTotalCountOfVideoDTO> {
+  return channelVideosDefaultOptions;
+};
+export function setChannelVideosDefaultOptions(options: UseQueryOptions<Types.WithTotalCountOfVideoDTO, unknown, Types.WithTotalCountOfVideoDTO>) {
+  channelVideosDefaultOptions = options;
+}
+
+export function channelVideosQueryKey(dto: ChannelVideosQueryParameters): QueryKey;
+export function channelVideosQueryKey(id: string, limit?: number | undefined, offset?: number | undefined): QueryKey;
+export function channelVideosQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id, limit, offset,  } = params[0] as ChannelVideosQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'channelVideos',
+        id as any,
+        limit as any,
+        offset as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'channelVideos',
+        ...params
+      ]);
+  }
+}
+function __channelVideos(context: QueryFunctionContext) {
+  return Client.channelVideos(
+      context.queryKey[2] as string,       context.queryKey[3] as number | undefined,       context.queryKey[4] as number | undefined    );
+}
+
+export function useChannelVideosQuery<TSelectData = Types.WithTotalCountOfVideoDTO, TError = unknown>(dto: ChannelVideosQueryParameters, options?: UseQueryOptions<Types.WithTotalCountOfVideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function useChannelVideosQuery<TSelectData = Types.WithTotalCountOfVideoDTO, TError = unknown>(id: string, limit?: number | undefined, offset?: number | undefined, options?: UseQueryOptions<Types.WithTotalCountOfVideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelVideosQuery<TSelectData = Types.WithTotalCountOfVideoDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.WithTotalCountOfVideoDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  let limit: any = undefined;
+  let offset: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id, limit, offset,  } = params[0] as ChannelVideosQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, limit, offset, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.WithTotalCountOfVideoDTO, TError, TSelectData>({
+    queryFn: __channelVideos,
+    queryKey: channelVideosQueryKey(id, limit, offset),
+    ...channelVideosDefaultOptions as unknown as UseQueryOptions<Types.WithTotalCountOfVideoDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setChannelVideosData(queryClient: QueryClient, updater: (data: Types.WithTotalCountOfVideoDTO | undefined) => Types.WithTotalCountOfVideoDTO, id: string, limit?: number | undefined, offset?: number | undefined) {
+  queryClient.setQueryData(channelVideosQueryKey(id, limit, offset),
+    updater
+  );
+}
+
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setChannelVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.WithTotalCountOfVideoDTO | undefined) => Types.WithTotalCountOfVideoDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function channelAdvancedInfoUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Channels/{id}/channel-advanced-info";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let channelAdvancedInfoDefaultOptions: UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo> = {
+  queryFn: __channelAdvancedInfo,
+};
+export function getChannelAdvancedInfoDefaultOptions(): UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo> {
+  return channelAdvancedInfoDefaultOptions;
+};
+export function setChannelAdvancedInfoDefaultOptions(options: UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo>) {
+  channelAdvancedInfoDefaultOptions = options;
+}
+
+export function channelAdvancedInfoQueryKey(id: string): QueryKey;
+export function channelAdvancedInfoQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as ChannelAdvancedInfoQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'channelAdvancedInfo',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'channelAdvancedInfo',
+        ...params
+      ]);
+  }
+}
+function __channelAdvancedInfo(context: QueryFunctionContext) {
+  return Client.channelAdvancedInfo(
+      context.queryKey[2] as string    );
+}
+
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(dto: ChannelAdvancedInfoQueryParameters, options?: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(id: string, options?: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as ChannelAdvancedInfoQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ChannelAdvancedInfo, TError, TSelectData>({
+    queryFn: __channelAdvancedInfo,
+    queryKey: channelAdvancedInfoQueryKey(id),
+    ...channelAdvancedInfoDefaultOptions as unknown as UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setChannelAdvancedInfoData(queryClient: QueryClient, updater: (data: Types.ChannelAdvancedInfo | undefined) => Types.ChannelAdvancedInfo, id: string) {
+  queryClient.setQueryData(channelAdvancedInfoQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setChannelAdvancedInfoDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ChannelAdvancedInfo | undefined) => Types.ChannelAdvancedInfo) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function channelUserInfoGETUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Channels/{id}/channel-user-info";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let channelUserInfoGETDefaultOptions: UseQueryOptions<Types.ChannelUserSpecificInfoDTO, unknown, Types.ChannelUserSpecificInfoDTO> = {
+  queryFn: __channelUserInfoGET,
+};
+export function getChannelUserInfoGETDefaultOptions(): UseQueryOptions<Types.ChannelUserSpecificInfoDTO, unknown, Types.ChannelUserSpecificInfoDTO> {
+  return channelUserInfoGETDefaultOptions;
+};
+export function setChannelUserInfoGETDefaultOptions(options: UseQueryOptions<Types.ChannelUserSpecificInfoDTO, unknown, Types.ChannelUserSpecificInfoDTO>) {
+  channelUserInfoGETDefaultOptions = options;
+}
+
+export function channelUserInfoGETQueryKey(id: string): QueryKey;
+export function channelUserInfoGETQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as ChannelUserInfoGETQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'channelUserInfoGET',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'channelUserInfoGET',
+        ...params
+      ]);
+  }
+}
+function __channelUserInfoGET(context: QueryFunctionContext) {
+  return Client.channelUserInfoGET(
+      context.queryKey[2] as string    );
+}
+
+export function useChannelUserInfoGETQuery<TSelectData = Types.ChannelUserSpecificInfoDTO, TError = unknown>(dto: ChannelUserInfoGETQueryParameters, options?: UseQueryOptions<Types.ChannelUserSpecificInfoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useChannelUserInfoGETQuery<TSelectData = Types.ChannelUserSpecificInfoDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.ChannelUserSpecificInfoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelUserInfoGETQuery<TSelectData = Types.ChannelUserSpecificInfoDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ChannelUserSpecificInfoDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as ChannelUserInfoGETQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ChannelUserSpecificInfoDTO, TError, TSelectData>({
+    queryFn: __channelUserInfoGET,
+    queryKey: channelUserInfoGETQueryKey(id),
+    ...channelUserInfoGETDefaultOptions as unknown as UseQueryOptions<Types.ChannelUserSpecificInfoDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setChannelUserInfoGETData(queryClient: QueryClient, updater: (data: Types.ChannelUserSpecificInfoDTO | undefined) => Types.ChannelUserSpecificInfoDTO, id: string) {
+  queryClient.setQueryData(channelUserInfoGETQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setChannelUserInfoGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ChannelUserSpecificInfoDTO | undefined) => Types.ChannelUserSpecificInfoDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function channelUserInfoPUTUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Channels/{id}/channel-user-info";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function channelUserInfoPUTMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'channelUserInfoPUT',
+      id as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useChannelUserInfoPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.ChannelUserSpecificInfoDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.ChannelUserSpecificInfoDTO, TContext> {
+  const key = channelUserInfoPUTMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.ChannelUserSpecificInfoDTO) => Client.channelUserInfoPUT(id, body), {...options, mutationKey: key});
+}
+  
+    
 export function channelsPOSTUrl(): string {
   let url_ = getBaseUrl() + "/api/Channels";
   url_ = url_.replace(/[?&]$/, "");
@@ -290,6 +653,8 @@ export function channelsPOSTMutationKey(): MutationKey {
  * @param poster (optional) 
  * @param pinnedVideoId (optional) 
  * @param avatar (optional) 
+ * @param description (optional) 
+ * @param relatedChannels (optional) 
  * @return Success
  */
 export function useChannelsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext> {
@@ -298,7 +663,7 @@ export function useChannelsPOSTMutation<TContext>(options?: Omit<UseMutationOpti
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((channelsPOSTMutationParameters: ChannelsPOSTMutationParameters) => Client.channelsPOST(channelsPOSTMutationParameters.name, channelsPOSTMutationParameters.poster, channelsPOSTMutationParameters.pinnedVideoId, channelsPOSTMutationParameters.avatar), {...options, mutationKey: key});
+      return useMutation((channelsPOSTMutationParameters: ChannelsPOSTMutationParameters) => Client.channelsPOST(channelsPOSTMutationParameters.name, channelsPOSTMutationParameters.poster, channelsPOSTMutationParameters.pinnedVideoId, channelsPOSTMutationParameters.avatar, channelsPOSTMutationParameters.description, channelsPOSTMutationParameters.relatedChannels), {...options, mutationKey: key});
 }
   
     
@@ -427,45 +792,68 @@ export function setMeDataByQueryId(queryClient: QueryClient, queryKey: QueryKey,
 }
     
     
-export function videosAllUrl(): string {
-  let url_ = getBaseUrl() + "/api/Videos";
+export function userVideoStatsGETUrl(videoId: string): string {
+  let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}";
+
+if (videoId === undefined || videoId === null)
+  throw new Error("The parameter 'videoId' must be defined.");
+url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-let videosAllDefaultOptions: UseQueryOptions<Types.Video[], unknown, Types.Video[]> = {
-  queryFn: __videosAll,
+let userVideoStatsGETDefaultOptions: UseQueryOptions<Types.UserVideoStats, unknown, Types.UserVideoStats> = {
+  queryFn: __userVideoStatsGET,
 };
-export function getVideosAllDefaultOptions(): UseQueryOptions<Types.Video[], unknown, Types.Video[]> {
-  return videosAllDefaultOptions;
+export function getUserVideoStatsGETDefaultOptions(): UseQueryOptions<Types.UserVideoStats, unknown, Types.UserVideoStats> {
+  return userVideoStatsGETDefaultOptions;
 };
-export function setVideosAllDefaultOptions(options: UseQueryOptions<Types.Video[], unknown, Types.Video[]>) {
-  videosAllDefaultOptions = options;
+export function setUserVideoStatsGETDefaultOptions(options: UseQueryOptions<Types.UserVideoStats, unknown, Types.UserVideoStats>) {
+  userVideoStatsGETDefaultOptions = options;
 }
 
-export function videosAllQueryKey(): QueryKey;
-export function videosAllQueryKey(...params: any[]): QueryKey {
-  return trimArrayEnd([
-      'Client',
-      'videosAll',
-    ]);
+export function userVideoStatsGETQueryKey(videoId: string): QueryKey;
+export function userVideoStatsGETQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { videoId,  } = params[0] as UserVideoStatsGETQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'userVideoStatsGET',
+        videoId as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'userVideoStatsGET',
+        ...params
+      ]);
+  }
 }
-function __videosAll() {
-  return Client.videosAll(
-    );
+function __userVideoStatsGET(context: QueryFunctionContext) {
+  return Client.userVideoStatsGET(
+      context.queryKey[2] as string    );
 }
 
+export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStats, TError = unknown>(dto: UserVideoStatsGETQueryParameters, options?: UseQueryOptions<Types.UserVideoStats, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useVideosAllQuery<TSelectData = Types.Video[], TError = unknown>(options?: UseQueryOptions<Types.Video[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useVideosAllQuery<TSelectData = Types.Video[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.Video[], TError, TSelectData> | undefined = undefined;
+export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStats, TError = unknown>(videoId: string, options?: UseQueryOptions<Types.UserVideoStats, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStats, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserVideoStats, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
+  let videoId: any = undefined;
   
-
-  options = params[0] as any;
-  axiosConfig = params[1] as any;
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ videoId,  } = params[0] as UserVideoStatsGETQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [videoId, options, axiosConfig] = params;
+    }
+  }
 
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
@@ -474,18 +862,18 @@ export function useVideosAllQuery<TSelectData = Types.Video[], TError = unknown>
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.Video[], TError, TSelectData>({
-    queryFn: __videosAll,
-    queryKey: videosAllQueryKey(),
-    ...videosAllDefaultOptions as unknown as UseQueryOptions<Types.Video[], TError, TSelectData>,
+  return useQuery<Types.UserVideoStats, TError, TSelectData>({
+    queryFn: __userVideoStatsGET,
+    queryKey: userVideoStatsGETQueryKey(videoId),
+    ...userVideoStatsGETDefaultOptions as unknown as UseQueryOptions<Types.UserVideoStats, TError, TSelectData>,
     ...options,
   });
 }
 /**
  * @return Success
  */
-export function setVideosAllData(queryClient: QueryClient, updater: (data: Types.Video[] | undefined) => Types.Video[], ) {
-  queryClient.setQueryData(videosAllQueryKey(),
+export function setUserVideoStatsGETData(queryClient: QueryClient, updater: (data: Types.UserVideoStats | undefined) => Types.UserVideoStats, videoId: string) {
+  queryClient.setQueryData(userVideoStatsGETQueryKey(videoId),
     updater
   );
 }
@@ -493,7 +881,155 @@ export function setVideosAllData(queryClient: QueryClient, updater: (data: Types
 /**
  * @return Success
  */
-export function setVideosAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Video[] | undefined) => Types.Video[]) {
+export function setUserVideoStatsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserVideoStats | undefined) => Types.UserVideoStats) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function userVideoStatsPUTUrl(videoId: string): string {
+  let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}";
+
+if (videoId === undefined || videoId === null)
+  throw new Error("The parameter 'videoId' must be defined.");
+url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function userVideoStatsPUTMutationKey(videoId: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'userVideoStatsPUT',
+      videoId as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUserVideoStatsPUTMutation<TContext>(videoId: string, options?: Omit<UseMutationOptions<void, unknown, Types.UserVideoStats, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.UserVideoStats, TContext> {
+  const key = userVideoStatsPUTMutationKey(videoId);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.UserVideoStats) => Client.userVideoStatsPUT(videoId, body), {...options, mutationKey: key});
+}
+  
+    
+export function videosAllUrl(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined): string {
+  let url_ = getBaseUrl() + "/api/Videos?";
+if (orderBy === null)
+    throw new Error("The parameter 'orderBy' cannot be null.");
+else if (orderBy !== undefined)
+    url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+if (limit === null)
+    throw new Error("The parameter 'limit' cannot be null.");
+else if (limit !== undefined)
+    url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+if (offset === null)
+    throw new Error("The parameter 'offset' cannot be null.");
+else if (offset !== undefined)
+    url_ += "offset=" + encodeURIComponent("" + offset) + "&";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let videosAllDefaultOptions: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> = {
+  queryFn: __videosAll,
+};
+export function getVideosAllDefaultOptions(): UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> {
+  return videosAllDefaultOptions;
+};
+export function setVideosAllDefaultOptions(options: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]>) {
+  videosAllDefaultOptions = options;
+}
+
+export function videosAllQueryKey(dto: VideosAllQueryParameters): QueryKey;
+export function videosAllQueryKey(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined): QueryKey;
+export function videosAllQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { orderBy, limit, offset,  } = params[0] as VideosAllQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'videosAll',
+        orderBy as any,
+        limit as any,
+        offset as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'videosAll',
+        ...params
+      ]);
+  }
+}
+function __videosAll(context: QueryFunctionContext) {
+  return Client.videosAll(
+      context.queryKey[2] as string | undefined,       context.queryKey[3] as number | undefined,       context.queryKey[4] as number | undefined    );
+}
+
+export function useVideosAllQuery<TSelectData = Types.VideoDTO[], TError = unknown>(dto: VideosAllQueryParameters, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @param orderBy (optional) 
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function useVideosAllQuery<TSelectData = Types.VideoDTO[], TError = unknown>(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideosAllQuery<TSelectData = Types.VideoDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.VideoDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let orderBy: any = undefined;
+  let limit: any = undefined;
+  let offset: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ orderBy, limit, offset,  } = params[0] as VideosAllQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [orderBy, limit, offset, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.VideoDTO[], TError, TSelectData>({
+    queryFn: __videosAll,
+    queryKey: videosAllQueryKey(orderBy, limit, offset),
+    ...videosAllDefaultOptions as unknown as UseQueryOptions<Types.VideoDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @param orderBy (optional) 
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setVideosAllData(queryClient: QueryClient, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[], orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined) {
+  queryClient.setQueryData(videosAllQueryKey(orderBy, limit, offset),
+    updater
+  );
+}
+
+/**
+ * @param orderBy (optional) 
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setVideosAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -541,13 +1077,13 @@ url_ = url_.replace("{id}", encodeURIComponent("" + id));
   return url_;
 }
 
-let videosGETDefaultOptions: UseQueryOptions<Types.Video, unknown, Types.Video> = {
+let videosGETDefaultOptions: UseQueryOptions<Types.VideoDTO, unknown, Types.VideoDTO> = {
   queryFn: __videosGET,
 };
-export function getVideosGETDefaultOptions(): UseQueryOptions<Types.Video, unknown, Types.Video> {
+export function getVideosGETDefaultOptions(): UseQueryOptions<Types.VideoDTO, unknown, Types.VideoDTO> {
   return videosGETDefaultOptions;
 };
-export function setVideosGETDefaultOptions(options: UseQueryOptions<Types.Video, unknown, Types.Video>) {
+export function setVideosGETDefaultOptions(options: UseQueryOptions<Types.VideoDTO, unknown, Types.VideoDTO>) {
   videosGETDefaultOptions = options;
 }
 
@@ -574,13 +1110,13 @@ function __videosGET(context: QueryFunctionContext) {
       context.queryKey[2] as string    );
 }
 
-export function useVideosGETQuery<TSelectData = Types.Video, TError = unknown>(dto: VideosGETQueryParameters, options?: UseQueryOptions<Types.Video, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown>(dto: VideosGETQueryParameters, options?: UseQueryOptions<Types.VideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useVideosGETQuery<TSelectData = Types.Video, TError = unknown>(id: string, options?: UseQueryOptions<Types.Video, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useVideosGETQuery<TSelectData = Types.Video, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.Video, TError, TSelectData> | undefined = undefined;
+export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.VideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.VideoDTO, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
   let id: any = undefined;
   
@@ -601,17 +1137,17 @@ export function useVideosGETQuery<TSelectData = Types.Video, TError = unknown>(.
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.Video, TError, TSelectData>({
+  return useQuery<Types.VideoDTO, TError, TSelectData>({
     queryFn: __videosGET,
     queryKey: videosGETQueryKey(id),
-    ...videosGETDefaultOptions as unknown as UseQueryOptions<Types.Video, TError, TSelectData>,
+    ...videosGETDefaultOptions as unknown as UseQueryOptions<Types.VideoDTO, TError, TSelectData>,
     ...options,
   });
 }
 /**
  * @return Success
  */
-export function setVideosGETData(queryClient: QueryClient, updater: (data: Types.Video | undefined) => Types.Video, id: string) {
+export function setVideosGETData(queryClient: QueryClient, updater: (data: Types.VideoDTO | undefined) => Types.VideoDTO, id: string) {
   queryClient.setQueryData(videosGETQueryKey(id),
     updater
   );
@@ -620,7 +1156,7 @@ export function setVideosGETData(queryClient: QueryClient, updater: (data: Types
 /**
  * @return Success
  */
-export function setVideosGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Video | undefined) => Types.Video) {
+export function setVideosGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO | undefined) => Types.VideoDTO) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -647,13 +1183,13 @@ export function videosPUTMutationKey(id: string): MutationKey {
  * @param body (optional) 
  * @return Success
  */
-export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.Video, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.Video, TContext> {
+export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.ModifyVideoDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.ModifyVideoDTO, TContext> {
   const key = videosPUTMutationKey(id);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((body: Types.Video) => Client.videosPUT(id, body), {...options, mutationKey: key});
+      return useMutation((body: Types.ModifyVideoDTO) => Client.videosPUT(id, body), {...options, mutationKey: key});
 }
   
     
@@ -685,4 +1221,98 @@ export function useVideosDELETEMutation<TContext>(id: string, options?: Omit<Use
   options = addMetaToOptions(options, metaContext);
   
       return useMutation(() => Client.videosDELETE(id), {...options, mutationKey: key});
+}
+  
+    
+export function relatedVideosUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Videos/{id}/related-videos";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let relatedVideosDefaultOptions: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> = {
+  queryFn: __relatedVideos,
+};
+export function getRelatedVideosDefaultOptions(): UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> {
+  return relatedVideosDefaultOptions;
+};
+export function setRelatedVideosDefaultOptions(options: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]>) {
+  relatedVideosDefaultOptions = options;
+}
+
+export function relatedVideosQueryKey(id: string): QueryKey;
+export function relatedVideosQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as RelatedVideosQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'relatedVideos',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'relatedVideos',
+        ...params
+      ]);
+  }
+}
+function __relatedVideos(context: QueryFunctionContext) {
+  return Client.relatedVideos(
+      context.queryKey[2] as string    );
+}
+
+export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(dto: RelatedVideosQueryParameters, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(id: string, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.VideoDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as RelatedVideosQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.VideoDTO[], TError, TSelectData>({
+    queryFn: __relatedVideos,
+    queryKey: relatedVideosQueryKey(id),
+    ...relatedVideosDefaultOptions as unknown as UseQueryOptions<Types.VideoDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setRelatedVideosData(queryClient: QueryClient, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[], id: string) {
+  queryClient.setQueryData(relatedVideosQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setRelatedVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
 }

@@ -3,7 +3,7 @@ import { AppBar, Slide, Toolbar, useMediaQuery, useScrollTrigger } from '@mui/ma
 import theme from 'Theme';
 import Logo from './Logo';
 import Search from './Search';
-import Avatar from './Avatar';
+import Avatar from '../Avatar/Avatar';
 
 interface Props {
   children: React.ReactElement;

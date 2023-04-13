@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
-import { getVideoById, search, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 import {
   ExpandedPlaylistInlineList,
@@ -10,24 +9,25 @@ import {
 import { PlaylistModel } from 'model/Playlist';
 import { getChannelPlaylists } from 'model/Channel';
 import VideoCard from 'components/Thumbnail/VideoCard';
+import { useChannelVideosQuery, useVideosGETQuery } from 'api/axios-client/Query';
 
 export interface Props {
   channelId: string;
-  latestVideos: Video[];
-  pinnedVideo?: Video;
+  pinnedVideoId: string;
 }
 
 export async function loader({ params }: { params: any }): Promise<Props> {
   return {
     channelId: params.channelId,
-    latestVideos: await search('123'),
-    pinnedVideo: await getVideoById('asdf'),
+    pinnedVideoId: params.channelPinnedVideoId,
   };
 }
 
 export function ChannelHomePage() {
-  const { channelId, latestVideos, pinnedVideo } = useLoaderData() as Props;
+  const { channelId, pinnedVideoId } = useLoaderData() as Props;
   const [playlists, setPlaylists] = useState<PlaylistModel[]>([]);
+  const latestVideos = useChannelVideosQuery(channelId);
+  const pinnedVideo = useVideosGETQuery(pinnedVideoId);
 
   useEffect(() => {
     (async () => {
@@ -37,22 +37,23 @@ export function ChannelHomePage() {
 
   return (
     <Grid container spacing={2}>
-      {pinnedVideo && (
+      {pinnedVideo?.data && (
         <Grid item xs={12} mt={2} mb={2}>
           <VideoCard
-            key={pinnedVideo.id}
-            video={{ ...pinnedVideo }}
+            key={pinnedVideo.data.id}
+            video={pinnedVideo.data}
             fullWidth
             withPlayer
             showChannel={false}
           />
         </Grid>
       )}
-
-      <Grid item xs={12}>
-        <Typography variant="h6">Videa</Typography>
-        <VideoInlineList videos={latestVideos} />
-      </Grid>
+      {latestVideos?.data && (
+        <Grid item xs={12}>
+          <Typography variant="h6">Videa</Typography>
+          <VideoInlineList videos={latestVideos?.data.items} />
+        </Grid>
+      )}
       {playlists.length > 0 && (
         <>
           <Grid item xs={12}>

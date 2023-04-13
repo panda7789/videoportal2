@@ -20,9 +20,13 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
+    c.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "time-span" });
+    c.UseAllOfToExtendReferenceSchemas();
     c.CustomSchemaIds(x => x.FullName);
     c.SupportNonNullableReferenceTypes();
+    c.SchemaFilter<MarkAsRequiredIfNonNullable>();
     c.OperationFilter<SwaggerOptionalFormDataFilter>();
+    c.CustomSchemaIds(i => i.FriendlyId());
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
@@ -97,7 +101,7 @@ builder.Services.AddCors(options =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
 builder.Services.AddDbContext<MyDbContext>(
-        dbContextOptions => dbContextOptions
+dbContextOptions => dbContextOptions
             .UseMySql(connectionString, serverVersion)
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
