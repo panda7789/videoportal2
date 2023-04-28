@@ -45,6 +45,10 @@ export type ChannelsPOSTMutationParameters = {
   relatedChannels?: Types.Channel[] | null | undefined ; 
 };
 
+export type UsersGETQueryParameters = {
+  id: string;
+};
+
 export type UserVideoStatsGETQueryParameters = {
   videoId: string;
 };
@@ -73,6 +77,167 @@ export type RelatedVideosQueryParameters = {
   id: string;
 };
 
+    
+export function commentsAllUrl(): string {
+  let url_ = getBaseUrl() + "/api/Comments";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let commentsAllDefaultOptions: UseQueryOptions<Types.CommentDTO[], unknown, Types.CommentDTO[]> = {
+  queryFn: __commentsAll,
+};
+export function getCommentsAllDefaultOptions(): UseQueryOptions<Types.CommentDTO[], unknown, Types.CommentDTO[]> {
+  return commentsAllDefaultOptions;
+};
+export function setCommentsAllDefaultOptions(options: UseQueryOptions<Types.CommentDTO[], unknown, Types.CommentDTO[]>) {
+  commentsAllDefaultOptions = options;
+}
+
+export function commentsAllQueryKey(): QueryKey;
+export function commentsAllQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'commentsAll',
+    ]);
+}
+function __commentsAll() {
+  return Client.commentsAll(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.CommentDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.CommentDTO[], TError, TSelectData>({
+    queryFn: __commentsAll,
+    queryKey: commentsAllQueryKey(),
+    ...commentsAllDefaultOptions as unknown as UseQueryOptions<Types.CommentDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setCommentsAllData(queryClient: QueryClient, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[], ) {
+  queryClient.setQueryData(commentsAllQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setCommentsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function commentsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/Comments";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function commentsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'commentsPOST',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useCommentsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.CommentPostDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.CommentPostDTO, TContext> {
+  const key = commentsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.CommentPostDTO) => Client.commentsPOST(body), {...options, mutationKey: key});
+}
+  
+    
+export function commentsPUTUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Comments/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function commentsPUTMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'commentsPUT',
+      id as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useCommentsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.CommentPutDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.CommentPutDTO, TContext> {
+  const key = commentsPUTMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.CommentPutDTO) => Client.commentsPUT(id, body), {...options, mutationKey: key});
+}
+  
+    
+export function commentsDELETEUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Comments/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function commentsDELETEMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'commentsDELETE',
+      id as any,
+    ]);
+}
+
+/**
+ * @return Success
+ */
+export function useCommentsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = commentsDELETEMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.commentsDELETE(id), {...options, mutationKey: key});
+}
+  
     
 export function myChannelsUrl(): string {
   let url_ = getBaseUrl() + "/api/Channels/my-channels";
@@ -667,6 +832,38 @@ export function useChannelsPOSTMutation<TContext>(options?: Omit<UseMutationOpti
 }
   
     
+export function searchUrl(q?: string | undefined): string {
+  let url_ = getBaseUrl() + "/api/Search?";
+if (q === null)
+    throw new Error("The parameter 'q' cannot be null.");
+else if (q !== undefined)
+    url_ += "q=" + encodeURIComponent("" + q) + "&";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function searchMutationKey(q?: string | undefined): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'search',
+      q as any,
+    ]);
+}
+
+/**
+ * @param q (optional) 
+ * @return Success
+ */
+export function useSearchMutation<TContext>(q?: string | undefined, options?: Omit<UseMutationOptions<Types.VideoDTO[], unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.VideoDTO[], unknown, void, TContext> {
+  const key = searchMutationKey(q);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.search(q), {...options, mutationKey: key});
+}
+  
+    
 export function loginUrl(): string {
   let url_ = getBaseUrl() + "/api/users/login";
   url_ = url_.replace(/[?&]$/, "");
@@ -788,6 +985,234 @@ export function setMeData(queryClient: QueryClient, updater: (data: Types.UserDT
  * @return Success
  */
 export function setMeDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO | undefined) => Types.UserDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function usersAllUrl(): string {
+  let url_ = getBaseUrl() + "/api/users";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let usersAllDefaultOptions: UseQueryOptions<Types.UserDTO[], unknown, Types.UserDTO[]> = {
+  queryFn: __usersAll,
+};
+export function getUsersAllDefaultOptions(): UseQueryOptions<Types.UserDTO[], unknown, Types.UserDTO[]> {
+  return usersAllDefaultOptions;
+};
+export function setUsersAllDefaultOptions(options: UseQueryOptions<Types.UserDTO[], unknown, Types.UserDTO[]>) {
+  usersAllDefaultOptions = options;
+}
+
+export function usersAllQueryKey(): QueryKey;
+export function usersAllQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'usersAll',
+    ]);
+}
+function __usersAll() {
+  return Client.usersAll(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useUsersAllQuery<TSelectData = Types.UserDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useUsersAllQuery<TSelectData = Types.UserDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.UserDTO[], TError, TSelectData>({
+    queryFn: __usersAll,
+    queryKey: usersAllQueryKey(),
+    ...usersAllDefaultOptions as unknown as UseQueryOptions<Types.UserDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setUsersAllData(queryClient: QueryClient, updater: (data: Types.UserDTO[] | undefined) => Types.UserDTO[], ) {
+  queryClient.setQueryData(usersAllQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setUsersAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO[] | undefined) => Types.UserDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function usersPUTUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/users/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function usersPUTMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'usersPUT',
+      id as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUsersPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.UserDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.UserDTO, TContext> {
+  const key = usersPUTMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.UserDTO) => Client.usersPUT(id, body), {...options, mutationKey: key});
+}
+  
+    
+export function usersDELETEUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/users/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function usersDELETEMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'usersDELETE',
+      id as any,
+    ]);
+}
+
+/**
+ * @return Success
+ */
+export function useUsersDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = usersDELETEMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.usersDELETE(id), {...options, mutationKey: key});
+}
+  
+    
+export function usersGETUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/users/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let usersGETDefaultOptions: UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO> = {
+  queryFn: __usersGET,
+};
+export function getUsersGETDefaultOptions(): UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO> {
+  return usersGETDefaultOptions;
+};
+export function setUsersGETDefaultOptions(options: UseQueryOptions<Types.UserDTO, unknown, Types.UserDTO>) {
+  usersGETDefaultOptions = options;
+}
+
+export function usersGETQueryKey(id: string): QueryKey;
+export function usersGETQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as UsersGETQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'usersGET',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'usersGET',
+        ...params
+      ]);
+  }
+}
+function __usersGET(context: QueryFunctionContext) {
+  return Client.usersGET(
+      context.queryKey[2] as string    );
+}
+
+export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(dto: UsersGETQueryParameters, options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as UsersGETQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.UserDTO, TError, TSelectData>({
+    queryFn: __usersGET,
+    queryKey: usersGETQueryKey(id),
+    ...usersGETDefaultOptions as unknown as UseQueryOptions<Types.UserDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setUsersGETData(queryClient: QueryClient, updater: (data: Types.UserDTO | undefined) => Types.UserDTO, id: string) {
+  queryClient.setQueryData(usersGETQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setUsersGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO | undefined) => Types.UserDTO) {
   queryClient.setQueryData(queryKey, updater);
 }
     

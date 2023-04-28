@@ -249,6 +249,141 @@ export interface IChannelUserSpecificInfoDTO {
     subscribed: boolean;
 }
 
+export class CommentDTO implements ICommentDTO {
+    id!: string;
+    userId!: string;
+    videoId!: string;
+    text!: string;
+    created!: Date;
+    user!: UserDTO;
+
+    constructor(data?: ICommentDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.user = new UserDTO();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userId = _data["userId"];
+            this.videoId = _data["videoId"];
+            this.text = _data["text"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.user = _data["user"] ? UserDTO.fromJS(_data["user"]) : new UserDTO();
+        }
+    }
+
+    static fromJS(data: any): CommentDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userId"] = this.userId;
+        data["videoId"] = this.videoId;
+        data["text"] = this.text;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICommentDTO {
+    id: string;
+    userId: string;
+    videoId: string;
+    text: string;
+    created: Date;
+    user: UserDTO;
+}
+
+export class CommentPostDTO implements ICommentPostDTO {
+    videoId!: string;
+    text!: string;
+
+    constructor(data?: ICommentPostDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.videoId = _data["videoId"];
+            this.text = _data["text"];
+        }
+    }
+
+    static fromJS(data: any): CommentPostDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentPostDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["videoId"] = this.videoId;
+        data["text"] = this.text;
+        return data;
+    }
+}
+
+export interface ICommentPostDTO {
+    videoId: string;
+    text: string;
+}
+
+export class CommentPutDTO implements ICommentPutDTO {
+    text!: string;
+
+    constructor(data?: ICommentPutDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.text = _data["text"];
+        }
+    }
+
+    static fromJS(data: any): CommentPutDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentPutDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["text"] = this.text;
+        return data;
+    }
+}
+
+export interface ICommentPutDTO {
+    text: string;
+}
+
 export class LoginDTO implements ILoginDTO {
     email!: string;
     password!: string;
@@ -1076,12 +1211,15 @@ export function getResultTypeClassKey(queryKey: QueryKey): string {
 
 export function initPersister() {
   
+  addResultTypeFactory('Client___commentsAll', (data: any) => { const result = new CommentDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___myChannels', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelsGET', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelVideos', (data: any) => { const result = new WithTotalCountOfVideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfo(); result.init(data); return result; });
   addResultTypeFactory('Client___channelUserInfoGET', (data: any) => { const result = new ChannelUserSpecificInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___usersAll', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___usersGET', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
   addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });

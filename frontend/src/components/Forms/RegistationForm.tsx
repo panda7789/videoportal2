@@ -55,8 +55,8 @@ export default function RegistrationForm({ handleLoginClick }: Props) {
         setSuccessfullRegistration(true);
         getCurrentUser.refetch();
       },
-      onError: (error) => {
-        setStatusText((error as string).toString());
+      onError: (error: any) => {
+        setStatusText((error?.response ?? error) as string);
         setSuccessfullRegistration(false);
       },
     });

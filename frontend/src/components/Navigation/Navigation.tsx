@@ -6,6 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DatasetIcon from '@mui/icons-material/Dataset';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { UserContext } from 'routes/Root';
 import { UserRoles } from 'api/axios-client';
 import AndroidNavigation from './AndroidNavigation';
@@ -23,7 +24,7 @@ export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Domů', icon: <HomeIcon /> },
   {
     route: '/myvideos',
-    title: 'Moje videoa',
+    title: 'Moje videa',
     icon: <AccountBoxIcon />, // todo gearbox
     signed: true,
   },
@@ -46,6 +47,13 @@ export const NavigationItems: NavigationItem[] = [
     icon: <DatasetIcon />,
     signed: true,
     userRole: ['videoEditor'],
+  },
+  {
+    route: '/users',
+    title: 'Správa uživatelů',
+    icon: <ManageAccountsIcon />,
+    signed: true,
+    userRole: ['administrator'],
   },
 ];
 

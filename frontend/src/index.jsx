@@ -10,7 +10,7 @@ import App from './App';
 const container = document.getElementById('root');
 const root = createRoot(container);
 const queryClient = new QueryClient();
-
+queryClient.defaultQueryOptions({ networkMode: 'online' });
 AxiosQuery.setBaseUrl('https://localhost:7287');
 AxiosQuery.setAxiosFactory(() => {
   const instance = axios.create();

@@ -21,6 +21,8 @@ import {
 import { ChannelInfo, loader as channelInfoLoader } from 'routes/Channel/ChannelInfo';
 import { MyChannels } from 'routes/MyChannels';
 import { ChannelEdit, loader as channelEditLoader } from 'routes/ChannelEdit';
+import { UsersEdit } from 'routes/Users/UsersEdit';
+import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 
 function App() {
   const router = createBrowserRouter([
@@ -106,6 +108,19 @@ function App() {
           path: 'playlist/:playlistId',
           element: <PlaylistDetail />,
           loader: playlistLoader,
+        },
+        {
+          path: 'users',
+          element: <UsersEdit />,
+        },
+        {
+          path: 'userEdit/:Id',
+          element: <UserEditor />,
+          loader: userEditLoader,
+        },
+        {
+          path: 'userEdit',
+          element: <UserEditor newUser />,
         },
       ],
     },

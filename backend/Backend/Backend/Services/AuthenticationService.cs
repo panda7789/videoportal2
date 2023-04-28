@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Controllers;
+using Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,10 +11,13 @@ namespace Backend.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+
         private readonly IConfiguration _configuration;
-        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration)
+        public AuthenticationService(UserManager<User> userManager, RoleManager<Role> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _configuration = configuration;
         }
 
@@ -22,8 +26,10 @@ namespace Backend.Services
             var userByEmail = await _userManager.FindByEmailAsync(request.Email);
             if (userByEmail is not null)
             {
-                throw new ArgumentException($"User with email {request.Email} already exists.");
+                throw new Exception($"User with email {request.Email} already exists.");
             }
+
+            var newUserRoles = new UserRoles() { User = true };
 
             User user = new()
             {
@@ -32,14 +38,21 @@ namespace Backend.Services
                 Email = request.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 Initials = (request.Name.IndexOf(" ") is int spaceIndex) && spaceIndex > 0 ? $"{request.Name[0]}{request.Name[spaceIndex + 1]}" : request.Name[..2],
-                Roles = new UserRoles(){ User = true}
+                Roles = newUserRoles
             };
-
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
             {
-                throw new ArgumentException($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
+                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
+            }
+
+            var rolesResult = await UsersController.UpdateUserRoles(_userManager, user, null, newUserRoles);
+            if (!rolesResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(rolesResult.Errors)}");
+
             }
 
             return await Login(new LoginDTO { Email = request.Email, Password = request.Password });
@@ -51,15 +64,23 @@ namespace Backend.Services
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
             {
-                throw new ArgumentException($"Unable to authenticate user {request.Email}");
+                throw new Exception($"Unable to authenticate user {request.Email}");
             }
-
             var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Email, user.Email),
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var roleName in roles)
+            {
+                var role = await _roleManager.FindByNameAsync(roleName);
+                if (role != null)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role.NormalizedName));
+                }
+            }
 
             var token = GetToken(authClaims);
 

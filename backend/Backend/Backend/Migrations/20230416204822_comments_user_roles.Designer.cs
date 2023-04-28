@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230411140534_add-comments")]
-    partial class addcomments
+    [Migration("20230416204822_comments_user_roles")]
+    partial class comments_user_roles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,6 +103,32 @@ namespace Backend.Migrations
                     b.ToTable("ChannelUserSpecificInfos");
                 });
 
+            modelBuilder.Entity("Backend.Models.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comment");
+                });
+
             modelBuilder.Entity("Backend.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -128,6 +154,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d2b9aca2-dddc-46ed-976c-e23b5f7b3fd9"),
+                            ConcurrencyStamp = "db79dbdd-62bf-4319-bdb8-b40f66dda5e7",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("999f41cc-778b-4539-95b7-9722a931b39d"),
+                            ConcurrencyStamp = "75bc0000-9683-4e24-9950-9df16d0f3a91",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("d82d8ea0-19f3-472d-b6a0-5f4c84e1162a"),
+                            ConcurrencyStamp = "d6097711-b1f3-48b6-8123-e30b022c02c8",
+                            Name = "Editor",
+                            NormalizedName = "EDITOR"
+                        });
                 });
 
             modelBuilder.Entity("Backend.Models.Tag", b =>
@@ -413,6 +462,17 @@ namespace Backend.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("PinnedVideo");
+                });
+
+            modelBuilder.Entity("Backend.Models.Comment", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Backend.Models.Tag", b =>

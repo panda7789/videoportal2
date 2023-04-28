@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Backend.Utils;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Controllers
 {
@@ -20,12 +21,14 @@ namespace Backend.Controllers
     public class UsersController : ControllerBase
     {
         private readonly MyDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly IAuthenticationService _authenticationService;
 
 
-        public UsersController(MyDbContext context, IAuthenticationService authenticationService)
+        public UsersController(MyDbContext context, UserManager<User> userManager, IAuthenticationService authenticationService)
         {
             _context = context;
+            _userManager = userManager;
             _authenticationService = authenticationService;
         }
 
@@ -33,16 +36,31 @@ namespace Backend.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login([FromBody] LoginDTO request)
         {
-            var response = await _authenticationService.Login(request);
-            return Ok(response);
+            try
+            {
+                var response = await _authenticationService.Login(request);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register([FromBody] RegisterDTO request)
         {
-            var response = await _authenticationService.Register(request);
-            return Ok(response);
+            try
+            {
+                var response = await _authenticationService.Register(request);
+                return Ok(response);
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // GET: api/users/me
@@ -67,5 +85,111 @@ namespace Backend.Controllers
 
             return user.ToDTO();
         }
+
+        [HttpGet]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            var userDtos = users.Select(u => u.ToDTO()).ToList();
+
+            return Ok(userDtos);
+        }
+
+        
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDTO userDto)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            if (id != userDto.Id)
+            {
+                return BadRequest();
+            }
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            user.Name = userDto.Name;
+            user.Initials = userDto.Initials;
+            var result = await UpdateUserRoles(_userManager, user, user.Roles, userDto.Roles);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+            user.Roles = userDto.Roles;
+            result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest($"Failed to delete user: {errors}");
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<ActionResult<UserDTO>> GetUser(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user.ToDTO();
+        }
+
+
+        public static async Task<IdentityResult> UpdateUserRoles(UserManager<User> _userManager, User user, UserRoles? oldRoles, UserRoles? newRoles)
+        {
+            if (oldRoles != null && oldRoles.GetActiveRoles() is var currentRoles)
+            {
+                var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!result.Succeeded)
+                {
+                    return result;
+                }
+            }
+            if (newRoles != null && newRoles.GetActiveRoles() is var rollesToAdd && rollesToAdd.Any())
+            {
+                var result = await _userManager.AddToRolesAsync(user, rollesToAdd);
+                if (!result.Succeeded)
+                {
+                    return result;
+                }
+            }
+            return IdentityResult.Success;
+        }
     }
+
+
 }

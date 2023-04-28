@@ -12,16 +12,17 @@ import {
   TableBody,
   TablePagination,
   Button,
+  Divider,
 } from '@mui/material';
 import { Box, alpha } from '@mui/system';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { visuallyHidden } from '@mui/utils';
 import AspectRatio from 'components/Utils/AspectRatio';
 
 export interface ToolbarButton {
   label: string;
   icon: any;
-  onClick(selectedIDs: readonly string[]): void;
+  onClick(selectedIDs?: readonly string[]): boolean | void;
 }
 interface TableDataBase {
   id: string;
@@ -75,11 +76,20 @@ interface EnhancedTableHeadProps<T> {
   order: Order;
   orderBy: keyof T;
   rowCount: number;
+  checkVisible?: boolean;
 }
 
 function EnhancedTableHead<T extends TableDataBase>(props: EnhancedTableHeadProps<T>) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, attributes } =
-    props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+    attributes,
+    checkVisible,
+  } = props;
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -87,21 +97,24 @@ function EnhancedTableHead<T extends TableDataBase>(props: EnhancedTableHeadProp
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
+        {checkVisible ??
+          (true && (
+            <TableCell padding="checkbox">
+              <Checkbox
+                color="primary"
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={onSelectAllClick}
+                inputProps={{
+                  'aria-label': 'select all desserts',
+                }}
+              />
+            </TableCell>
+          ))}
         {attributes.map((headCell) => (
           <TableCell
             key={headCell.id as string}
-            align={headCell.align ?? 'center'}
+            align={headCell.align ?? 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -126,47 +139,59 @@ function EnhancedTableHead<T extends TableDataBase>(props: EnhancedTableHeadProp
 interface EnhancedTableToolbarProps {
   selected: readonly string[];
   buttons?: ToolbarButton[];
+  staticButtons?: ToolbarButton[];
 }
-function EnhancedTableToolbar({ selected, buttons }: EnhancedTableToolbarProps) {
-  return selected.length > 0 ? (
+function EnhancedTableToolbar({ selected, buttons, staticButtons }: EnhancedTableToolbarProps) {
+  return (
     <Toolbar
       sx={{
         height: '48px !important',
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
-        ...(selected.length > 0 && {
+        ...((selected.length > 0 || staticButtons) && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         }),
       }}
     >
-      <Typography sx={{ marginRight: 2 }} color="inherit" variant="subtitle1" component="div">
-        {selected.length} selected
-      </Typography>
-      <>
-        {buttons?.map((button) => (
+      {staticButtons?.map((button) => (
+        <Button
+          key={button.label}
+          startIcon={button.icon}
+          variant="contained"
+          onClick={() => button.onClick()}
+        >
+          {button.label}
+        </Button>
+      ))}
+      {staticButtons && selected.length > 0 && (
+        <Divider orientation="vertical" flexItem sx={{ margin: '8px' }} />
+      )}
+      {selected.length > 0 &&
+        buttons?.map((button) => (
           <Button
             key={button.label}
             startIcon={button.icon}
-            onClick={() => button.onClick(selected)}
+            onClick={() => {
+              button.onClick(selected);
+            }}
+            variant="contained"
           >
             {button.label}
           </Button>
         ))}
-      </>
     </Toolbar>
-  ) : (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <></>
   );
 }
 
 export interface EnhancedTableProps<T> {
   attributes: Attribute<T>[];
   buttons?: ToolbarButton[];
+  staticButtons?: ToolbarButton[];
   rowClick?(event: React.MouseEvent<unknown>, name: string): void;
   rows: T[];
   orderBy: keyof T;
+  checkVisible?: boolean;
 }
 
 export default function EnhancedTable<T extends TableDataBase>({
@@ -175,6 +200,8 @@ export default function EnhancedTable<T extends TableDataBase>({
   attributes,
   buttons,
   rowClick,
+  checkVisible,
+  staticButtons,
 }: EnhancedTableProps<T>) {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(_orderby ?? 'id');
@@ -196,6 +223,12 @@ export default function EnhancedTable<T extends TableDataBase>({
     }
     setSelected([]);
   };
+
+  useEffect(() => {
+    if (selected?.length > 0 ?? false) {
+      setSelected([]);
+    }
+  }, [rows]);
 
   const handleCheckboxClick = (event: React.MouseEvent<unknown>, name: string) => {
     event.preventDefault();
@@ -236,7 +269,7 @@ export default function EnhancedTable<T extends TableDataBase>({
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar buttons={buttons} selected={selected} />
+        <EnhancedTableToolbar buttons={buttons} selected={selected} staticButtons={staticButtons} />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
             <EnhancedTableHead
@@ -247,6 +280,7 @@ export default function EnhancedTable<T extends TableDataBase>({
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              checkVisible={checkVisible}
             />
             <TableBody>
               {stableSort<T>(rows, getComparator<T, typeof orderBy>(order, orderBy))
@@ -263,23 +297,30 @@ export default function EnhancedTable<T extends TableDataBase>({
                           rowClick(event, row.id);
                         }
                       }}
+                      sx={{ cursor: 'pointer' }}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox" onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
-                            handleCheckboxClick(event, row.id)
-                          }>
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
+                      {checkVisible ??
+                        (true && (
+                          <TableCell
+                            padding="checkbox"
+                            onClick={(event: React.MouseEvent<unknown, MouseEvent>) =>
+                              handleCheckboxClick(event, row.id)
+                            }
+                          >
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                'aria-labelledby': labelId,
+                              }}
+                            />
+                          </TableCell>
+                        ))}
                       {attributes.map((attr) => (
                         <TableCell
                           key={String(attr.id)}

@@ -102,10 +102,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Comment", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("VideoId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("Created")
@@ -115,7 +113,15 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("UserId", "VideoId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comment");
                 });
@@ -145,6 +151,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d2b9aca2-dddc-46ed-976c-e23b5f7b3fd9"),
+                            ConcurrencyStamp = "db79dbdd-62bf-4319-bdb8-b40f66dda5e7",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("999f41cc-778b-4539-95b7-9722a931b39d"),
+                            ConcurrencyStamp = "75bc0000-9683-4e24-9950-9df16d0f3a91",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("d82d8ea0-19f3-472d-b6a0-5f4c84e1162a"),
+                            ConcurrencyStamp = "d6097711-b1f3-48b6-8123-e30b022c02c8",
+                            Name = "Editor",
+                            NormalizedName = "EDITOR"
+                        });
                 });
 
             modelBuilder.Entity("Backend.Models.Tag", b =>

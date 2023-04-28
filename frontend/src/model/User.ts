@@ -1,13 +1,4 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  initials: string;
-  rights: Privileges[];
-}
+import { UserDTO, UserRoles } from 'api/axios-client';
 
-export enum Privileges {
-  user,
-  videoEditor,
-  admin,
-}
+// eslint-disable-next-line import/prefer-default-export
+export { UserDTO as User, UserRoles };

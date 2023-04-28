@@ -3,7 +3,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Models
 {
-    public class Role : IdentityRole<Guid> { }
+    public static class RoleNames
+    {
+        public const string User = "USER";
+        public const string Admin = "ADMIN";
+        public const string Editor = "EDITOR";
+    }
+
+    public class Role : IdentityRole<Guid> 
+    {
+        public Role() : base()
+        {
+        }
+
+        public Role(string roleName) : base(roleName)
+        {
+        }
+    }
 
     public class User: IdentityUser<Guid>
     {
@@ -36,6 +52,41 @@ namespace Backend.Models
         public bool User { get; set; }
         public bool VideoEditor { get; set; }
         public bool Administrator { get; set; }
+
+        public IEnumerable<string> GetActiveRoles()
+        {
+            var list = new List<string>();
+            if (User)
+            {
+                list.Add(RoleNames.User);
+            }
+            if (VideoEditor)
+            {
+                list.Add(RoleNames.Editor);
+            }
+            if (Administrator)
+            {
+                list.Add(RoleNames.Admin);
+            }
+            return list;
+        }
+        public IEnumerable<string> GetDisabledRoles()
+        {
+            var list = new List<string>();
+            if (!User)
+            {
+                list.Add(RoleNames.User);
+            }
+            if (!VideoEditor)
+            {
+                list.Add(RoleNames.Editor);
+            }
+            if (!Administrator)
+            {
+                list.Add(RoleNames.Admin);
+            }
+            return list;
+        }
     }
 
 }
