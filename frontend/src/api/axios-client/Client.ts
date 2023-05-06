@@ -1410,7 +1410,7 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
 }
 
 /**
- * @param file (optional) 
+ * @param fileName (optional) 
  * @param name (optional) 
  * @param description (optional) 
  * @param durationSec (optional) 
@@ -1419,13 +1419,13 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
  * @param tags (optional) 
  * @return Success
  */
-export function videosPOST(file?: Types.FileParameter | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: Types.Tag[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.Video> {
+export function videosPOST(fileName?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: Types.Tag[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PostVideoResponse> {
     let url_ = getBaseUrl() + "/api/Videos";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = new FormData();
-    if (file !== null && file !== undefined)
-        content_.append("File", file.data, file.fileName ? file.fileName : "File");
+    if (fileName !== null && fileName !== undefined)
+        content_.append("FileName", fileName.toString());
     if (name !== null && name !== undefined)
         content_.append("Name", name.toString());
     if (description !== null && description !== undefined)
@@ -1465,7 +1465,7 @@ export function videosPOST(file?: Types.FileParameter | null | undefined, name?:
     });
 }
 
-function processVideosPOST(response: AxiosResponse): Promise<Types.Video> {
+function processVideosPOST(response: AxiosResponse): Promise<Types.PostVideoResponse> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -1479,14 +1479,14 @@ function processVideosPOST(response: AxiosResponse): Promise<Types.Video> {
         const _responseText = response.data;
         let result200: any = null;
         let resultData200  = _responseText;
-        result200 = Types.Video.fromJS(resultData200);
-        return Promise.resolve<Types.Video>(result200);
+        result200 = Types.PostVideoResponse.fromJS(resultData200);
+        return Promise.resolve<Types.PostVideoResponse>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.Video>(null as any);
+    return Promise.resolve<Types.PostVideoResponse>(null as any);
 }
 
 /**
@@ -1715,6 +1715,60 @@ function processRelatedVideos(response: AxiosResponse): Promise<Types.VideoDTO[]
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<Types.VideoDTO[]>(null as any);
+}
+
+/**
+ * @param chunk (optional) 
+ * @return Success
+ */
+export function upload(chunk?: Types.FileParameter | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Videos/upload";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = new FormData();
+    if (chunk !== null && chunk !== undefined)
+        content_.append("chunk", chunk.data, chunk.fileName ? chunk.fileName : "chunk");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUpload,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUpload(_response);
+    });
+}
+
+function processUpload(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
 }
 let _requestConfigCommentsAll: Partial<AxiosRequestConfig> | undefined;
 export function getCommentsAllRequestConfig() {
@@ -2033,4 +2087,15 @@ export function setRelatedVideosRequestConfig(value: Partial<AxiosRequestConfig>
 }
 export function patchRelatedVideosRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigRelatedVideos = patch(_requestConfigRelatedVideos ?? {});
+}
+
+let _requestConfigUpload: Partial<AxiosRequestConfig> | undefined;
+export function getUploadRequestConfig() {
+  return _requestConfigUpload;
+}
+export function setUploadRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUpload = value;
+}
+export function patchUploadRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUpload = patch(_requestConfigUpload ?? {});
 }

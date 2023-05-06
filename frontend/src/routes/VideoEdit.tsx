@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
-import { Typography, Grid, TextField, Box, Button, MenuItem } from '@mui/material';
+import React, { forwardRef, useState } from 'react';
+import {
+  Typography,
+  Grid,
+  TextField,
+  Box,
+  Button,
+  MenuItem,
+  LinearProgress,
+  FormLabel,
+} from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
-import AspectRatio from 'components/Utils/AspectRatio';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
 import ChipEditLine from 'components/Chip/ChipEditLine';
-import FileUpload from 'react-mui-fileuploader';
-import { ExtendedFileProps } from 'react-mui-fileuploader/dist/types/index.types';
 import nanoMetadata from 'nano-metadata';
+import ChunkedUploady, {
+  useBatchAddListener,
+  useUploadyContext,
+  useItemFinishListener,
+  useChunkStartListener,
+  useItemErrorListener,
+} from '@rpldy/chunked-uploady';
+import { asUploadButton } from '@rpldy/upload-button';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { AxiosQuery } from 'api';
-import { v4 } from 'uuid';
+import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
+import { ApiPath } from 'components/Utils/APIUtils';
+import { uploadUrl } from 'api/axios-client/Query';
+import { PostVideoResponse } from 'api/axios-client';
+import { SizeToWords } from 'components/Utils/NumberUtils';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params);
@@ -22,27 +39,67 @@ export interface Props {
   newVideo?: boolean;
 }
 
-export function VideoEdit({ newVideo = false }: Props) {
+interface InnerProps {
+  newVideo?: boolean;
+}
+
+const CustomUploadButton = asUploadButton(
+  // eslint-disable-next-line react/display-name
+  forwardRef((props, ref) => (
+    <Button
+      {...props}
+      style={{ cursor: 'pointer' }}
+      variant="outlined"
+      startIcon={<FileUploadIcon />}
+    />
+  )),
+);
+
+function VideoEditInner({ newVideo }: InnerProps) {
   let video: Video | undefined;
   if (!newVideo) {
     video = useLoaderData() as Video;
   }
-  const [fileToUpload, setFileToUpload] = useState<ExtendedFileProps>();
   const [imageToUpload, setImageToUpload] = useState<File>();
   const [statusText, setStatusText] = useState<string>();
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [fileUploadInfo, setFileUploadInfo] = useState<{
+    name: string;
+    size: string;
+    duration: number;
+  }>();
+
   const uploadVideoMutation = AxiosQuery.Query.useVideosPOSTMutation();
   const myChannels = AxiosQuery.Query.useMyChannelsQuery();
+  const uploady = useUploadyContext();
 
-  const generateThumbnailFromVideo = () => {};
-  const handleFilesChange = (files: ExtendedFileProps[]) => {
-    setFileToUpload(files[0]);
-  };
-  const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (e.target?.files?.length === 1) {
-      setImageToUpload(e.target.files[0]);
-    }
-  };
+  useChunkStartListener((data) => {
+    setProgress((data.chunk.index / data.totalCount) * 100);
+  });
 
+  useItemFinishListener(() => {
+    setProgress(100);
+    setUploading(false);
+    setStatusText('Video úspěšně nahráno ☺️');
+  });
+  useItemErrorListener(() => {
+    setUploading(false);
+    setStatusText('Video se nepodařilo nahrát 😥');
+  });
+  useBatchAddListener((batch) => {
+    (async () => {
+      if (batch.items.length === 1) {
+        const { file } = batch.items[0];
+        const dur = await nanoMetadata.video.duration(file);
+        setFileUploadInfo({
+          name: file.name,
+          size: SizeToWords(file.size),
+          duration: dur,
+        });
+      }
+    })();
+  });
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
@@ -51,29 +108,53 @@ export function VideoEdit({ newVideo = false }: Props) {
     const name = data.get('name')?.toString()!;
     const channelId = data.get('channelSelect')?.toString()!;
 
-    if (!fileToUpload) {
-      setStatusText('Nebyl vybrát soubor s videem.');
-      return;
-    }
     if (!imageToUpload) {
       setStatusText('Nebyl vybrát náhledový obrázek.');
       return;
     }
-    const dur = await nanoMetadata.video.duration(fileToUpload);
+    if (!fileUploadInfo) {
+      setStatusText('Nebyl vybrát soubor s videem.');
+      return;
+    }
+    setUploading(true);
 
-    uploadVideoMutation.mutate({
-      channelId,
-      description,
-      durationSec: Math.floor(dur),
-      name,
-      tags: [],
-      file: { data: fileToUpload, fileName: fileToUpload.name },
-      image: { data: imageToUpload, fileName: imageToUpload.name },
-    });
+    uploadVideoMutation.mutate(
+      {
+        channelId,
+        description,
+        durationSec: Math.floor(fileUploadInfo.duration),
+        name,
+        tags: [],
+        fileName: fileUploadInfo.name,
+        image: { data: imageToUpload, fileName: imageToUpload.name },
+      },
+      {
+        onSuccess: (res: PostVideoResponse) => {
+          const token = localStorage.getItem('token');
+
+          if (!token) {
+            setUploading(false);
+            setStatusText('Došlo k odhlášení, prosím přihlaste se znovu.');
+          }
+          uploady.processPending({
+            destination: { headers: { 'x-guid': res.dataUrl, authorization: `Bearer ${token}` } },
+          });
+        },
+        onError: () => {
+          setUploading(false);
+          setStatusText(`Video se nepodařilo nahrát 😥`);
+        },
+      },
+    );
   };
 
   return (
     <Box margin={4} component="form" onSubmit={submitHandler}>
+      {uploading && (
+        <Box sx={{ width: '100%' }} pt={2} pb={2}>
+          <LinearProgress variant="determinate" value={progress} />
+        </Box>
+      )}
       <Box display="flex" justifyContent="space-between">
         <Typography variant="h6" gutterBottom>
           Editace videa
@@ -90,7 +171,10 @@ export function VideoEdit({ newVideo = false }: Props) {
       <Grid container spacing={3}>
         {statusText && (
           <Grid item xs={12}>
-            <Typography variant="subtitle1" color="error">
+            <Typography
+              variant="subtitle1"
+              color={uploadVideoMutation.isSuccess && progress === 100 ? 'success.main' : 'error'}
+            >
               {statusText}
             </Typography>
           </Grid>
@@ -119,6 +203,7 @@ export function VideoEdit({ newVideo = false }: Props) {
                 id="name"
                 name="name"
                 label="Název"
+                value="asd"
                 fullWidth
                 defaultValue={video?.name}
               />
@@ -129,6 +214,7 @@ export function VideoEdit({ newVideo = false }: Props) {
                 id="description"
                 name="description"
                 label="Popis"
+                value="popis"
                 fullWidth
                 defaultValue={video?.description}
                 multiline
@@ -138,49 +224,60 @@ export function VideoEdit({ newVideo = false }: Props) {
             </Grid>
             {newVideo && (
               <Grid item xs={12}>
-                <Typography variant="caption" pl={2}>
-                  Video soubor
-                </Typography>
-                <FileUpload
-                  title=""
-                  header="[Přetáhněte soubor sem]"
-                  leftLabel="nebo"
-                  rightLabel=""
-                  buttonLabel="Vyberte soubor"
-                  buttonRemoveLabel=""
-                  BannerProps={{
-                    sx: {
-                      backgroundColor: 'primary.main',
-                      paddingTop: '1px',
-                      paddingBottom: '8px',
-                    },
+                <fieldset
+                  style={{
+                    borderColor: 'rgba(0, 0, 0, 0.23)',
+                    borderWidth: '1px',
+                    borderRadius: '4px',
+                    position: 'relative',
+                    padding: 0,
                   }}
-                  showPlaceholderImage={false}
-                  acceptedType={'video/*'}
-                  onFilesChange={handleFilesChange}
-                />
+                >
+                  <FormLabel
+                    style={{
+                      transform: 'translate(10px, -9px) scale(0.75)',
+                      position: 'absolute',
+                      left: '0',
+                      top: '0',
+                      transformOrigin: 'top left',
+                      zIndex: '1',
+                      backgroundColor: 'white',
+                      paddingLeft: '4px',
+                      paddingRight: '4px',
+                    }}
+                  >
+                    Video soubor
+                  </FormLabel>
+                  <Box p={2}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Typography>{fileUploadInfo?.name ?? 'Nebyl vybrán soubor'}</Typography>
+                      <Typography variant="caption">{fileUploadInfo?.size ?? ''}</Typography>
+                    </Box>
+                    <Box pt={1}>
+                      <CustomUploadButton
+                        autoUpload={false}
+                        extraProps={{ type: 'button' }}
+                        text="Nahrát"
+                      />
+                    </Box>
+                  </Box>
+                </fieldset>
               </Grid>
             )}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography>Náhledový obrázek:</Typography>
-          <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={video?.imageUrl ?? imageToUpload} />
-          </AspectRatio>
-          <Box display="flex" justifyContent="center" gap={2} padding={2}>
-            <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
-              <input hidden accept="image/*" type="file" onChange={handleImageChange} />
-              Nahrát
-            </Button>
-            <Button
-              startIcon={<AutorenewIcon />}
-              variant="outlined"
-              onClick={generateThumbnailFromVideo}
-            >
-              Vygenerovat
-            </Button>
-          </Box>
+          <FileUploadWithPreview
+            uploadedFile={imageToUpload}
+            setUploadedFile={setImageToUpload}
+            existingImageUrl={ApiPath(video?.imageUrl)}
+          />
           <Grid item xs={12}>
             <Typography variant="caption" pl={2}>
               Tagy
@@ -190,5 +287,18 @@ export function VideoEdit({ newVideo = false }: Props) {
         </Grid>
       </Grid>
     </Box>
+  );
+}
+
+export function VideoEdit({ newVideo = false }: Props) {
+  return (
+    <ChunkedUploady
+      method="POST"
+      chunkSize={1e7}
+      destination={{ url: uploadUrl() }}
+      accept="video/*"
+    >
+      <VideoEditInner newVideo={newVideo} />
+    </ChunkedUploady>
   );
 }

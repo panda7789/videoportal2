@@ -110,6 +110,8 @@ dbContextOptions => dbContextOptions
             .EnableDetailedErrors()
     );
 
+SaveFile.Init();
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {

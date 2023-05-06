@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Typography, Grid, TextField, Box, Button } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
-import AspectRatio from 'components/Utils/AspectRatio';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { AxiosQuery } from 'api';
 import { Channel } from 'model/Channel';
 import { ApiPath } from 'components/Utils/APIUtils';
+import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
+import { useChannelAdvancedInfoQuery } from 'api/axios-client/Query';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.channelsGET(params.Id);
@@ -22,21 +22,12 @@ export function ChannelEdit({ newChannel = false }: Props) {
   if (!newChannel) {
     channel = useLoaderData() as Channel;
   }
+  const channelAdvancedInfo =
+    channel?.id ?? false ? useChannelAdvancedInfoQuery({ id: channel!.id }) : undefined;
   const [avatarToUpload, setAvatarToUpload] = useState<File>();
   const [posterToUpload, setPosterToUpload] = useState<File>();
 
   const channelPostMutation = AxiosQuery.Query.useChannelsPOSTMutation();
-
-  const handleAvatarChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (e.target?.files?.length === 1) {
-      setAvatarToUpload(e.target.files[0]);
-    }
-  };
-  const handlePosterChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (e.target?.files?.length === 1) {
-      setPosterToUpload(e.target.files[0]);
-    }
-  };
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -92,7 +83,7 @@ export function ChannelEdit({ newChannel = false }: Props) {
                 name="description"
                 label="Popis"
                 fullWidth
-                defaultValue={channel?.description}
+                defaultValue={channelAdvancedInfo?.data?.description}
                 multiline
                 minRows={2}
                 maxRows={14}
@@ -102,27 +93,19 @@ export function ChannelEdit({ newChannel = false }: Props) {
         </Grid>
         <Grid item xs={12} sm={3}>
           <Typography>Poster:</Typography>
-          <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={ApiPath(channel?.posterUrl)} />
-          </AspectRatio>
-          <Box display="flex" justifyContent="center" gap={2} padding={2}>
-            <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
-              <input hidden accept="image/*" type="file" onChange={handlePosterChange} />
-              Nahrát
-            </Button>
-          </Box>
+          <FileUploadWithPreview
+            uploadedFile={posterToUpload}
+            setUploadedFile={setPosterToUpload}
+            existingImageUrl={ApiPath(channel?.posterUrl)}
+          />
         </Grid>
         <Grid item xs={12} sm={3}>
           <Typography>Avatar:</Typography>
-          <AspectRatio ratio={16 / 9}>
-            <img width="100%" src={ApiPath(channel?.avatar)} />
-          </AspectRatio>
-          <Box display="flex" justifyContent="center" gap={2} padding={2}>
-            <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
-              <input hidden accept="image/*" type="file" onChange={handleAvatarChange} />
-              Nahrát
-            </Button>
-          </Box>
+          <FileUploadWithPreview
+            uploadedFile={avatarToUpload}
+            setUploadedFile={setAvatarToUpload}
+            existingImageUrl={ApiPath(channel?.avatarUrl)}
+          />
         </Grid>
       </Grid>
     </Box>

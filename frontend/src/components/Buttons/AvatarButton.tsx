@@ -10,9 +10,10 @@ export interface Props {
   url?: string;
   image?: string;
   text?: string;
+  customAvatarText?: string;
 }
 
-export function AvatarButton({ key, url, image, text }: Props) {
+export function AvatarButton({ key, url, image, text, customAvatarText }: Props) {
   return (
     <Box
       key={key}
@@ -30,7 +31,7 @@ export function AvatarButton({ key, url, image, text }: Props) {
         borderRadius: '15px',
       }}
     >
-      <ChannelAvatar imageSrc={image} avatarInitials={text} large />
+      <ChannelAvatar imageSrc={image} avatarInitials={customAvatarText ?? text} large />
       <Typography paddingLeft={1}>{text}</Typography>
     </Box>
   );

@@ -60,7 +60,7 @@ export type VideosAllQueryParameters = {
 };
 
 export type VideosPOSTMutationParameters = {
-  file?: Types.FileParameter | null | undefined ; 
+  fileName?: string | null | undefined ; 
   name?: string | null | undefined ; 
   description?: string | null | undefined ; 
   durationSec?: number | undefined ; 
@@ -75,6 +75,10 @@ export type VideosGETQueryParameters = {
 
 export type RelatedVideosQueryParameters = {
   id: string;
+};
+
+export type UploadMutationParameters = {
+  chunk?: Types.FileParameter | null | undefined ; 
 };
 
     
@@ -1473,7 +1477,7 @@ export function videosPOSTMutationKey(): MutationKey {
 }
 
 /**
- * @param file (optional) 
+ * @param fileName (optional) 
  * @param name (optional) 
  * @param description (optional) 
  * @param durationSec (optional) 
@@ -1482,13 +1486,13 @@ export function videosPOSTMutationKey(): MutationKey {
  * @param tags (optional) 
  * @return Success
  */
-export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.Video, unknown, VideosPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.Video, unknown, VideosPOSTMutationParameters, TContext> {
+export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext> {
   const key = videosPOSTMutationKey();
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.file, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.channelId, videosPOSTMutationParameters.tags), {...options, mutationKey: key});
+      return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.fileName, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.channelId, videosPOSTMutationParameters.tags), {...options, mutationKey: key});
 }
   
     
@@ -1740,4 +1744,31 @@ export function setRelatedVideosData(queryClient: QueryClient, updater: (data: T
  */
 export function setRelatedVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
   queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function uploadUrl(): string {
+  let url_ = getBaseUrl() + "/api/Videos/upload";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function uploadMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'upload',
+    ]);
+}
+
+/**
+ * @param chunk (optional) 
+ * @return Success
+ */
+export function useUploadMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, UploadMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, UploadMutationParameters, TContext> {
+  const key = uploadMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((uploadMutationParameters: UploadMutationParameters) => Client.upload(uploadMutationParameters.chunk), {...options, mutationKey: key});
 }

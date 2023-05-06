@@ -28,7 +28,12 @@ export function MyChannels() {
           </Grid>
         ))}
       <Grid item xs={12} key="new">
-        <AvatarButton key="new" url="/mychannels/create" text="Vytvořit nový kanál" />
+        <AvatarButton
+          key="new"
+          url="/mychannels/create"
+          text="Vytvořit nový kanál"
+          customAvatarText="+"
+        />
       </Grid>
     </Grid>
   );

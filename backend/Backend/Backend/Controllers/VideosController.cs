@@ -172,9 +172,10 @@ namespace Backend.Controllers
 
             return NoContent();
         }
-        public class UploadVideoDTO
+        public class PostVideoRequest
         {
-            public IFormFile File { get; set; }
+            //public IFormFile File { get; set; }
+            public string FileName { get; set; }
             public string Name { get; set; }
             public string? Description { get; set; }
             public int DurationSec { get; set; }
@@ -184,10 +185,18 @@ namespace Backend.Controllers
 
         }
 
+        public class PostVideoResponse
+        {
+            public string DataUrl { get; set; }
+
+        }
+
         // POST: api/Videos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Video>> PostVideo([FromForm] UploadVideoDTO video)
+        [Authorize(Roles = RoleNames.Editor)]
+
+        public async Task<ActionResult<PostVideoResponse>> PostVideo([FromForm] PostVideoRequest video)
         {
             if (_context.Videos == null)
             {
@@ -195,8 +204,9 @@ namespace Backend.Controllers
             }
 
             // upload video
-            var videoName = $"{video.ChannelId}[GUID].{video.File.FileName.Split(".")[1]}";
-            string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, video.File);
+            var videoGuid = $"{video.ChannelId}{Guid.NewGuid()}";
+            var videoName = $"{videoGuid}.{video.FileName.Split(".")[1]}";
+            string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
 
             var thumbnailUrl = await SaveThumbnailAsync(video.ChannelId, video.Image);
@@ -217,6 +227,32 @@ namespace Backend.Controllers
             };
             _context.Videos.Add(videoDB);
             await _context.SaveChangesAsync();
+
+            return Ok(new PostVideoResponse() { DataUrl= videoGuid });
+        }
+        [HttpPost("upload")]
+        [Authorize(Roles = RoleNames.Editor)]
+
+        public async Task<ActionResult> UploadVideo(IFormFile file)
+        {
+            if (!Request.Headers.TryGetValue("x-guid", out var guid))
+            {
+                return Problem("Header x-guid is empty");
+            }
+            if (_context.Videos == null)
+            {
+                return Problem("Entity set 'MyDbContext.Videos'  is null.");
+            }
+
+            var videoName = $"{guid}.{file.FileName.Split(".")[1]}";
+            try
+            {
+                await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, file, chunks: true);
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
 
             return Ok();
         }

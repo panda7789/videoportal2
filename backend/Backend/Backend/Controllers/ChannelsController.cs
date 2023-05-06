@@ -268,6 +268,7 @@ namespace Backend.Controllers
 
 
             _context.Channels.Add(channel);
+            _context.ChannelAdvancedInfos.Add(channelAdvancedInfo);
             await _context.SaveChangesAsync();
 
             return Ok();

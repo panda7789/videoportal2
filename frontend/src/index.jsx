@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import 'react-aspect-ratio/aspect-ratio.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react-query';
 import { AxiosQuery } from 'api';
 import axios from 'axios';
 import App from './App';
@@ -10,7 +10,7 @@ import App from './App';
 const container = document.getElementById('root');
 const root = createRoot(container);
 const queryClient = new QueryClient();
-queryClient.defaultQueryOptions({ networkMode: 'online' });
+onlineManager.setOnline(true);
 AxiosQuery.setBaseUrl('https://localhost:7287');
 AxiosQuery.setAxiosFactory(() => {
   const instance = axios.create();

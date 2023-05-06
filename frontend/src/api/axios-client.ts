@@ -484,6 +484,42 @@ export interface IModifyVideoDTO {
     tags?: Tag[] | undefined;
 }
 
+export class PostVideoResponse implements IPostVideoResponse {
+    dataUrl!: string;
+
+    constructor(data?: IPostVideoResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.dataUrl = _data["dataUrl"];
+        }
+    }
+
+    static fromJS(data: any): PostVideoResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PostVideoResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dataUrl"] = this.dataUrl;
+        return data;
+    }
+}
+
+export interface IPostVideoResponse {
+    dataUrl: string;
+}
+
 export class RegisterDTO implements IRegisterDTO {
     name!: string;
     email!: string;

@@ -9,6 +9,16 @@ export function NumberToWords(input: number): string {
   return `${input.toFixed(1)}`;
 }
 
+export function SizeToWords(input: number): string {
+  if (input >= 1e6) {
+    return `${(input / 1e6).toFixed(1)} MB`;
+  }
+  if (input >= 1e3) {
+    return `${(input / 1e3).toFixed(1)} KB`;
+  }
+  return `${input.toFixed(1)} B`;
+}
+
 export function TimeSpanToReadableFormat(input: string, includeHours = false): string {
   // eslint-disable-next-line prefer-template
   return includeHours ? input : input.slice(3);
