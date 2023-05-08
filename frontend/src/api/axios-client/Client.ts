@@ -296,6 +296,138 @@ function processMyChannels(response: AxiosResponse): Promise<Types.ChannelDTO[]>
 /**
  * @return Success
  */
+export function channelsAll(config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO[]> {
+    let url_ = getBaseUrl() + "/api/Channels";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigChannelsAll,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processChannelsAll(_response);
+    });
+}
+
+function processChannelsAll(response: AxiosResponse): Promise<Types.ChannelDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.ChannelDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.ChannelDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.ChannelDTO[]>(null as any);
+}
+
+/**
+ * @param name (optional) 
+ * @param poster (optional) 
+ * @param pinnedVideoId (optional) 
+ * @param avatar (optional) 
+ * @param description (optional) 
+ * @param relatedChannels (optional) 
+ * @return Success
+ */
+export function channelsPOST(name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: Types.Channel[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO> {
+    let url_ = getBaseUrl() + "/api/Channels";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = new FormData();
+    if (name !== null && name !== undefined)
+        content_.append("Name", name.toString());
+    if (poster !== null && poster !== undefined)
+        content_.append("Poster", poster.data, poster.fileName ? poster.fileName : "Poster");
+    if (pinnedVideoId !== null && pinnedVideoId !== undefined)
+        content_.append("PinnedVideoId", pinnedVideoId.toString());
+    if (avatar !== null && avatar !== undefined)
+        content_.append("Avatar", avatar.data, avatar.fileName ? avatar.fileName : "Avatar");
+    if (description !== null && description !== undefined)
+        content_.append("Description", description.toString());
+    if (relatedChannels !== null && relatedChannels !== undefined)
+        relatedChannels.forEach(item_ => content_.append("RelatedChannels", item_.toString()));
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigChannelsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processChannelsPOST(_response);
+    });
+}
+
+function processChannelsPOST(response: AxiosResponse): Promise<Types.ChannelDTO> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.ChannelDTO.fromJS(resultData200);
+        return Promise.resolve<Types.ChannelDTO>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.ChannelDTO>(null as any);
+}
+
+/**
+ * @return Success
+ */
 export function channelsGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO> {
     let url_ = getBaseUrl() + "/api/Channels/{id}";
 
@@ -691,79 +823,6 @@ function processChannelUserInfoPUT(response: AxiosResponse): Promise<void> {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<void>(null as any);
-}
-
-/**
- * @param name (optional) 
- * @param poster (optional) 
- * @param pinnedVideoId (optional) 
- * @param avatar (optional) 
- * @param description (optional) 
- * @param relatedChannels (optional) 
- * @return Success
- */
-export function channelsPOST(name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: Types.Channel[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO> {
-    let url_ = getBaseUrl() + "/api/Channels";
-      url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = new FormData();
-    if (name !== null && name !== undefined)
-        content_.append("Name", name.toString());
-    if (poster !== null && poster !== undefined)
-        content_.append("Poster", poster.data, poster.fileName ? poster.fileName : "Poster");
-    if (pinnedVideoId !== null && pinnedVideoId !== undefined)
-        content_.append("PinnedVideoId", pinnedVideoId.toString());
-    if (avatar !== null && avatar !== undefined)
-        content_.append("Avatar", avatar.data, avatar.fileName ? avatar.fileName : "Avatar");
-    if (description !== null && description !== undefined)
-        content_.append("Description", description.toString());
-    if (relatedChannels !== null && relatedChannels !== undefined)
-        relatedChannels.forEach(item_ => content_.append("RelatedChannels", item_.toString()));
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigChannelsPOST,
-        ...config,
-        data: content_,
-        method: "POST",
-        url: url_,
-        headers: {
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processChannelsPOST(_response);
-    });
-}
-
-function processChannelsPOST(response: AxiosResponse): Promise<Types.ChannelDTO> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.ChannelDTO.fromJS(resultData200);
-        return Promise.resolve<Types.ChannelDTO>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-    }
-    return Promise.resolve<Types.ChannelDTO>(null as any);
 }
 
 /**
@@ -1546,10 +1605,14 @@ function processVideosGET(response: AxiosResponse): Promise<Types.VideoDTO> {
 }
 
 /**
- * @param body (optional) 
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param image (optional) 
+ * @param channelId (optional) 
+ * @param tags (optional) 
  * @return Success
  */
-export function videosPUT(id: string, body?: Types.ModifyVideoDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function videosPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: Types.Tag[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Videos/{id}";
 
     if (id === undefined || id === null)
@@ -1557,7 +1620,19 @@ export function videosPUT(id: string, body?: Types.ModifyVideoDTO | undefined, c
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
       url_ = url_.replace(/[?&]$/, "");
 
-    const content_ = JSON.stringify(body);
+    const content_ = new FormData();
+    if (name !== null && name !== undefined)
+        content_.append("Name", name.toString());
+    if (description !== null && description !== undefined)
+        content_.append("Description", description.toString());
+    if (image !== null && image !== undefined)
+        content_.append("Image", image.data, image.fileName ? image.fileName : "Image");
+    if (channelId === null || channelId === undefined)
+        throw new Error("The parameter 'channelId' cannot be null.");
+    else
+        content_.append("ChannelId", channelId.toString());
+    if (tags !== null && tags !== undefined)
+        tags.forEach(item_ => content_.append("Tags", item_.toString()));
 
     let options_: AxiosRequestConfig = {
         ..._requestConfigVideosPUT,
@@ -1566,7 +1641,6 @@ export function videosPUT(id: string, body?: Types.ModifyVideoDTO | undefined, c
         method: "PUT",
         url: url_,
         headers: {
-            "Content-Type": "application/json",
         }
     };
 
@@ -1657,6 +1731,65 @@ function processVideosDELETE(response: AxiosResponse): Promise<void> {
 /**
  * @return Success
  */
+export function myVideos(config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
+    let url_ = getBaseUrl() + "/api/Videos/my-videos";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigMyVideos,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processMyVideos(_response);
+    });
+}
+
+function processMyVideos(response: AxiosResponse): Promise<Types.VideoDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.VideoDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.VideoDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.VideoDTO[]>(null as any);
+}
+
+/**
+ * @return Success
+ */
 export function relatedVideos(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
     let url_ = getBaseUrl() + "/api/Videos/{id}/related-videos";
 
@@ -1718,16 +1851,16 @@ function processRelatedVideos(response: AxiosResponse): Promise<Types.VideoDTO[]
 }
 
 /**
- * @param chunk (optional) 
+ * @param file (optional) 
  * @return Success
  */
-export function upload(chunk?: Types.FileParameter | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function upload(file?: Types.FileParameter | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Videos/upload";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = new FormData();
-    if (chunk !== null && chunk !== undefined)
-        content_.append("chunk", chunk.data, chunk.fileName ? chunk.fileName : "chunk");
+    if (file !== null && file !== undefined)
+        content_.append("file", file.data, file.fileName ? file.fileName : "file");
 
     let options_: AxiosRequestConfig = {
         ..._requestConfigUpload,
@@ -1825,6 +1958,28 @@ export function patchMyChannelsRequestConfig(patch: (value: Partial<AxiosRequest
   _requestConfigMyChannels = patch(_requestConfigMyChannels ?? {});
 }
 
+let _requestConfigChannelsAll: Partial<AxiosRequestConfig> | undefined;
+export function getChannelsAllRequestConfig() {
+  return _requestConfigChannelsAll;
+}
+export function setChannelsAllRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigChannelsAll = value;
+}
+export function patchChannelsAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigChannelsAll = patch(_requestConfigChannelsAll ?? {});
+}
+
+let _requestConfigChannelsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getChannelsPOSTRequestConfig() {
+  return _requestConfigChannelsPOST;
+}
+export function setChannelsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigChannelsPOST = value;
+}
+export function patchChannelsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigChannelsPOST = patch(_requestConfigChannelsPOST ?? {});
+}
+
 let _requestConfigChannelsGET: Partial<AxiosRequestConfig> | undefined;
 export function getChannelsGETRequestConfig() {
   return _requestConfigChannelsGET;
@@ -1900,17 +2055,6 @@ export function setChannelUserInfoPUTRequestConfig(value: Partial<AxiosRequestCo
 }
 export function patchChannelUserInfoPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigChannelUserInfoPUT = patch(_requestConfigChannelUserInfoPUT ?? {});
-}
-
-let _requestConfigChannelsPOST: Partial<AxiosRequestConfig> | undefined;
-export function getChannelsPOSTRequestConfig() {
-  return _requestConfigChannelsPOST;
-}
-export function setChannelsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigChannelsPOST = value;
-}
-export function patchChannelsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigChannelsPOST = patch(_requestConfigChannelsPOST ?? {});
 }
 
 let _requestConfigSearch: Partial<AxiosRequestConfig> | undefined;
@@ -2076,6 +2220,17 @@ export function setVideosDELETERequestConfig(value: Partial<AxiosRequestConfig>)
 }
 export function patchVideosDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigVideosDELETE = patch(_requestConfigVideosDELETE ?? {});
+}
+
+let _requestConfigMyVideos: Partial<AxiosRequestConfig> | undefined;
+export function getMyVideosRequestConfig() {
+  return _requestConfigMyVideos;
+}
+export function setMyVideosRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigMyVideos = value;
+}
+export function patchMyVideosRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigMyVideos = patch(_requestConfigMyVideos ?? {});
 }
 
 let _requestConfigRelatedVideos: Partial<AxiosRequestConfig> | undefined;

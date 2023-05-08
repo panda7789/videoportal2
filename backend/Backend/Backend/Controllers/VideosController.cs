@@ -95,6 +95,22 @@ namespace Backend.Controllers
             return video.ToDTO();
         }
 
+        // GET: api/videos/my
+        [HttpGet("my-videos")]
+        public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()
+        {
+            if (_context.Videos == null)
+            {
+                return NotFound();
+            }
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            return await _context.Videos.Where(x => x.Channel.IdOwner == userId).Include(x => x.Channel).Select(x => x.ToDTO()).ToListAsync();
+        }
+
         [HttpGet("{id}/related-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetRelatedVideos(Guid id)
         {
@@ -136,7 +152,7 @@ namespace Backend.Controllers
         // PUT: api/Videos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVideo(Guid id, ModifyVideoDTO modifiedVideo)
+        public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
             var video = await _context.Videos.FindAsync(id);
             if (video == null)

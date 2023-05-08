@@ -8,7 +8,7 @@ import HomePage from 'routes/HomePage';
 import VideoDetail, { loader as videoLoader } from 'routes/VideoDetail';
 import SearchResult from 'routes/SearchResult';
 import { loader as searchLoader } from 'components/AppBar/Search';
-import { MyVideos, loader as myVideosLoader } from 'routes/MyVideos';
+import { MyVideos } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
 import { Channel, loader as channelLoader } from 'routes/Channel/Channel';
@@ -38,7 +38,6 @@ function App() {
         {
           path: 'myvideos',
           element: <MyVideos />,
-          loader: myVideosLoader,
         },
         {
           path: 'channel/:channelId',

@@ -424,66 +424,6 @@ export interface ILoginDTO {
     password: string;
 }
 
-export class ModifyVideoDTO implements IModifyVideoDTO {
-    name!: string;
-    description?: string | undefined;
-    image?: string | undefined;
-    channelId!: string;
-    tags?: Tag[] | undefined;
-
-    constructor(data?: IModifyVideoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.description = _data["description"];
-            this.image = _data["image"];
-            this.channelId = _data["channelId"];
-            if (Array.isArray(_data["tags"])) {
-                this.tags = [] as any;
-                for (let item of _data["tags"])
-                    this.tags!.push(Tag.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ModifyVideoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new ModifyVideoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["description"] = this.description;
-        data["image"] = this.image;
-        data["channelId"] = this.channelId;
-        if (Array.isArray(this.tags)) {
-            data["tags"] = [];
-            for (let item of this.tags)
-                data["tags"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IModifyVideoDTO {
-    name: string;
-    description?: string | undefined;
-    image?: string | undefined;
-    channelId: string;
-    tags?: Tag[] | undefined;
-}
-
 export class PostVideoResponse implements IPostVideoResponse {
     dataUrl!: string;
 
@@ -1249,6 +1189,7 @@ export function initPersister() {
   
   addResultTypeFactory('Client___commentsAll', (data: any) => { const result = new CommentDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___myChannels', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelsAll', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelsGET', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelVideos', (data: any) => { const result = new WithTotalCountOfVideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfo(); result.init(data); return result; });
@@ -1259,6 +1200,7 @@ export function initPersister() {
   addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
   addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___myVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___relatedVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
 
 

@@ -18,6 +18,7 @@ import { Box, alpha } from '@mui/system';
 import React, { useEffect } from 'react';
 import { visuallyHidden } from '@mui/utils';
 import AspectRatio from 'components/Utils/AspectRatio';
+import { ApiPath } from 'components/Utils/APIUtils';
 
 export interface ToolbarButton {
   label: string;
@@ -33,6 +34,7 @@ export interface Attribute<T> {
   label: string;
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   image?: boolean;
+  customFormat?: (value: any) => string;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -191,19 +193,21 @@ export interface EnhancedTableProps<T> {
   rowClick?(event: React.MouseEvent<unknown>, name: string): void;
   rows: T[];
   orderBy: keyof T;
+  desc: Order;
   checkVisible?: boolean;
 }
 
 export default function EnhancedTable<T extends TableDataBase>({
   rows,
   orderBy: _orderby,
+  desc,
   attributes,
   buttons,
   rowClick,
   checkVisible,
   staticButtons,
 }: EnhancedTableProps<T>) {
-  const [order, setOrder] = React.useState<Order>('asc');
+  const [order, setOrder] = React.useState<Order>(desc ?? 'asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(_orderby ?? 'id');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
@@ -335,10 +339,15 @@ export default function EnhancedTable<T extends TableDataBase>({
                         >
                           {attr.image ?? false ? (
                             <AspectRatio ratio={16 / 9}>
-                              <img width="100%" src={String(row[attr.id])} />
+                              <img
+                                style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
+                                src={ApiPath(String(row[attr.id]))}
+                              />
                             </AspectRatio>
                           ) : (
-                            String(row[attr.id])
+                            String(
+                              attr.customFormat ? attr.customFormat(row[attr.id]) : row[attr.id],
+                            )
                           )}
                         </TableCell>
                       ))}

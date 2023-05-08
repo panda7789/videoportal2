@@ -32,7 +32,7 @@ import { PostVideoResponse } from 'api/axios-client';
 import { SizeToWords } from 'components/Utils/NumberUtils';
 
 export async function loader({ params }: { params: any }) {
-  return getVideoById(params);
+  return getVideoById(params.videoId);
 }
 
 export interface Props {
@@ -44,7 +44,7 @@ interface InnerProps {
 }
 
 const CustomUploadButton = asUploadButton(
-  // eslint-disable-next-line react/display-name
+  // eslint-disable-next-line react/display-name, @typescript-eslint/no-unused-vars
   forwardRef((props, ref) => (
     <Button
       {...props}
@@ -71,6 +71,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   }>();
 
   const uploadVideoMutation = AxiosQuery.Query.useVideosPOSTMutation();
+  const updateVideoMutation = AxiosQuery.Query.useVideosPUTMutation(video?.id ?? '');
   const myChannels = AxiosQuery.Query.useMyChannelsQuery();
   const uploady = useUploadyContext();
 
@@ -108,44 +109,69 @@ function VideoEditInner({ newVideo }: InnerProps) {
     const name = data.get('name')?.toString()!;
     const channelId = data.get('channelSelect')?.toString()!;
 
-    if (!imageToUpload) {
-      setStatusText('Nebyl vybrát náhledový obrázek.');
-      return;
-    }
-    if (!fileUploadInfo) {
-      setStatusText('Nebyl vybrát soubor s videem.');
-      return;
-    }
-    setUploading(true);
+    if (newVideo) {
+      if (!imageToUpload) {
+        setStatusText('Nebyl vybrát náhledový obrázek.');
+        return;
+      }
+      if (!fileUploadInfo) {
+        setStatusText('Nebyl vybrát soubor s videem.');
+        return;
+      }
+      setUploading(true);
 
-    uploadVideoMutation.mutate(
-      {
-        channelId,
-        description,
-        durationSec: Math.floor(fileUploadInfo.duration),
-        name,
-        tags: [],
-        fileName: fileUploadInfo.name,
-        image: { data: imageToUpload, fileName: imageToUpload.name },
-      },
-      {
-        onSuccess: (res: PostVideoResponse) => {
-          const token = localStorage.getItem('token');
+      uploadVideoMutation.mutate(
+        {
+          channelId,
+          description,
+          durationSec: Math.floor(fileUploadInfo.duration),
+          name,
+          tags: [],
+          fileName: fileUploadInfo.name,
+          image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
+        },
+        {
+          onSuccess: (res: PostVideoResponse) => {
+            const token = localStorage.getItem('token');
 
-          if (!token) {
+            if (!token) {
+              setUploading(false);
+              setStatusText('Došlo k odhlášení, prosím přihlaste se znovu.');
+            }
+            uploady.processPending({
+              destination: { headers: { 'x-guid': res.dataUrl, authorization: `Bearer ${token}` } },
+            });
+          },
+          onError: () => {
             setUploading(false);
-            setStatusText('Došlo k odhlášení, prosím přihlaste se znovu.');
-          }
-          uploady.processPending({
-            destination: { headers: { 'x-guid': res.dataUrl, authorization: `Bearer ${token}` } },
-          });
+            setStatusText(`Video se nepodařilo nahrát 😥`);
+          },
         },
-        onError: () => {
-          setUploading(false);
-          setStatusText(`Video se nepodařilo nahrát 😥`);
+      );
+    } else {
+      setUploading(true);
+
+      updateVideoMutation.mutate(
+        {
+          channelId,
+          description,
+          name,
+          tags: [],
+          image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
         },
-      },
-    );
+        {
+          onSuccess: () => {
+            setProgress(100);
+            setUploading(false);
+            setStatusText('Video úspěšně aktualizováno ☺️');
+          },
+          onError: () => {
+            setUploading(false);
+            setStatusText(`Video se nepodařilo aktualizovat 😥`);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -173,7 +199,11 @@ function VideoEditInner({ newVideo }: InnerProps) {
           <Grid item xs={12}>
             <Typography
               variant="subtitle1"
-              color={uploadVideoMutation.isSuccess && progress === 100 ? 'success.main' : 'error'}
+              color={
+                ((newVideo && uploadVideoMutation.isSuccess) || true) && progress === 100
+                  ? 'success.main'
+                  : 'error'
+              }
             >
               {statusText}
             </Typography>
@@ -188,7 +218,9 @@ function VideoEditInner({ newVideo }: InnerProps) {
                 select
                 required
                 label="Kanál"
-                defaultValue={myChannels.data?.length === 1 && myChannels.data[0].id}
+                defaultValue={
+                  video?.channelId ?? (myChannels.data?.length === 1 ? myChannels.data[0].id : '')
+                }
               >
                 {myChannels.data?.map((channel) => (
                   <MenuItem key={channel.id} value={channel.id}>
@@ -203,7 +235,6 @@ function VideoEditInner({ newVideo }: InnerProps) {
                 id="name"
                 name="name"
                 label="Název"
-                value="asd"
                 fullWidth
                 defaultValue={video?.name}
               />
@@ -214,7 +245,6 @@ function VideoEditInner({ newVideo }: InnerProps) {
                 id="description"
                 name="description"
                 label="Popis"
-                value="popis"
                 fullWidth
                 defaultValue={video?.description}
                 multiline

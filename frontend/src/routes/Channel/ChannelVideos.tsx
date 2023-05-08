@@ -10,7 +10,7 @@ export async function loader({ params }: { params: any }) {
   return params.channelId;
 }
 
-const pageSize = 1;
+const pageSize = 5;
 
 export function ChannelVideos() {
   const channelId = useLoaderData() as string;

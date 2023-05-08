@@ -18,6 +18,15 @@ import * as Client from './Client'
 export { Client };
 import type { AxiosRequestConfig } from 'axios';
 
+export type ChannelsPOSTMutationParameters = {
+  name?: string | null | undefined ; 
+  poster?: Types.FileParameter | null | undefined ; 
+  pinnedVideoId?: string | null | undefined ; 
+  avatar?: Types.FileParameter | null | undefined ; 
+  description?: string | null | undefined ; 
+  relatedChannels?: Types.Channel[] | null | undefined ; 
+};
+
 export type ChannelsGETQueryParameters = {
   id: string;
 };
@@ -34,15 +43,6 @@ export type ChannelAdvancedInfoQueryParameters = {
 
 export type ChannelUserInfoGETQueryParameters = {
   id: string;
-};
-
-export type ChannelsPOSTMutationParameters = {
-  name?: string | null | undefined ; 
-  poster?: Types.FileParameter | null | undefined ; 
-  pinnedVideoId?: string | null | undefined ; 
-  avatar?: Types.FileParameter | null | undefined ; 
-  description?: string | null | undefined ; 
-  relatedChannels?: Types.Channel[] | null | undefined ; 
 };
 
 export type UsersGETQueryParameters = {
@@ -73,12 +73,20 @@ export type VideosGETQueryParameters = {
   id: string;
 };
 
+export type VideosPUTMutationParameters = {
+  name?: string | null | undefined ; 
+  description?: string | null | undefined ; 
+  image?: Types.FileParameter | null | undefined ; 
+  channelId?: string | undefined ; 
+  tags?: Types.Tag[] | null | undefined ; 
+};
+
 export type RelatedVideosQueryParameters = {
   id: string;
 };
 
 export type UploadMutationParameters = {
-  chunk?: Types.FileParameter | null | undefined ; 
+  file?: Types.FileParameter | null | undefined ; 
 };
 
     
@@ -313,6 +321,109 @@ export function setMyChannelsDataByQueryId(queryClient: QueryClient, queryKey: Q
   queryClient.setQueryData(queryKey, updater);
 }
     
+    
+export function channelsAllUrl(): string {
+  let url_ = getBaseUrl() + "/api/Channels";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let channelsAllDefaultOptions: UseQueryOptions<Types.ChannelDTO[], unknown, Types.ChannelDTO[]> = {
+  queryFn: __channelsAll,
+};
+export function getChannelsAllDefaultOptions(): UseQueryOptions<Types.ChannelDTO[], unknown, Types.ChannelDTO[]> {
+  return channelsAllDefaultOptions;
+};
+export function setChannelsAllDefaultOptions(options: UseQueryOptions<Types.ChannelDTO[], unknown, Types.ChannelDTO[]>) {
+  channelsAllDefaultOptions = options;
+}
+
+export function channelsAllQueryKey(): QueryKey;
+export function channelsAllQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'channelsAll',
+    ]);
+}
+function __channelsAll() {
+  return Client.channelsAll(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useChannelsAllQuery<TSelectData = Types.ChannelDTO[], TError = unknown>(options?: UseQueryOptions<Types.ChannelDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelsAllQuery<TSelectData = Types.ChannelDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ChannelDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ChannelDTO[], TError, TSelectData>({
+    queryFn: __channelsAll,
+    queryKey: channelsAllQueryKey(),
+    ...channelsAllDefaultOptions as unknown as UseQueryOptions<Types.ChannelDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setChannelsAllData(queryClient: QueryClient, updater: (data: Types.ChannelDTO[] | undefined) => Types.ChannelDTO[], ) {
+  queryClient.setQueryData(channelsAllQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setChannelsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ChannelDTO[] | undefined) => Types.ChannelDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function channelsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/Channels";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function channelsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'channelsPOST',
+    ]);
+}
+
+/**
+ * @param name (optional) 
+ * @param poster (optional) 
+ * @param pinnedVideoId (optional) 
+ * @param avatar (optional) 
+ * @param description (optional) 
+ * @param relatedChannels (optional) 
+ * @return Success
+ */
+export function useChannelsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext> {
+  const key = channelsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((channelsPOSTMutationParameters: ChannelsPOSTMutationParameters) => Client.channelsPOST(channelsPOSTMutationParameters.name, channelsPOSTMutationParameters.poster, channelsPOSTMutationParameters.pinnedVideoId, channelsPOSTMutationParameters.avatar, channelsPOSTMutationParameters.description, channelsPOSTMutationParameters.relatedChannels), {...options, mutationKey: key});
+}
+  
     
 export function channelsGETUrl(id: string): string {
   let url_ = getBaseUrl() + "/api/Channels/{id}";
@@ -801,38 +912,6 @@ export function useChannelUserInfoPUTMutation<TContext>(id: string, options?: Om
   options = addMetaToOptions(options, metaContext);
   
       return useMutation((body: Types.ChannelUserSpecificInfoDTO) => Client.channelUserInfoPUT(id, body), {...options, mutationKey: key});
-}
-  
-    
-export function channelsPOSTUrl(): string {
-  let url_ = getBaseUrl() + "/api/Channels";
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-export function channelsPOSTMutationKey(): MutationKey {
-  return trimArrayEnd([
-      'Client',
-      'channelsPOST',
-    ]);
-}
-
-/**
- * @param name (optional) 
- * @param poster (optional) 
- * @param pinnedVideoId (optional) 
- * @param avatar (optional) 
- * @param description (optional) 
- * @param relatedChannels (optional) 
- * @return Success
- */
-export function useChannelsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.ChannelDTO, unknown, ChannelsPOSTMutationParameters, TContext> {
-  const key = channelsPOSTMutationKey();
-  
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  
-      return useMutation((channelsPOSTMutationParameters: ChannelsPOSTMutationParameters) => Client.channelsPOST(channelsPOSTMutationParameters.name, channelsPOSTMutationParameters.poster, channelsPOSTMutationParameters.pinnedVideoId, channelsPOSTMutationParameters.avatar, channelsPOSTMutationParameters.description, channelsPOSTMutationParameters.relatedChannels), {...options, mutationKey: key});
 }
   
     
@@ -1609,16 +1688,20 @@ export function videosPUTMutationKey(id: string): MutationKey {
 }
 
 /**
- * @param body (optional) 
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param image (optional) 
+ * @param channelId (optional) 
+ * @param tags (optional) 
  * @return Success
  */
-export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.ModifyVideoDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.ModifyVideoDTO, TContext> {
+export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, VideosPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, VideosPUTMutationParameters, TContext> {
   const key = videosPUTMutationKey(id);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((body: Types.ModifyVideoDTO) => Client.videosPUT(id, body), {...options, mutationKey: key});
+      return useMutation((videosPUTMutationParameters: VideosPUTMutationParameters) => Client.videosPUT(id, videosPUTMutationParameters.name, videosPUTMutationParameters.description, videosPUTMutationParameters.image, videosPUTMutationParameters.channelId, videosPUTMutationParameters.tags), {...options, mutationKey: key});
 }
   
     
@@ -1652,6 +1735,77 @@ export function useVideosDELETEMutation<TContext>(id: string, options?: Omit<Use
       return useMutation(() => Client.videosDELETE(id), {...options, mutationKey: key});
 }
   
+    
+export function myVideosUrl(): string {
+  let url_ = getBaseUrl() + "/api/Videos/my-videos";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let myVideosDefaultOptions: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> = {
+  queryFn: __myVideos,
+};
+export function getMyVideosDefaultOptions(): UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]> {
+  return myVideosDefaultOptions;
+};
+export function setMyVideosDefaultOptions(options: UseQueryOptions<Types.VideoDTO[], unknown, Types.VideoDTO[]>) {
+  myVideosDefaultOptions = options;
+}
+
+export function myVideosQueryKey(): QueryKey;
+export function myVideosQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'myVideos',
+    ]);
+}
+function __myVideos() {
+  return Client.myVideos(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useMyVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useMyVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.VideoDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.VideoDTO[], TError, TSelectData>({
+    queryFn: __myVideos,
+    queryKey: myVideosQueryKey(),
+    ...myVideosDefaultOptions as unknown as UseQueryOptions<Types.VideoDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setMyVideosData(queryClient: QueryClient, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[], ) {
+  queryClient.setQueryData(myVideosQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setMyVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
     
 export function relatedVideosUrl(id: string): string {
   let url_ = getBaseUrl() + "/api/Videos/{id}/related-videos";
@@ -1761,7 +1915,7 @@ export function uploadMutationKey(): MutationKey {
 }
 
 /**
- * @param chunk (optional) 
+ * @param file (optional) 
  * @return Success
  */
 export function useUploadMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, UploadMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, UploadMutationParameters, TContext> {
@@ -1770,5 +1924,5 @@ export function useUploadMutation<TContext>(options?: Omit<UseMutationOptions<vo
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((uploadMutationParameters: UploadMutationParameters) => Client.upload(uploadMutationParameters.chunk), {...options, mutationKey: key});
+      return useMutation((uploadMutationParameters: UploadMutationParameters) => Client.upload(uploadMutationParameters.file), {...options, mutationKey: key});
 }

@@ -42,6 +42,17 @@ namespace Backend.Controllers
             return await _context.Channels.Where(x => x.IdOwner == userId).Select(x => x.ToDTO()).ToListAsync();
         }
 
+        // GET: api/Channels
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ChannelDTO>>> GetChannels()
+        {
+            if (_context.Channels == null)
+            {
+                return NotFound();
+            }
+            return await _context.Channels.OrderBy(x => x.Name).Select(x => x.ToDTO()).ToListAsync();
+        }
+
         // GET: api/Channels/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChannelDTO>> GetChannelDTO(Guid id)

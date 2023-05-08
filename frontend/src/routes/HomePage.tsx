@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { getTags } from 'model/Video';
-import { Channel, getChannelById } from 'model/Channel';
+import { Channel } from 'model/Channel';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
 import CustomChip from 'components/Chip/CustomChip';
 import { AxiosQuery } from 'api';
@@ -9,19 +9,9 @@ import { ApiPath } from 'components/Utils/APIUtils';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 
 function HomePage() {
-  const [channels, setChannels] = useState<Channel[] | null>(null);
   const [tags, setTags] = useState<string[] | null>(null);
   const videos = AxiosQuery.Query.useVideosAllQuery(undefined, 5);
-
-  const loadChannels = async () => {
-    const x: Channel[] = [];
-    for (let i = 0; i < 10; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      const channel = await getChannelById('asdf');
-      x.push(channel);
-    }
-    setChannels(x);
-  };
+  const channels = AxiosQuery.Query.useChannelsAllQuery();
 
   const loadTags = async () => {
     const tag = await getTags();
@@ -29,7 +19,6 @@ function HomePage() {
   };
 
   useEffect(() => {
-    loadChannels();
     loadTags();
   }, []);
 
@@ -57,8 +46,8 @@ function HomePage() {
       <Grid item xs={12} md={6}>
         <Typography variant="h6">Kanály</Typography>
         <Grid container xs={12}>
-          {channels
-            ? channels?.map((channel) => (
+          {!channels.isLoading
+            ? channels?.data?.map((channel) => (
                 <Grid item xs={6} key={channel.id}>
                   <AvatarButton
                     key={channel.id}

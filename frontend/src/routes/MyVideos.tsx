@@ -1,12 +1,14 @@
 import React from 'react';
 import { Box } from '@mui/system';
-import { getVideoById, Video } from 'model/Video';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { Video } from 'model/Video';
+import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { useMyVideosQuery } from 'api/axios-client/Query';
 
+// eslint-disable-next-line import/prefer-default-export
 export function MyVideos() {
-  const arr = useLoaderData() as Video[];
+  const arr = useMyVideosQuery().data;
   const navigate = useNavigate();
 
   const attributes: Attribute<Video>[] = [
@@ -27,6 +29,13 @@ export function MyVideos() {
       id: 'duration',
       label: 'Délka',
     },
+    {
+      id: 'uploadTimestamp',
+      label: 'Datum nahrání',
+      customFormat: (value: Date) => {
+        return value.toLocaleString();
+      },
+    },
   ];
 
   const buttons: ToolbarButton[] = [];
@@ -42,7 +51,6 @@ export function MyVideos() {
   });
 
   const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
-    console.log(id);
     navigate({
       pathname: `/videoedit/${id}`,
     });
@@ -50,24 +58,16 @@ export function MyVideos() {
 
   return (
     <Box margin={4}>
-      <EnhancedTable
-        attributes={attributes}
-        rows={arr}
-        orderBy="id"
-        buttons={buttons}
-        rowClick={rowClick}
-      />
+      {arr && (
+        <EnhancedTable
+          attributes={attributes}
+          rows={arr}
+          orderBy="uploadTimestamp"
+          desc="desc"
+          buttons={buttons}
+          rowClick={rowClick}
+        />
+      )}
     </Box>
   );
-}
-
-export async function loader() {
-  const arr: Video[] = [];
-
-  for (let i = 0; i < 10; i++) {
-    // eslint-disable-next-line no-await-in-loop
-    arr.push(await getVideoById('1234'));
-  }
-
-  return arr;
 }
