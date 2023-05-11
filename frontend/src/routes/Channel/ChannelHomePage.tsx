@@ -51,7 +51,7 @@ export function ChannelHomePage() {
       {latestVideos?.data && (
         <Grid item xs={12}>
           <Typography variant="h6">Videa</Typography>
-          <VideoInlineList videos={latestVideos?.data.items} />
+          <VideoInlineList videos={latestVideos?.data.items} showDescription />
         </Grid>
       )}
       {playlists.length > 0 && (

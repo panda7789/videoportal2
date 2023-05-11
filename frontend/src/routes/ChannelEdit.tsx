@@ -28,16 +28,30 @@ export function ChannelEdit({ newChannel = false }: Props) {
   const [posterToUpload, setPosterToUpload] = useState<File>();
 
   const channelPostMutation = AxiosQuery.Query.useChannelsPOSTMutation();
+  const channelPutMutation = AxiosQuery.Query.useChannelsPUTMutation(channel?.id ?? '');
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    // const description = data.get('description')?.toString()!;
+    const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
     if (newChannel) {
       channelPostMutation.mutate({
         name,
+        description,
+        avatar: avatarToUpload
+          ? { data: avatarToUpload, fileName: avatarToUpload.name }
+          : undefined,
+        poster: posterToUpload
+          ? { data: posterToUpload, fileName: posterToUpload.name }
+          : undefined,
+        pinnedVideoId: undefined,
+      });
+    } else {
+      channelPutMutation.mutate({
+        name,
+        description,
         avatar: avatarToUpload
           ? { data: avatarToUpload, fileName: avatarToUpload.name }
           : undefined,

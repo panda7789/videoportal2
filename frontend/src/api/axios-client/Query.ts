@@ -31,6 +31,15 @@ export type ChannelsGETQueryParameters = {
   id: string;
 };
 
+export type ChannelsPUTMutationParameters = {
+  name?: string | null | undefined ; 
+  poster?: Types.FileParameter | null | undefined ; 
+  pinnedVideoId?: string | null | undefined ; 
+  avatar?: Types.FileParameter | null | undefined ; 
+  description?: string | null | undefined ; 
+  relatedChannels?: Types.Channel[] | null | undefined ; 
+};
+
 export type ChannelVideosQueryParameters = {
   id: string;
   limit?: number | undefined;
@@ -538,16 +547,21 @@ export function channelsPUTMutationKey(id: string): MutationKey {
 }
 
 /**
- * @param body (optional) 
+ * @param name (optional) 
+ * @param poster (optional) 
+ * @param pinnedVideoId (optional) 
+ * @param avatar (optional) 
+ * @param description (optional) 
+ * @param relatedChannels (optional) 
  * @return Success
  */
-export function useChannelsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.ChannelDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.ChannelDTO, TContext> {
+export function useChannelsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, ChannelsPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, ChannelsPUTMutationParameters, TContext> {
   const key = channelsPUTMutationKey(id);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation((body: Types.ChannelDTO) => Client.channelsPUT(id, body), {...options, mutationKey: key});
+      return useMutation((channelsPUTMutationParameters: ChannelsPUTMutationParameters) => Client.channelsPUT(id, channelsPUTMutationParameters.name, channelsPUTMutationParameters.poster, channelsPUTMutationParameters.pinnedVideoId, channelsPUTMutationParameters.avatar, channelsPUTMutationParameters.description, channelsPUTMutationParameters.relatedChannels), {...options, mutationKey: key});
 }
   
     
@@ -915,35 +929,47 @@ export function useChannelUserInfoPUTMutation<TContext>(id: string, options?: Om
 }
   
     
-export function searchUrl(q?: string | undefined): string {
+export function searchUrl(q?: string | undefined, limit?: number | undefined, offset?: number | undefined): string {
   let url_ = getBaseUrl() + "/api/Search?";
 if (q === null)
     throw new Error("The parameter 'q' cannot be null.");
 else if (q !== undefined)
     url_ += "q=" + encodeURIComponent("" + q) + "&";
+if (limit === null)
+    throw new Error("The parameter 'limit' cannot be null.");
+else if (limit !== undefined)
+    url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+if (offset === null)
+    throw new Error("The parameter 'offset' cannot be null.");
+else if (offset !== undefined)
+    url_ += "offset=" + encodeURIComponent("" + offset) + "&";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function searchMutationKey(q?: string | undefined): MutationKey {
+export function searchMutationKey(q?: string | undefined, limit?: number | undefined, offset?: number | undefined): MutationKey {
   return trimArrayEnd([
       'Client',
       'search',
       q as any,
+      limit as any,
+      offset as any,
     ]);
 }
 
 /**
  * @param q (optional) 
+ * @param limit (optional) 
+ * @param offset (optional) 
  * @return Success
  */
-export function useSearchMutation<TContext>(q?: string | undefined, options?: Omit<UseMutationOptions<Types.VideoDTO[], unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.VideoDTO[], unknown, void, TContext> {
-  const key = searchMutationKey(q);
+export function useSearchMutation<TContext>(q?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: Omit<UseMutationOptions<Types.WithTotalCountOfVideoDTO, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.WithTotalCountOfVideoDTO, unknown, void, TContext> {
+  const key = searchMutationKey(q, limit, offset);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-      return useMutation(() => Client.search(q), {...options, mutationKey: key});
+      return useMutation(() => Client.search(q, limit, offset), {...options, mutationKey: key});
 }
   
     

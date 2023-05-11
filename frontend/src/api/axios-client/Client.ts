@@ -482,10 +482,15 @@ function processChannelsGET(response: AxiosResponse): Promise<Types.ChannelDTO> 
 }
 
 /**
- * @param body (optional) 
+ * @param name (optional) 
+ * @param poster (optional) 
+ * @param pinnedVideoId (optional) 
+ * @param avatar (optional) 
+ * @param description (optional) 
+ * @param relatedChannels (optional) 
  * @return Success
  */
-export function channelsPUT(id: string, body?: Types.ChannelDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function channelsPUT(id: string, name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: Types.Channel[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Channels/{id}";
 
     if (id === undefined || id === null)
@@ -493,7 +498,19 @@ export function channelsPUT(id: string, body?: Types.ChannelDTO | undefined, con
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
       url_ = url_.replace(/[?&]$/, "");
 
-    const content_ = JSON.stringify(body);
+    const content_ = new FormData();
+    if (name !== null && name !== undefined)
+        content_.append("Name", name.toString());
+    if (poster !== null && poster !== undefined)
+        content_.append("Poster", poster.data, poster.fileName ? poster.fileName : "Poster");
+    if (pinnedVideoId !== null && pinnedVideoId !== undefined)
+        content_.append("PinnedVideoId", pinnedVideoId.toString());
+    if (avatar !== null && avatar !== undefined)
+        content_.append("Avatar", avatar.data, avatar.fileName ? avatar.fileName : "Avatar");
+    if (description !== null && description !== undefined)
+        content_.append("Description", description.toString());
+    if (relatedChannels !== null && relatedChannels !== undefined)
+        relatedChannels.forEach(item_ => content_.append("RelatedChannels", item_.toString()));
 
     let options_: AxiosRequestConfig = {
         ..._requestConfigChannelsPUT,
@@ -502,7 +519,6 @@ export function channelsPUT(id: string, body?: Types.ChannelDTO | undefined, con
         method: "PUT",
         url: url_,
         headers: {
-            "Content-Type": "application/json",
         }
     };
 
@@ -827,14 +843,24 @@ function processChannelUserInfoPUT(response: AxiosResponse): Promise<void> {
 
 /**
  * @param q (optional) 
+ * @param limit (optional) 
+ * @param offset (optional) 
  * @return Success
  */
-export function search(q?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
+export function search(q?: string | undefined, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.WithTotalCountOfVideoDTO> {
     let url_ = getBaseUrl() + "/api/Search?";
     if (q === null)
         throw new Error("The parameter 'q' cannot be null.");
     else if (q !== undefined)
         url_ += "q=" + encodeURIComponent("" + q) + "&";
+    if (limit === null)
+        throw new Error("The parameter 'limit' cannot be null.");
+    else if (limit !== undefined)
+        url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+    if (offset === null)
+        throw new Error("The parameter 'offset' cannot be null.");
+    else if (offset !== undefined)
+        url_ += "offset=" + encodeURIComponent("" + offset) + "&";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -858,7 +884,7 @@ export function search(q?: string | undefined, config?: AxiosRequestConfig | und
     });
 }
 
-function processSearch(response: AxiosResponse): Promise<Types.VideoDTO[]> {
+function processSearch(response: AxiosResponse): Promise<Types.WithTotalCountOfVideoDTO> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -872,21 +898,14 @@ function processSearch(response: AxiosResponse): Promise<Types.VideoDTO[]> {
         const _responseText = response.data;
         let result200: any = null;
         let resultData200  = _responseText;
-        if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-                result200!.push(Types.VideoDTO.fromJS(item));
-        }
-        else {
-            result200 = <any>null;
-        }
-        return Promise.resolve<Types.VideoDTO[]>(result200);
+        result200 = Types.WithTotalCountOfVideoDTO.fromJS(resultData200);
+        return Promise.resolve<Types.WithTotalCountOfVideoDTO>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.VideoDTO[]>(null as any);
+    return Promise.resolve<Types.WithTotalCountOfVideoDTO>(null as any);
 }
 
 /**

@@ -9,12 +9,16 @@ export interface Props {
   skeletonCount?: number;
   currentlyPlaying?: number;
   urlParamsGenerator?: (video: Video, index: number) => string;
+  showChannel?: boolean;
+  showDescription?: boolean;
 }
 export function VideoInlineList({
   videos,
   currentlyPlaying,
   urlParamsGenerator,
   skeletonCount = 5,
+  showChannel = false,
+  showDescription = false,
 }: Props) {
   return (
     <InlineList>
@@ -23,8 +27,8 @@ export function VideoInlineList({
             <VideoCard
               key={_video.id}
               video={_video}
-              showChannel={false}
-              showDescription={false}
+              showChannel={showChannel}
+              showDescription={showDescription}
               smallThumbnail
               currentlyPlaying={currentlyPlaying === index}
               urlParams={urlParamsGenerator ? urlParamsGenerator(_video, index) : ''}

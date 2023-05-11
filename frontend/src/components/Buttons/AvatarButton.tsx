@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { GetInitials } from 'components/Utils/StringUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
+import { ApiPath } from 'components/Utils/APIUtils';
 
 export interface Props {
   key?: string;

@@ -222,7 +222,7 @@ function VideoDetail() {
                   alignItems="center"
                 >
                   <ChannelAvatar
-                    imageSrc={video.channelAvatarUrl}
+                    imageSrc={ApiPath(video.channelAvatarUrl)}
                     avatarInitials={video.channelName}
                     large
                   />
@@ -249,7 +249,7 @@ function VideoDetail() {
             <Box mt={2}>
               <Typography variant="body1">Podobná videa</Typography>
               <Box mt={2}>
-                <VideoInlineList videos={relatedVideosQuery.data} />
+                <VideoInlineList videos={relatedVideosQuery.data} showChannel />
               </Box>
             </Box>
           )}

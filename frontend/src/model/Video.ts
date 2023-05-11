@@ -32,32 +32,21 @@ export async function getVideoById(id: string): Promise<VideoDTO> {
 }
 
 export async function search(q: string): Promise<VideoDTO[]> {
-  console.log(`Searching for ${q}`);
-  const arr: VideoDTO[] = [];
-
-  for (let i = 0; i < 10; i++) {
-    // eslint-disable-next-line no-await-in-loop
-    const video = await getVideoById(q);
-    arr.push(new Video({ ...video, id: uuidv4(), name: uuidv4() }));
-  }
-
-  return arr;
+  // eslint-disable-next-line no-template-curly-in-string
+  return AxiosQuery.Client.search(
+    `${q
+      .toString()
+      .trim()
+      .substring(0, q.length > 20 ? 20 : q.length)}`,
+  );
 }
 
-export async function searchTags(tags: string[]): Promise<Video[]> {
+export async function searchTags(tags: string[]): Promise<VideoDTO[]> {
   console.log(`Searching for tags: ${tags.toString()}`);
-  const arr: Video[] = [];
-
-  for (let i = 0; i < 10; i++) {
-    // eslint-disable-next-line no-await-in-loop
-    const video = await getVideoById('A');
-    arr.push(new Video({ ...video, id: uuidv4(), name: uuidv4() }));
-  }
-
-  return arr;
+  return [];
 }
 
-export function videoUrl(video: Video) {
+export function videoUrl(video: VideoDTO) {
   return `/video/${video.id}`;
 }
 

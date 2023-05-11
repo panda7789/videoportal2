@@ -49,8 +49,6 @@ namespace Backend.Models
         public Guid ChannelId { get; set; }
         public string? Description { get; set; }
         public DateTime DateOfRegistration { get; set; }
-
-        // owner.email
         public string? Email { get; set; }
         public ICollection<Channel>? RelatedChannels { get; set; }
     }
@@ -74,7 +72,7 @@ namespace Backend.Models
         public bool Subscribed { get; set; } = false;
     }
 
-    public class ChannelPostRequest
+    public class ChannelPostPutRequest
     {
         public string Name { get; set; }
         public IFormFile? Poster { get; set; }

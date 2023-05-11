@@ -1,11 +1,10 @@
 import { Box, Grid, Typography } from '@mui/material';
 import { AxiosQuery } from 'api';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
+import { ApiPath } from 'components/Utils/APIUtils';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 
-// eslint-disable-next-line import/prefer-default-export
 export function MyChannels() {
-  // const arr = useLoaderData() as Channel[];
   const arr = AxiosQuery.Query.useMyChannelsQuery().data;
 
   return (
@@ -21,7 +20,7 @@ export function MyChannels() {
                 key={channel.id}
                 url={`/mychannels/${channel.id}`}
                 text={channel.name}
-                image={channel.avatarUrl}
+                image={ApiPath(channel.avatarUrl)}
               />
               <Typography>{NumberToWords(channel.subscribersCount ?? 0)} odběratelů</Typography>
             </Box>

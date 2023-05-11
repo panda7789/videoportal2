@@ -228,7 +228,7 @@ function VideoCard({
               >
                 {(showAvatar ?? true) && (
                   <ChannelAvatar
-                    imageSrc={video?.channelAvatarUrl}
+                    imageSrc={ApiPath(video?.channelAvatarUrl)}
                     avatarInitials={video.channelName}
                   />
                 )}

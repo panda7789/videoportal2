@@ -4,13 +4,12 @@ import { Button, Grid } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { AxiosQuery } from 'api';
-import { Video } from 'model/Video';
 
 export async function loader({ params }: { params: any }) {
   return params.channelId;
 }
 
-const pageSize = 5;
+const pageSize = 8;
 
 export function ChannelVideos() {
   const channelId = useLoaderData() as string;
@@ -22,8 +21,9 @@ export function ChannelVideos() {
       return AxiosQuery.Client.channelVideos(channelId, pageSize, pageParam * pageSize);
     },
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.totalCount > pages.length * pageSize;
+      return lastPage.totalCount > pages.length * pageSize ? pages.length : undefined;
     },
+    refetchOnWindowFocus: false,
   });
 
   return (

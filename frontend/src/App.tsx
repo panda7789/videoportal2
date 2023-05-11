@@ -6,7 +6,6 @@ import { ThemeProvider } from '@emotion/react';
 import { Box } from '@mui/system';
 import HomePage from 'routes/HomePage';
 import VideoDetail, { loader as videoLoader } from 'routes/VideoDetail';
-import SearchResult from 'routes/SearchResult';
 import { loader as searchLoader } from 'components/AppBar/Search';
 import { MyVideos } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
@@ -23,6 +22,7 @@ import { MyChannels } from 'routes/MyChannels';
 import { ChannelEdit, loader as channelEditLoader } from 'routes/ChannelEdit';
 import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
+import SearchResult from 'routes/SearchResult';
 
 function App() {
   const router = createBrowserRouter([

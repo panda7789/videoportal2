@@ -27,7 +27,7 @@ function HomePage() {
       <Grid item xs={12}>
         <Typography variant="h6">Videa</Typography>
         <Grid container spacing={1} p={2} sx={{ overflow: 'hidden', gridRow: 1 }}>
-          <VideoInlineList videos={videos.data} />
+          <VideoInlineList videos={videos.data} showChannel />
         </Grid>
       </Grid>
       <Grid item xs={12} md={6}>

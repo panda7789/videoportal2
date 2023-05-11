@@ -4,19 +4,23 @@ import IconButton from '@mui/material/IconButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, Box, InputBase } from '@mui/material';
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import { search, searchTags } from 'model/Video';
 
-export async function loader({ request }: { request: any }) {
+export interface SearchQ {
+  searchTerm?: string;
+  tags?: string;
+}
+
+export async function loader({ request }: { request: any }): Promise<SearchQ> {
   const url = new URL(request.url);
   const searchTerm = url.searchParams.get('q');
   if (searchTerm) {
-    return search(searchTerm);
+    return { searchTerm };
   }
   const tags = url.searchParams.get('tags');
   if (tags) {
-    return searchTags(tags.split(','));
+    return { tags };
   }
-  return null;
+  return Promise.reject();
 }
 
 export const searchUrl = (searchedParam: string) => {
@@ -38,6 +42,9 @@ function Search() {
   ) => {
     e.preventDefault();
     const params = { q: inputValue };
+    if (inputValue?.length === 0 ?? true) {
+      return;
+    }
     navigate({
       pathname: '/search',
       search: `?${createSearchParams(params)}`,
@@ -100,6 +107,11 @@ function Search() {
               setInputValue(newInputValue);
             }}
             options={predmety}
+            sx={{
+              '& .MuiAutocomplete-endAdornment > button': {
+                color: 'white',
+              },
+            }}
             renderInput={(params) => {
               const { InputLabelProps, InputProps, ...rest } = params;
               return (
@@ -114,10 +126,8 @@ function Search() {
                       width: '100%',
                       paddingLeft: 4,
                     },
-                    '& .MuiAutocomplete-endAdornment > button': {
-                      color: 'white',
-                    },
                   }}
+                  endAdornment={undefined}
                   placeholder="Vyhledávání…"
                   onKeyPress={(event) => {
                     if (event.key === 'Enter') searchButtonClickHandle(event);

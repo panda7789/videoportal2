@@ -204,30 +204,48 @@ namespace Backend.Controllers
         // PUT: api/Channels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutChannelDTO(Guid id, ChannelDTO channelDTO)
+        public async Task<IActionResult> PutChannelDTO(Guid id, [FromForm] ChannelPostPutRequest channelDTO)
         {
-            if (id != channelDTO.Id)
+            var userId = User.GetUserId();
+            if (userId == null)
             {
-                return BadRequest();
+                return Unauthorized();
+            }
+            var channel = await _context.Channels.FindAsync(id);
+            if (channel == null)
+            {
+                return NotFound();
+            }
+            var channelAdvancedInfo = _context.ChannelAdvancedInfos.Where(x => x.ChannelId == id).FirstOrDefault();
+            if (channelAdvancedInfo == null)
+            {
+                return NotFound();
+            }
+            if (channel.IdOwner != userId)
+            {
+                return Unauthorized();
             }
 
-            _context.Entry(channelDTO).State = EntityState.Modified;
+            channel.Name = channelDTO.Name;
+            channel.PinnedVideoId = channelDTO.PinnedVideoId;
+            channelAdvancedInfo.Description = channelDTO.Description;
+            channelAdvancedInfo.RelatedChannels = channelDTO.RelatedChannels;
+            if (channelDTO.Poster != null)
+            {
+                var posterName = $"{channelDTO.Name}[GUID].{channelDTO.Poster.FileName.Split(".")[1]}";
+                channel.PosterUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, channelDTO.Poster);
+            }
+            if (channelDTO.Avatar != null)
+            {
+                var avatarName = $"{channelDTO.Name}[GUID].{channelDTO.Avatar.FileName.Split(".")[1]}";
+                channel.AvatarUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, avatarName, channelDTO.Avatar);
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChannelDTOExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            _context.Entry(channel).State = EntityState.Modified;
+            _context.Entry(channelAdvancedInfo).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -235,7 +253,7 @@ namespace Backend.Controllers
         // POST: api/Channels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ChannelDTO>> PostChannelDTO([FromForm] ChannelPostRequest channelDTO)
+        public async Task<ActionResult<ChannelDTO>> PostChannelDTO([FromForm] ChannelPostPutRequest channelDTO)
         {
             if (_context.Channels == null)
             {
@@ -256,16 +274,6 @@ namespace Backend.Controllers
                 IdOwner = userId ?? Guid.Empty,
             };
 
-            var channelAdvancedInfo = new ChannelAdvancedInfo()
-            {
-                ChannelId = channel.Id,
-                DateOfRegistration = DateTime.UtcNow,
-                Description = channelDTO.Description,
-                Email = userEmail,
-                RelatedChannels = channelDTO.RelatedChannels
-                
-            };
-
             if (channelDTO.Poster != null)
             {
                 var posterName = $"{channelDTO.Name}[GUID].{channelDTO.Poster.FileName.Split(".")[1]}";
@@ -276,9 +284,19 @@ namespace Backend.Controllers
                 var avatarName = $"{channelDTO.Name}[GUID].{channelDTO.Avatar.FileName.Split(".")[1]}";
                 channel.AvatarUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, avatarName, channelDTO.Avatar);
             }
-
-
             _context.Channels.Add(channel);
+            var channelAdvancedInfo = new ChannelAdvancedInfo()
+            {
+                ChannelId = channel.Id,
+                DateOfRegistration = DateTime.UtcNow,
+                Description = channelDTO.Description,
+                Email = userEmail,
+                RelatedChannels = channelDTO.RelatedChannels
+                
+            };
+
+
+
             _context.ChannelAdvancedInfos.Add(channelAdvancedInfo);
             await _context.SaveChangesAsync();
 

@@ -6,7 +6,7 @@ export function NumberToWords(input: number): string {
   if (input > 999) {
     return `${(input / 1000).toFixed(1)} tis.`;
   }
-  return `${input.toFixed(1)}`;
+  return `${input.toFixed(0)}`;
 }
 
 export function SizeToWords(input: number): string {

@@ -4,7 +4,7 @@ import { ChannelAdvancedInfo, getChannelAdvancedInfo } from 'model/Channel';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
 
 export async function loader({ params }: { params: any }) {
-  return getChannelAdvancedInfo('asdf');
+  return getChannelAdvancedInfo(params.channelId);
 }
 
 export function ChannelInfo() {
@@ -23,7 +23,7 @@ export function ChannelInfo() {
           </Box>
           <Box>
             <Typography variant="caption">Datum registrace:</Typography>
-            <Typography>{info.dateOfRegistration}</Typography>
+            <Typography>{info.dateOfRegistration.toLocaleString()}</Typography>
           </Box>
           <Box>
             {info.email && (
