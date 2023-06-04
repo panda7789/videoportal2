@@ -34,6 +34,7 @@ export interface Attribute<T> {
   label: string;
   align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
   image?: boolean;
+  imageCustomElement?: (row: T) => JSX.Element;
   customFormat?: (value: any) => string;
 }
 
@@ -337,7 +338,9 @@ export default function EnhancedTable<T extends TableDataBase>({
                             }),
                           }}
                         >
-                          {attr.image ?? false ? (
+                          {attr.imageCustomElement ? (
+                            attr.imageCustomElement(row)
+                          ) : attr.image ?? false ? (
                             <AspectRatio ratio={16 / 9}>
                               <img
                                 style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}

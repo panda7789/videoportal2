@@ -18,13 +18,17 @@ import * as Client from './Client'
 export { Client };
 import type { AxiosRequestConfig } from 'axios';
 
+export type CommentsAllQueryParameters = {
+  videoId: string;
+};
+
 export type ChannelsPOSTMutationParameters = {
   name?: string | null | undefined ; 
   poster?: Types.FileParameter | null | undefined ; 
   pinnedVideoId?: string | null | undefined ; 
   avatar?: Types.FileParameter | null | undefined ; 
   description?: string | null | undefined ; 
-  relatedChannels?: Types.Channel[] | null | undefined ; 
+  relatedChannels?: string[] | null | undefined ; 
 };
 
 export type ChannelsGETQueryParameters = {
@@ -37,7 +41,7 @@ export type ChannelsPUTMutationParameters = {
   pinnedVideoId?: string | null | undefined ; 
   avatar?: Types.FileParameter | null | undefined ; 
   description?: string | null | undefined ; 
-  relatedChannels?: Types.Channel[] | null | undefined ; 
+  relatedChannels?: string[] | null | undefined ; 
 };
 
 export type ChannelVideosQueryParameters = {
@@ -75,7 +79,7 @@ export type VideosPOSTMutationParameters = {
   durationSec?: number | undefined ; 
   image?: Types.FileParameter | null | undefined ; 
   channelId?: string | undefined ; 
-  tags?: Types.Tag[] | null | undefined ; 
+  tags?: string[] | null | undefined ; 
 };
 
 export type VideosGETQueryParameters = {
@@ -87,7 +91,7 @@ export type VideosPUTMutationParameters = {
   description?: string | null | undefined ; 
   image?: Types.FileParameter | null | undefined ; 
   channelId?: string | undefined ; 
-  tags?: Types.Tag[] | null | undefined ; 
+  tags?: string[] | null | undefined ; 
 };
 
 export type RelatedVideosQueryParameters = {
@@ -99,8 +103,12 @@ export type UploadMutationParameters = {
 };
 
     
-export function commentsAllUrl(): string {
-  let url_ = getBaseUrl() + "/api/Comments";
+export function commentsAllUrl(videoId: string): string {
+  let url_ = getBaseUrl() + "/api/Comments/{videoId}";
+
+if (videoId === undefined || videoId === null)
+  throw new Error("The parameter 'videoId' must be defined.");
+url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -115,29 +123,48 @@ export function setCommentsAllDefaultOptions(options: UseQueryOptions<Types.Comm
   commentsAllDefaultOptions = options;
 }
 
-export function commentsAllQueryKey(): QueryKey;
+export function commentsAllQueryKey(videoId: string): QueryKey;
 export function commentsAllQueryKey(...params: any[]): QueryKey {
-  return trimArrayEnd([
-      'Client',
-      'commentsAll',
-    ]);
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { videoId,  } = params[0] as CommentsAllQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'commentsAll',
+        videoId as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'commentsAll',
+        ...params
+      ]);
+  }
 }
-function __commentsAll() {
+function __commentsAll(context: QueryFunctionContext) {
   return Client.commentsAll(
-    );
+      context.queryKey[2] as string    );
 }
 
+export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(dto: CommentsAllQueryParameters, options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(videoId: string, options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
   let options: UseQueryOptions<Types.CommentDTO[], TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
+  let videoId: any = undefined;
   
-
-  options = params[0] as any;
-  axiosConfig = params[1] as any;
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ videoId,  } = params[0] as CommentsAllQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [videoId, options, axiosConfig] = params;
+    }
+  }
 
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
@@ -148,7 +175,7 @@ export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = u
 
   return useQuery<Types.CommentDTO[], TError, TSelectData>({
     queryFn: __commentsAll,
-    queryKey: commentsAllQueryKey(),
+    queryKey: commentsAllQueryKey(videoId),
     ...commentsAllDefaultOptions as unknown as UseQueryOptions<Types.CommentDTO[], TError, TSelectData>,
     ...options,
   });
@@ -156,8 +183,8 @@ export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = u
 /**
  * @return Success
  */
-export function setCommentsAllData(queryClient: QueryClient, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[], ) {
-  queryClient.setQueryData(commentsAllQueryKey(),
+export function setCommentsAllData(queryClient: QueryClient, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[], videoId: string) {
+  queryClient.setQueryData(commentsAllQueryKey(videoId),
     updater
   );
 }
@@ -169,33 +196,6 @@ export function setCommentsAllDataByQueryId(queryClient: QueryClient, queryKey: 
   queryClient.setQueryData(queryKey, updater);
 }
     
-    
-export function commentsPOSTUrl(): string {
-  let url_ = getBaseUrl() + "/api/Comments";
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-export function commentsPOSTMutationKey(): MutationKey {
-  return trimArrayEnd([
-      'Client',
-      'commentsPOST',
-    ]);
-}
-
-/**
- * @param body (optional) 
- * @return Success
- */
-export function useCommentsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.CommentPostDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.CommentPostDTO, TContext> {
-  const key = commentsPOSTMutationKey();
-  
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  
-      return useMutation((body: Types.CommentPostDTO) => Client.commentsPOST(body), {...options, mutationKey: key});
-}
-  
     
 export function commentsPUTUrl(id: string): string {
   let url_ = getBaseUrl() + "/api/Comments/{id}";
@@ -257,6 +257,33 @@ export function useCommentsDELETEMutation<TContext>(id: string, options?: Omit<U
   options = addMetaToOptions(options, metaContext);
   
       return useMutation(() => Client.commentsDELETE(id), {...options, mutationKey: key});
+}
+  
+    
+export function commentsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/Comments";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function commentsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'commentsPOST',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useCommentsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.CommentPostDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.CommentPostDTO, TContext> {
+  const key = commentsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: Types.CommentPostDTO) => Client.commentsPOST(body), {...options, mutationKey: key});
 }
   
     
@@ -719,13 +746,13 @@ url_ = url_.replace("{id}", encodeURIComponent("" + id));
   return url_;
 }
 
-let channelAdvancedInfoDefaultOptions: UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo> = {
+let channelAdvancedInfoDefaultOptions: UseQueryOptions<Types.ChannelAdvancedInfoDTO, unknown, Types.ChannelAdvancedInfoDTO> = {
   queryFn: __channelAdvancedInfo,
 };
-export function getChannelAdvancedInfoDefaultOptions(): UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo> {
+export function getChannelAdvancedInfoDefaultOptions(): UseQueryOptions<Types.ChannelAdvancedInfoDTO, unknown, Types.ChannelAdvancedInfoDTO> {
   return channelAdvancedInfoDefaultOptions;
 };
-export function setChannelAdvancedInfoDefaultOptions(options: UseQueryOptions<Types.ChannelAdvancedInfo, unknown, Types.ChannelAdvancedInfo>) {
+export function setChannelAdvancedInfoDefaultOptions(options: UseQueryOptions<Types.ChannelAdvancedInfoDTO, unknown, Types.ChannelAdvancedInfoDTO>) {
   channelAdvancedInfoDefaultOptions = options;
 }
 
@@ -752,13 +779,13 @@ function __channelAdvancedInfo(context: QueryFunctionContext) {
       context.queryKey[2] as string    );
 }
 
-export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(dto: ChannelAdvancedInfoQueryParameters, options?: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfoDTO, TError = unknown>(dto: ChannelAdvancedInfoQueryParameters, options?: UseQueryOptions<Types.ChannelAdvancedInfoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(id: string, options?: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfo, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData> | undefined = undefined;
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfoDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.ChannelAdvancedInfoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedInfoDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ChannelAdvancedInfoDTO, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
   let id: any = undefined;
   
@@ -779,17 +806,17 @@ export function useChannelAdvancedInfoQuery<TSelectData = Types.ChannelAdvancedI
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.ChannelAdvancedInfo, TError, TSelectData>({
+  return useQuery<Types.ChannelAdvancedInfoDTO, TError, TSelectData>({
     queryFn: __channelAdvancedInfo,
     queryKey: channelAdvancedInfoQueryKey(id),
-    ...channelAdvancedInfoDefaultOptions as unknown as UseQueryOptions<Types.ChannelAdvancedInfo, TError, TSelectData>,
+    ...channelAdvancedInfoDefaultOptions as unknown as UseQueryOptions<Types.ChannelAdvancedInfoDTO, TError, TSelectData>,
     ...options,
   });
 }
 /**
  * @return Success
  */
-export function setChannelAdvancedInfoData(queryClient: QueryClient, updater: (data: Types.ChannelAdvancedInfo | undefined) => Types.ChannelAdvancedInfo, id: string) {
+export function setChannelAdvancedInfoData(queryClient: QueryClient, updater: (data: Types.ChannelAdvancedInfoDTO | undefined) => Types.ChannelAdvancedInfoDTO, id: string) {
   queryClient.setQueryData(channelAdvancedInfoQueryKey(id),
     updater
   );
@@ -798,7 +825,7 @@ export function setChannelAdvancedInfoData(queryClient: QueryClient, updater: (d
 /**
  * @return Success
  */
-export function setChannelAdvancedInfoDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ChannelAdvancedInfo | undefined) => Types.ChannelAdvancedInfo) {
+export function setChannelAdvancedInfoDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ChannelAdvancedInfoDTO | undefined) => Types.ChannelAdvancedInfoDTO) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -970,6 +997,206 @@ export function useSearchMutation<TContext>(q?: string | undefined, limit?: numb
   options = addMetaToOptions(options, metaContext);
   
       return useMutation(() => Client.search(q, limit, offset), {...options, mutationKey: key});
+}
+  
+    
+export function tagsAllUrl(): string {
+  let url_ = getBaseUrl() + "/api/Tags";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let tagsAllDefaultOptions: UseQueryOptions<Types.TagDTO[], unknown, Types.TagDTO[]> = {
+  queryFn: __tagsAll,
+};
+export function getTagsAllDefaultOptions(): UseQueryOptions<Types.TagDTO[], unknown, Types.TagDTO[]> {
+  return tagsAllDefaultOptions;
+};
+export function setTagsAllDefaultOptions(options: UseQueryOptions<Types.TagDTO[], unknown, Types.TagDTO[]>) {
+  tagsAllDefaultOptions = options;
+}
+
+export function tagsAllQueryKey(): QueryKey;
+export function tagsAllQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'tagsAll',
+    ]);
+}
+function __tagsAll() {
+  return Client.tagsAll(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useTagsAllQuery<TSelectData = Types.TagDTO[], TError = unknown>(options?: UseQueryOptions<Types.TagDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useTagsAllQuery<TSelectData = Types.TagDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.TagDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.TagDTO[], TError, TSelectData>({
+    queryFn: __tagsAll,
+    queryKey: tagsAllQueryKey(),
+    ...tagsAllDefaultOptions as unknown as UseQueryOptions<Types.TagDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setTagsAllData(queryClient: QueryClient, updater: (data: Types.TagDTO[] | undefined) => Types.TagDTO[], ) {
+  queryClient.setQueryData(tagsAllQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setTagsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.TagDTO[] | undefined) => Types.TagDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function tagsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/Tags";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function tagsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'tagsPOST',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useTagsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, string, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, string, TContext> {
+  const key = tagsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: string) => Client.tagsPOST(body), {...options, mutationKey: key});
+}
+  
+    
+export function tagsWithVideosUrl(): string {
+  let url_ = getBaseUrl() + "/api/Tags/tagsWithVideos";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let tagsWithVideosDefaultOptions: UseQueryOptions<Types.Tag[], unknown, Types.Tag[]> = {
+  queryFn: __tagsWithVideos,
+};
+export function getTagsWithVideosDefaultOptions(): UseQueryOptions<Types.Tag[], unknown, Types.Tag[]> {
+  return tagsWithVideosDefaultOptions;
+};
+export function setTagsWithVideosDefaultOptions(options: UseQueryOptions<Types.Tag[], unknown, Types.Tag[]>) {
+  tagsWithVideosDefaultOptions = options;
+}
+
+export function tagsWithVideosQueryKey(): QueryKey;
+export function tagsWithVideosQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'tagsWithVideos',
+    ]);
+}
+function __tagsWithVideos() {
+  return Client.tagsWithVideos(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useTagsWithVideosQuery<TSelectData = Types.Tag[], TError = unknown>(options?: UseQueryOptions<Types.Tag[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useTagsWithVideosQuery<TSelectData = Types.Tag[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.Tag[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.Tag[], TError, TSelectData>({
+    queryFn: __tagsWithVideos,
+    queryKey: tagsWithVideosQueryKey(),
+    ...tagsWithVideosDefaultOptions as unknown as UseQueryOptions<Types.Tag[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setTagsWithVideosData(queryClient: QueryClient, updater: (data: Types.Tag[] | undefined) => Types.Tag[], ) {
+  queryClient.setQueryData(tagsWithVideosQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setTagsWithVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Tag[] | undefined) => Types.Tag[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function tagsDELETEUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Tags/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function tagsDELETEMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'tagsDELETE',
+      id as any,
+    ]);
+}
+
+/**
+ * @return Success
+ */
+export function useTagsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = tagsDELETEMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.tagsDELETE(id), {...options, mutationKey: key});
 }
   
     
@@ -1449,6 +1676,38 @@ export function useUserVideoStatsPUTMutation<TContext>(videoId: string, options?
   options = addMetaToOptions(options, metaContext);
   
       return useMutation((body: Types.UserVideoStats) => Client.userVideoStatsPUT(videoId, body), {...options, mutationKey: key});
+}
+  
+    
+export function watchedUrl(videoId: string): string {
+  let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}/watched";
+
+if (videoId === undefined || videoId === null)
+  throw new Error("The parameter 'videoId' must be defined.");
+url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function watchedMutationKey(videoId: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'watched',
+      videoId as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useWatchedMutation<TContext>(videoId: string, options?: Omit<UseMutationOptions<void, unknown, number, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, number, TContext> {
+  const key = watchedMutationKey(videoId);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((body: number) => Client.watched(videoId, body), {...options, mutationKey: key});
 }
   
     

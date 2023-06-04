@@ -1,18 +1,35 @@
-import type { Error } from 'model/Error';
-import React from 'react';
 import { useRouteError } from 'react-router-dom';
+import { Typography, Container, Box } from '@mui/material';
 
 export default function ErrorPage() {
   const error = useRouteError() as Error;
-  console.error(error);
-
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{error.statusText || error.message}</i>
-      </p>
-    </div>
+    <Container maxWidth="md">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        mt={10}
+        mb={10}
+        p={4}
+        bgcolor="#f8f8f8"
+        borderRadius={10}
+        boxShadow={3}
+      >
+        <img
+          src="https://robohash.org/error%20page"
+          alt="Funny Error Illustration"
+          style={{ width: '200px' }}
+        />
+
+        <Typography variant="h2" component="h1" align="center" gutterBottom>
+          Ups!
+        </Typography>
+
+        <Typography variant="h6" component="h2" align="center" gutterBottom>
+          {error.message}
+        </Typography>
+      </Box>
+    </Container>
   );
 }

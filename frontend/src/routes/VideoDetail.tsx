@@ -26,12 +26,19 @@ import { getPlaylistById, PlaylistModel } from 'model/Playlist';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
-import { UserDTO, UserRoles, VideoDTO as Video } from 'api/axios-client';
+import { CommentPostDTO, UserDTO, UserRoles, VideoDTO as Video } from 'api/axios-client';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { AxiosQuery } from 'api';
 import { NavigationContext, UserContext } from './Root';
+import {
+  useCommentsAllQuery,
+  useCommentsPOSTMutation,
+  useUserVideoStatsGETQuery,
+  useUserVideoStatsPUTMutation,
+  useWatchedMutation,
+} from 'api/axios-client/Query';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -85,15 +92,27 @@ export async function loader({ params }: { params: any }) {
 function VideoDetail() {
   const [expanded, setExpanded] = React.useState(true);
   const commentInput = React.createRef<HTMLInputElement>();
-  const [comments, setComments] = React.useState<CommentProps[]>([]);
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
   const [searchParams] = useSearchParams();
   const [playlist, setPlaylist] = React.useState<PlaylistModel | undefined>(undefined);
   const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
-  const [commentsLoading, setCommentsLoading] = React.useState<boolean>(false);
+  const [commentTimeout, setCommentTimeout] = React.useState(false);
   const userContext = useContext(UserContext);
   const relatedVideosQuery = AxiosQuery.Query.useRelatedVideosQuery({ id: video.id });
+  const commentsQuery = useCommentsAllQuery({ videoId: video.id }, { refetchOnWindowFocus: false });
+  const userVideoStatsMutation = useWatchedMutation(video.id);
+  const userVideoStatsQuery = useUserVideoStatsGETQuery({ videoId: video.id });
+  const commentMutation = useCommentsPOSTMutation({
+    onSuccess: () => {
+      commentsQuery.refetch();
+      commentInput.current.value = '';
+      setCommentTimeout(true);
+      setTimeout(() => {
+        setCommentTimeout(false);
+      }, 10 * 1000);
+    },
+  });
 
   useEffect(() => {
     console.log(searchParams.toString());
@@ -111,38 +130,14 @@ function VideoDetail() {
     context?.setOpen(false);
   }, []);
 
-  useEffect(() => {
-    const commentsApi: CommentProps[] = [];
-    [...Array.from(Array(10).keys())].forEach(() => {
-      commentsApi.push({
-        user: Users[Math.floor(Math.random() * Users.length)],
-        text: Texts[Math.floor(Math.random() * Texts.length)],
-      });
-    });
-    setComments(commentsApi);
-  }, []);
   const addComment = async (commentText: string | undefined) => {
     if (commentText) {
-      setCommentsLoading(true);
-      const comment: CommentProps = {
-        text: commentText,
-        user: new UserDTO({
-          id: '0',
-          name: 'Lukáš Linhart',
-          initials: 'LL',
-          email: 'a@b.cz',
-          roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
-        }), // TODO Current user
-      };
-      await Promise.all([
-        // eslint-disable-next-line no-promise-executor-return
-        new Promise((r) => setTimeout(r, 500)),
-      ]);
-      setComments((prevState) => [comment, ...prevState]);
-      if (commentInput && commentInput.current) {
-        commentInput.current.value = '';
-      }
-      setCommentsLoading(false);
+      commentMutation.mutate(
+        new CommentPostDTO({
+          text: commentText,
+          videoId: video.id,
+        }),
+      );
     }
   };
 
@@ -162,20 +157,36 @@ function VideoDetail() {
     setExpanded(!expanded);
   };
 
+  const userWatchedHandle = (sec: number) => {
+    userVideoStatsMutation.mutate(sec);
+  };
+
   useEffect(() => {
     ScrollToTop();
   }, [video]);
+
+  useEffect(() => {
+    userVideoStatsQuery.refetch();
+  }, [userContext]);
 
   return (
     <Grid container xs={12}>
       <Grid item xs={12}>
         {video?.dataUrl ? (
-          <VideoPlayer videoSrc={ApiPath(video.dataUrl)!} />
+          <VideoPlayer
+            videoSrc={ApiPath(video.dataUrl)!}
+            triggerWatched={userWatchedHandle}
+            watchedTimeSec={
+              !userVideoStatsQuery?.isRefetchError
+                ? userVideoStatsQuery?.data?.timeWatchedSec ?? 0
+                : 0
+            }
+          />
         ) : (
           <Typography variant="h1">Video nenalezeno.</Typography>
         )}
       </Grid>
-      <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+      <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" pb={8}>
         <Box width="95%" mt={2}>
           <Grid container spacing={2} minHeight={170}>
             <Grid item xs={8}>
@@ -195,7 +206,7 @@ function VideoDetail() {
                 {(video?.tags?.length ?? 0) > 0 && (
                   <>
                     <Typography variant="caption">Tagy:</Typography>
-                    <Grid container gap={0.5} pt={1}>
+                    <Grid container gap={0.5} pt={1} sx={{ position: 'relative' }}>
                       <ChipLine chipData={video.tags!} />
                     </Grid>
                   </>
@@ -206,9 +217,10 @@ function VideoDetail() {
               <Grid item xs={6} height={65} width="100%">
                 <LikeDislikeMenu
                   videoId={video.id}
-                  likeCount={NumberToWords(video.likeCount)}
-                  dislikeCount={NumberToWords(video.dislikeCount)}
+                  likeCount={video.likeCount}
+                  dislikeCount={video.dislikeCount}
                   enabled={!!userContext?.user}
+                  userStatsQuery={userVideoStatsQuery}
                 />
               </Grid>
               <Grid item xs={6} height={65} width="100%">
@@ -255,11 +267,11 @@ function VideoDetail() {
           )}
           <Divider sx={{ marginTop: 2 }} />
           <Box mt={1}>
-            <Typography variant="body1">Komentáře ({comments.length})</Typography>
+            <Typography variant="body1">Komentáře ({commentsQuery?.data?.length ?? 0})</Typography>
 
             <Box display="flex" mt={2}>
               <Avatar>{userContext?.user?.initials}</Avatar>
-              {commentsLoading ? (
+              {commentsQuery.isLoading ? (
                 <TailSpin
                   height="80"
                   width="80"
@@ -277,25 +289,28 @@ function VideoDetail() {
                   label=""
                   variant="outlined"
                   multiline
-                  disabled={!userContext}
-                  placeholder={!userContext ? 'Pro přidání komentáře se nejprve přihlaste.' : ''}
+                  disabled={!userContext?.user}
+                  placeholder={
+                    !userContext?.user ? 'Pro přidání komentáře se nejprve přihlaste.' : ''
+                  }
                   inputRef={commentInput}
                 />
               )}
               <Button
                 variant="text"
-                disabled={!userContext}
+                disabled={!userContext?.user || commentTimeout}
                 onClick={() => addComment(commentInput.current?.value)}
               >
                 Odeslat
               </Button>
             </Box>
-            {comments.map((comment, i) => (
+            {commentsQuery?.data?.map((comment, i) => (
               <Comment
                 // eslint-disable-next-line react/no-array-index-key
                 key={comment.text + i + comment.user.id}
-                text={comment.text}
-                user={comment.user}
+                comment={comment}
+                canEdit={userContext?.user?.roles.administrator}
+                invalidate={commentsQuery.refetch}
               />
             ))}
           </Box>

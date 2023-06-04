@@ -1,17 +1,22 @@
-import React, { useRef, useEffect } from 'react';
+import { useUserVideoStatsGETQuery } from 'api/axios-client/Query';
+import React, { useRef, useEffect, useContext, useState } from 'react';
+import { UserContext } from 'routes/Root';
 import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css';
 import 'videojs-hotkeys';
 
 export interface Props {
   videoSrc: string;
+  watchedTimeSec?: number;
   autoplay?: boolean;
   muted?: boolean;
+  triggerWatched?(sec: number): void;
 }
 
-export function VideoPlayer({ videoSrc, autoplay, muted }: Props) {
+export function VideoPlayer({ videoSrc, autoplay, muted, triggerWatched, watchedTimeSec }: Props) {
   const playerRef = useRef<VideoJsPlayer | null>(null);
   const videoRef = useRef<HTMLDivElement>(null);
+  const usercontext = useContext(UserContext);
 
   useEffect(() => {
     if (!playerRef.current) {
@@ -30,27 +35,36 @@ export function VideoPlayer({ videoSrc, autoplay, muted }: Props) {
           fluid: true,
           plugins: {
             hotkeys: {
+              enableVolumeScroll: false,
               volumeStep: 0.1,
               seekStep: 5,
               enableModifiersForNumbers: false,
             },
           },
         },
+
         () => {
           player.src(videoSrc);
         },
       );
       playerRef.current = player;
-    } else {
-      // const player = playerRef.current;
-      // player.autoplay(options.autoplay);
-      // player.src(options.sources);
     }
-  }, [videoRef]);
-
-  React.useEffect(() => {
     const player = playerRef.current;
+    let lastWatchedSec = 9;
+    const timeCheck = () => {
+      const currentTime = Math.round(player.currentTime());
+      if (currentTime % 10 === 0 && currentTime > lastWatchedSec) {
+        lastWatchedSec = currentTime;
+        triggerWatched?.(currentTime);
+      }
+    };
+    if (triggerWatched && usercontext?.user) {
+      player.on('timeupdate', timeCheck);
+    }
+  }, [videoRef, usercontext]);
 
+  useEffect(() => {
+    const player = playerRef.current;
     return () => {
       if (player && !player.isDisposed()) {
         player.dispose();
@@ -58,6 +72,10 @@ export function VideoPlayer({ videoSrc, autoplay, muted }: Props) {
       }
     };
   }, [playerRef]);
+
+  useEffect(() => {
+    playerRef.current?.currentTime(watchedTimeSec ?? 0);
+  }, [watchedTimeSec]);
 
   return <div ref={videoRef} style={{ height: '100vh - 64px' }} />;
 }

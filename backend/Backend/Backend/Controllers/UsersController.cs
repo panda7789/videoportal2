@@ -87,7 +87,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -135,7 +135,7 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -156,7 +156,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<ActionResult<UserDTO>> GetUser(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -174,7 +174,8 @@ namespace Backend.Controllers
             if (oldRoles != null && oldRoles.GetActiveRoles() is var currentRoles)
             {
                 var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                if (!result.Succeeded)
+                // pokud uživatel nemá žádnou roli a spadne to, tak asi chceme opravit nějakou nesrovnalost
+                if (!result.Succeeded && _userManager.GetRolesAsync(user).Result.Count > 1)
                 {
                     return result;
                 }

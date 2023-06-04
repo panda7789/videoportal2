@@ -23,103 +23,113 @@ import { ChannelEdit, loader as channelEditLoader } from 'routes/ChannelEdit';
 import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 import SearchResult from 'routes/SearchResult';
+import { TagEdit } from 'routes/TagEdit';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
       element: <Root />,
-      errorElement: <ErrorPage />,
       children: [
         {
-          index: true,
-          element: <HomePage />,
-        },
-        {
-          path: 'myvideos',
-          element: <MyVideos />,
-        },
-        {
-          path: 'channel/:channelId',
-          element: <Channel />,
-          loader: channelLoader,
+          errorElement: <ErrorPage />,
+
           children: [
             {
-              path: '',
-              element: <ChannelHomePage />,
-              loader: channelHomePageLoader,
+              index: true,
+              element: <HomePage />,
             },
             {
-              path: 'videos',
-              element: <ChannelVideos />,
-              loader: channelVideosLoader,
+              path: 'myvideos',
+              element: <MyVideos />,
             },
             {
-              path: 'playlists',
-              element: <ChannelPlaylists />,
-              loader: channelPlaylistsLoader,
+              path: 'channel/:channelId',
+              element: <Channel />,
+              loader: channelLoader,
+              children: [
+                {
+                  path: '',
+                  element: <ChannelHomePage />,
+                  loader: channelHomePageLoader,
+                },
+                {
+                  path: 'videos',
+                  element: <ChannelVideos />,
+                  loader: channelVideosLoader,
+                },
+                {
+                  path: 'playlists',
+                  element: <ChannelPlaylists />,
+                  loader: channelPlaylistsLoader,
+                },
+                {
+                  path: 'info',
+                  element: <ChannelInfo />,
+                  loader: channelInfoLoader,
+                },
+              ],
             },
             {
-              path: 'info',
-              element: <ChannelInfo />,
-              loader: channelInfoLoader,
+              path: 'mychannels',
+              children: [
+                {
+                  path: '',
+                  element: <MyChannels />,
+                },
+                {
+                  path: 'create',
+                  element: <ChannelEdit newChannel />,
+                },
+                {
+                  path: ':Id',
+                  element: <ChannelEdit />,
+                  loader: channelEditLoader,
+                },
+              ],
+            },
+            {
+              path: 'video/:videoId',
+              element: <VideoDetail />,
+              loader: videoLoader,
+            },
+            {
+              path: 'videoedit/:videoId',
+              element: <VideoEdit />,
+              loader: videoEditLoader,
+            },
+            {
+              path: 'upload',
+              element: <VideoEdit newVideo />,
+            },
+            {
+              path: 'search',
+              element: <SearchResult />,
+              loader: searchLoader,
+            },
+            {
+              path: 'playlist/:playlistId',
+              element: <PlaylistDetail />,
+              loader: playlistLoader,
+            },
+            {
+              path: 'users',
+              element: <UsersEdit />,
+            },
+            {
+              path: 'userEdit/:Id',
+              element: <UserEditor />,
+              loader: userEditLoader,
+            },
+            {
+              path: 'userEdit',
+              element: <UserEditor newUser />,
+            },
+            {
+              path: 'tagEdit',
+              element: <TagEdit />,
             },
           ],
-        },
-        {
-          path: 'mychannels',
-          children: [
-            {
-              path: '',
-              element: <MyChannels />,
-            },
-            {
-              path: 'create',
-              element: <ChannelEdit newChannel />,
-            },
-            {
-              path: ':Id',
-              element: <ChannelEdit />,
-              loader: channelEditLoader,
-            },
-          ],
-        },
-        {
-          path: 'video/:videoId',
-          element: <VideoDetail />,
-          loader: videoLoader,
-        },
-        {
-          path: 'videoedit/:videoId',
-          element: <VideoEdit />,
-          loader: videoEditLoader,
-        },
-        {
-          path: 'upload',
-          element: <VideoEdit newVideo />,
-        },
-        {
-          path: 'search',
-          element: <SearchResult />,
-          loader: searchLoader,
-        },
-        {
-          path: 'playlist/:playlistId',
-          element: <PlaylistDetail />,
-          loader: playlistLoader,
-        },
-        {
-          path: 'users',
-          element: <UsersEdit />,
-        },
-        {
-          path: 'userEdit/:Id',
-          element: <UserEditor />,
-          loader: userEditLoader,
-        },
-        {
-          path: 'userEdit',
-          element: <UserEditor newUser />,
         },
       ],
     },

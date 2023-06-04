@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Avatar, Button, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Link, Outlet, useLoaderData } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { Channel as ChannelModel, getChannelById } from 'model/Channel';
 import { useChannelUserInfoGETQuery, useChannelUserInfoPUTMutation } from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
 import { ChannelUserSpecificInfoDTO } from 'api/axios-client';
+import { GetInitials } from 'components/Utils/StringUtils';
 
 export async function loader({ params }: { params: any }) {
   return getChannelById(params.channelId);
@@ -44,6 +45,10 @@ export function Channel() {
     channelUserInfoPUTMutation.mutate(new ChannelUserSpecificInfoDTO({ subscribed: false }));
   };
 
+  useEffect(() => {
+    channelUserSpecificInfoQuery.refetch();
+  }, [userContext?.user]);
+
   return (
     <Box>
       <Grid container justifyContent="center">
@@ -64,8 +69,11 @@ export function Channel() {
                 padding: '4px',
                 img: { objectFit: 'fill', borderRadius: '50%' },
               }}
-              src="/upol.png"
-            />
+              src={ApiPath(channelBasicInfo.avatarUrl)}
+            >
+              {!channelBasicInfo.avatarUrl ? GetInitials(channelBasicInfo.name) : ''}
+            </Avatar>
+
             <Box display="flex" flexDirection="column" pl={2}>
               <Typography variant="h5">{channelBasicInfo.name}</Typography>
               <Typography variant="caption">

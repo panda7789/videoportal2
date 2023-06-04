@@ -2,6 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import { ChannelAdvancedInfo, getChannelAdvancedInfo } from 'model/Channel';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
+import { ApiPath } from 'components/Utils/APIUtils';
 
 export async function loader({ params }: { params: any }) {
   return getChannelAdvancedInfo(params.channelId);
@@ -9,7 +10,6 @@ export async function loader({ params }: { params: any }) {
 
 export function ChannelInfo() {
   const info = useLoaderData() as ChannelAdvancedInfo;
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={7} columns={2}>
@@ -45,7 +45,7 @@ export function ChannelInfo() {
               key={channel.id}
               url={`/channel/${channel.id}`}
               text={channel.name}
-              image={ApiUrl(channel.avatar)}
+              image={ApiPath(channel.avatarUrl)}
             />
           ))}
         </Box>

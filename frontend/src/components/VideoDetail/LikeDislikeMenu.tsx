@@ -5,18 +5,21 @@ import ShareIcon from '@mui/icons-material/Share';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import QueueIcon from '@mui/icons-material/Queue';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import theme from 'Theme';
 import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
 import { AxiosQuery } from 'api';
-import { useUserVideoStatsGETQuery, useUserVideoStatsPUTMutation } from 'api/axios-client/Query';
+import { useUserVideoStatsPUTMutation } from 'api/axios-client/Query';
 import { UserVideoStats } from 'api/axios-client';
+import { NumberToWords } from 'components/Utils/NumberUtils';
+import { UseQueryResult } from '@tanstack/react-query';
 
 export interface Props {
   videoId: string;
-  likeCount: string;
-  dislikeCount: string;
+  likeCount: number;
+  dislikeCount: number;
   enabled?: boolean;
+  userStatsQuery?: UseQueryResult<AxiosQuery.UserVideoStats, unknown>;
 }
 
 const Item = styled(Box)(() => ({
@@ -39,13 +42,21 @@ const dropdownActions: DropDownMenuAction[] = [
   },
 ];
 
-function LikeDislikeMenu({ likeCount, dislikeCount, videoId, enabled = true }: Props) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-  const videoUserStatsQuery = useUserVideoStatsGETQuery({ videoId });
-  const videoUserStatsMutation = useUserVideoStatsPUTMutation(videoId);
+function LikeDislikeMenu({
+  likeCount,
+  dislikeCount,
+  videoId,
+  userStatsQuery,
+  enabled = true,
+}: Props) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const videoUserStatsMutation = useUserVideoStatsPUTMutation(videoId, {
+    onSuccess: () => {
+      userStatsQuery?.refetch();
+    },
+  });
 
-  const open = Boolean(anchorEl);
   const handleAddToPlaylistClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -54,30 +65,29 @@ function LikeDislikeMenu({ likeCount, dislikeCount, videoId, enabled = true }: P
   };
   const handleLikeClick = () => {
     // todo send like to api
-    if (videoUserStatsQuery?.data) {
+    if (userStatsQuery?.data) {
       videoUserStatsMutation.mutateAsync(
         new UserVideoStats({
-          ...videoUserStatsQuery?.data,
-          like: true,
+          ...userStatsQuery?.data,
+          like: !userStatsQuery?.data?.like ?? true,
           dislike: false,
         }),
       );
     }
   };
   const handleDislikeClick = () => {
-    // todo send dislike to api
-    if (videoUserStatsQuery?.data) {
+    if (userStatsQuery?.data) {
       videoUserStatsMutation.mutateAsync(
         new UserVideoStats({
-          ...videoUserStatsQuery?.data,
+          ...userStatsQuery?.data,
           like: false,
-          dislike: true,
+          dislike: !userStatsQuery?.data?.dislike ?? true,
         }),
       );
     }
   };
   const handleShareClick = () => {
-    navigator.clipboard.writeText('odkaz na video');
+    navigator.clipboard.writeText(window.location.href);
     setSnackbarOpen(true);
   };
   const handleShareClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -100,29 +110,29 @@ function LikeDislikeMenu({ likeCount, dislikeCount, videoId, enabled = true }: P
     >
       <Item>
         <IconButton
-          color={videoUserStatsQuery?.data?.like ? 'primary' : 'default'}
+          color={userStatsQuery?.data?.like ? 'primary' : 'default'}
           onClick={handleLikeClick}
           disabled={!enabled}
         >
           <ThumbUpIcon />
         </IconButton>
-        <Typography>{likeCount}</Typography>
+        <Typography>{NumberToWords(likeCount)}</Typography>
       </Item>
       <Item>
         <IconButton
-          color={videoUserStatsQuery?.data?.dislike ? 'primary' : 'default'}
+          color={userStatsQuery?.data?.dislike ? 'primary' : 'default'}
           onClick={handleDislikeClick}
           disabled={!enabled}
         >
           <ThumbDownIcon />
         </IconButton>
-        <Typography>{dislikeCount}</Typography>
+        <Typography>{NumberToWords(dislikeCount)}</Typography>
       </Item>
       <Item>
         <IconButton
           disabled={!enabled}
           onClick={handleShareClick}
-          color={videoUserStatsQuery?.data?.addedToPlaylist ? 'success' : 'default'}
+          color={userStatsQuery?.data?.addedToPlaylist ? 'success' : 'default'}
         >
           <ShareIcon />
         </IconButton>

@@ -11,6 +11,8 @@ using Backend.Utils;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections;
+using NuGet.Packaging;
 
 namespace Backend.Controllers
 {
@@ -85,13 +87,17 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            var video = await _context.Videos.Include(x => x.Channel).FirstOrDefaultAsync(x => x.Id == id);
-
+            var video = await _context.Videos
+                    .Include(x => x.Channel)
+                    .Include(x => x.Tags)
+                    .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
                 return NotFound();
             }
-
+            var userStats = await _context.UserVideoStats.Where(x => x.VideoId == id).ToListAsync();
+            video.LikeCount = userStats.Where(x => x.Like).Count();
+            video.DislikeCount = userStats.Where(x => x.Dislike).Count();
             return video.ToDTO();
         }
 
@@ -146,7 +152,7 @@ namespace Backend.Controllers
             public string? Description { get; set; }
             public IFormFile? Image { get; set; }
             public Guid ChannelId { get; set; }
-            public Tag[]? Tags { get; set; }
+            public ICollection<string>? Tags { get; set; }
 
         }
         // PUT: api/Videos/5
@@ -154,7 +160,7 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
-            var video = await _context.Videos.FindAsync(id);
+            var video = await _context.Videos.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
                 return NotFound();
@@ -163,7 +169,18 @@ namespace Backend.Controllers
             video.Name = modifiedVideo.Name;
             video.Description = modifiedVideo.Description;
             video.ChannelId = modifiedVideo.ChannelId;
-            video.Tags = modifiedVideo.Tags;
+            if (video.Tags?.Any() ?? false)
+            {
+                video.Tags.Clear();
+            }
+            else
+            {
+                video.Tags = new List<Tag>();
+            }
+            if (modifiedVideo.Tags?.Any() ?? false)
+            {
+                _context.Tags.Where(x => modifiedVideo.Tags.Contains(x.Name)).ToList().ForEach(x => video.Tags.Add(x));
+            }
             if (modifiedVideo.Image != null)
             {
                 var thumbnailUrl = await SaveThumbnailAsync(modifiedVideo.ChannelId, modifiedVideo.Image);
@@ -197,7 +214,7 @@ namespace Backend.Controllers
             public int DurationSec { get; set; }
             public IFormFile Image { get; set; }
             public Guid ChannelId { get; set; }
-            public Tag[]? Tags { get; set; }
+            public ICollection<string>? Tags { get; set; }
 
         }
 
@@ -233,7 +250,7 @@ namespace Backend.Controllers
                 Description = video.Description,
                 ChannelId = video.ChannelId,
                 Duration = new TimeSpan(0,0,0, video.DurationSec, 0),
-                Tags = video.Tags,
+                Tags = new List<Tag>(),
                 DislikeCount = 0,
                 LikeCount = 0,
                 Views = 0,
@@ -241,6 +258,10 @@ namespace Backend.Controllers
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
             };
+            if (video.Tags?.Any() ?? false)
+            {
+                _context.Tags.Where(x => video.Tags.Contains(x.Name)).ToList().ForEach(x => videoDB.Tags.Add(x));
+            }
             _context.Videos.Add(videoDB);
             await _context.SaveChangesAsync();
 

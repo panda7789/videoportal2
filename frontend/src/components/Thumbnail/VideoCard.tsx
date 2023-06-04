@@ -14,7 +14,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
 import { ApiPath } from 'components/Utils/APIUtils';
-import { TimeSpanToReadableFormat } from 'components/Utils/NumberUtils';
+import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 
 interface Props {
@@ -204,12 +204,12 @@ function VideoCard({
               {(showStats ?? true) && (
                 <Box pb="4px">
                   <Typography variant="caption">{video.views} zhlédnutí • </Typography>
-                  <Typography variant="caption">{video.uploadTimestamp.getUTCDate()}</Typography>
+                  <Typography variant="caption">
+                    {TimestampToAgoWords(video.uploadTimestamp)}
+                  </Typography>
                 </Box>
               )}
-              {(showTags ?? true) && video.tags?.length && (
-                <ChipLine chipData={video.tags?.map((x) => x.name)} />
-              )}
+              {(showTags ?? true) && video.tags?.length && <ChipLine chipData={video.tags} />}
             </Box>
             {(showChannel ?? true) && (
               <Box

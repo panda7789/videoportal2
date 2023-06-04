@@ -89,15 +89,14 @@ export interface IChannel {
     idOwner: string;
 }
 
-export class ChannelAdvancedInfo implements IChannelAdvancedInfo {
-    id!: string;
+export class ChannelAdvancedInfoDTO implements IChannelAdvancedInfoDTO {
     channelId!: string;
     description?: string | undefined;
     dateOfRegistration!: Date;
     email?: string | undefined;
-    relatedChannels?: Channel[] | undefined;
+    relatedChannels?: ChannelDTO[] | undefined;
 
-    constructor(data?: IChannelAdvancedInfo) {
+    constructor(data?: IChannelAdvancedInfoDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -108,7 +107,6 @@ export class ChannelAdvancedInfo implements IChannelAdvancedInfo {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
             this.channelId = _data["channelId"];
             this.description = _data["description"];
             this.dateOfRegistration = _data["dateOfRegistration"] ? new Date(_data["dateOfRegistration"].toString()) : <any>undefined;
@@ -116,21 +114,20 @@ export class ChannelAdvancedInfo implements IChannelAdvancedInfo {
             if (Array.isArray(_data["relatedChannels"])) {
                 this.relatedChannels = [] as any;
                 for (let item of _data["relatedChannels"])
-                    this.relatedChannels!.push(Channel.fromJS(item));
+                    this.relatedChannels!.push(ChannelDTO.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): ChannelAdvancedInfo {
+    static fromJS(data: any): ChannelAdvancedInfoDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new ChannelAdvancedInfo();
+        let result = new ChannelAdvancedInfoDTO();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
         data["channelId"] = this.channelId;
         data["description"] = this.description;
         data["dateOfRegistration"] = this.dateOfRegistration ? this.dateOfRegistration.toISOString() : <any>undefined;
@@ -144,13 +141,12 @@ export class ChannelAdvancedInfo implements IChannelAdvancedInfo {
     }
 }
 
-export interface IChannelAdvancedInfo {
-    id: string;
+export interface IChannelAdvancedInfoDTO {
     channelId: string;
     description?: string | undefined;
     dateOfRegistration: Date;
     email?: string | undefined;
-    relatedChannels?: Channel[] | undefined;
+    relatedChannels?: ChannelDTO[] | undefined;
 }
 
 export class ChannelDTO implements IChannelDTO {
@@ -505,10 +501,65 @@ export interface IRegisterDTO {
 }
 
 export class Tag implements ITag {
-    id!: number;
+    id!: string;
     name!: string;
+    videos!: Video[];
 
     constructor(data?: ITag) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.videos = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["videos"])) {
+                this.videos = [] as any;
+                for (let item of _data["videos"])
+                    this.videos!.push(Video.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Tag {
+        data = typeof data === 'object' ? data : {};
+        let result = new Tag();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.videos)) {
+            data["videos"] = [];
+            for (let item of this.videos)
+                data["videos"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ITag {
+    id: string;
+    name: string;
+    videos: Video[];
+}
+
+export class TagDTO implements ITagDTO {
+    id!: string;
+    name!: string;
+
+    constructor(data?: ITagDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -524,9 +575,9 @@ export class Tag implements ITag {
         }
     }
 
-    static fromJS(data: any): Tag {
+    static fromJS(data: any): TagDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new Tag();
+        let result = new TagDTO();
         result.init(data);
         return result;
     }
@@ -539,8 +590,8 @@ export class Tag implements ITag {
     }
 }
 
-export interface ITag {
-    id: number;
+export interface ITagDTO {
+    id: string;
     name: string;
 }
 
@@ -1192,8 +1243,10 @@ export function initPersister() {
   addResultTypeFactory('Client___channelsAll', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelsGET', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelVideos', (data: any) => { const result = new WithTotalCountOfVideoDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfo(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelUserInfoGET', (data: any) => { const result = new ChannelUserSpecificInfoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___tagsWithVideos', (data: any) => { const result = new Tag(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersAll', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersGET', (data: any) => { const result = new UserDTO(); result.init(data); return result; });

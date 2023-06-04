@@ -26,7 +26,7 @@ namespace Backend.Models
         public int DislikeCount { get; set; }
         public int Views { get; set; }
         public DateTime UploadTimestamp { get; set; }
-        public Tag[]? Tags { get; set; }
+        public ICollection<Tag>? Tags { get; set; }
         public Guid ChannelId { get; set; }
         public Channel Channel { get; set; }
 

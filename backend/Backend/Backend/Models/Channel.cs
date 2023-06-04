@@ -51,6 +51,24 @@ namespace Backend.Models
         public DateTime DateOfRegistration { get; set; }
         public string? Email { get; set; }
         public ICollection<Channel>? RelatedChannels { get; set; }
+
+        public ChannelAdvancedInfoDTO ToDTO() => new()
+        {
+            ChannelId = ChannelId,
+            Description = Description,
+            DateOfRegistration = DateOfRegistration,
+            Email = Email,
+            RelatedChannels = RelatedChannels?.Any() ?? false ? RelatedChannels.Select(x => x.ToDTO()).ToList() : null
+        };
+    }
+
+    public class ChannelAdvancedInfoDTO
+    {
+        public Guid ChannelId { get; set; }
+        public string? Description { get; set; }
+        public DateTime DateOfRegistration { get; set; }
+        public string? Email { get; set; }
+        public ICollection<ChannelDTO>? RelatedChannels { get; set; }
     }
 
     public class ChannelUserSpecificInfo
@@ -79,6 +97,6 @@ namespace Backend.Models
         public Guid? PinnedVideoId { get; set; }
         public IFormFile? Avatar { get; set; }
         public string? Description { get; set; }
-        public ICollection<Channel>? RelatedChannels { get; set; }
+        public ICollection<Guid>? RelatedChannels { get; set; }
     }
 }

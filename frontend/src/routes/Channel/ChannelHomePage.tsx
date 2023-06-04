@@ -48,11 +48,13 @@ export function ChannelHomePage() {
           />
         </Grid>
       )}
-      {latestVideos?.data && (
+      {latestVideos?.data && (latestVideos?.data?.items?.length ?? 0) > 0 ? (
         <Grid item xs={12}>
           <Typography variant="h6">Videa</Typography>
           <VideoInlineList videos={latestVideos?.data.items} showDescription />
         </Grid>
+      ) : (
+        <Typography alignSelf="center">Kanál nemá žádná videa 🤔</Typography>
       )}
       {playlists.length > 0 && (
         <>

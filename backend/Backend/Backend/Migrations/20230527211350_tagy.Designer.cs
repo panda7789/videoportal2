@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230527211350_tagy")]
+    partial class tagy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,22 +158,22 @@ namespace Backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "daaeee99-85f3-49e5-9b99-a43e0107e740",
+                            Id = new Guid("1eec1871-5e7b-468d-92f1-d97eaaccb6de"),
+                            ConcurrencyStamp = "c0049c63-684e-4943-9ffc-e10c2444e7cc",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "7fa1983e-35b2-4909-9e2a-16a8ec17ed38",
+                            Id = new Guid("b5b0acba-9675-4130-a674-98e154317202"),
+                            ConcurrencyStamp = "aa60a9aa-34da-42f4-9f61-cc949f4ffc83",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "42a2ded4-754b-4616-8d72-d6f8fd88b11f",
+                            Id = new Guid("50d85fe8-8192-4d6c-82e9-159c94fdb72e"),
+                            ConcurrencyStamp = "ac456354-b495-42b8-b0a8-fb584f877d76",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -182,11 +185,12 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid?>("VideoId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("VideoId");
 
                     b.ToTable("Tags");
                 });
@@ -434,21 +438,6 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TagVideo", b =>
-                {
-                    b.Property<Guid>("TagsId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("VideosId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("TagsId", "VideosId");
-
-                    b.HasIndex("VideosId");
-
-                    b.ToTable("TagVideo");
-                });
-
             modelBuilder.Entity("Backend.Models.Channel", b =>
                 {
                     b.HasOne("Backend.Models.ChannelAdvancedInfo", null)
@@ -480,6 +469,13 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.Tag", b =>
+                {
+                    b.HasOne("Backend.Models.Video", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("VideoId");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -572,24 +568,14 @@ namespace Backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TagVideo", b =>
-                {
-                    b.HasOne("Backend.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.Video", null)
-                        .WithMany()
-                        .HasForeignKey("VideosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>
                 {
                     b.Navigation("RelatedChannels");
+                });
+
+            modelBuilder.Entity("Backend.Models.Video", b =>
+                {
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

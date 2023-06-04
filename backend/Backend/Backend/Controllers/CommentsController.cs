@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Backend.Utils;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Backend.Controllers
 {
@@ -15,25 +18,29 @@ namespace Backend.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly MyDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public CommentsController(MyDbContext context)
+        public CommentsController(MyDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Comments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetComment()
+        [HttpGet("{videoId}")]
+        public async Task<ActionResult<IEnumerable<CommentDTO>>> GetComment(Guid videoId)
         {
             if (_context.Comment == null)
             {
                 return NotFound();
             }
             return await _context.Comment
+                .Where(x => x.VideoId == videoId)
                 .OrderByDescending(x => x.Created)
                 .Include(x => x.User)
                 .Select(x => new CommentDTO
                 {
+                    Id = x.Id,
                     UserId = x.UserId,
                     VideoId = x.VideoId,
                     Text = x.Text,
@@ -108,6 +115,7 @@ namespace Backend.Controllers
         }
 
         // DELETE: api/Comments/5
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(Guid id)
         {
@@ -125,7 +133,6 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            //if (comment.UserId )
 
             _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();

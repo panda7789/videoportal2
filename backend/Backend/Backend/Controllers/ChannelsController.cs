@@ -12,6 +12,7 @@ using Backend.Utils;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection.PortableExecutable;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using NuGet.Packaging;
 
 namespace Backend.Controllers
 {
@@ -112,18 +113,18 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}/channel-advanced-info")]
-        public ActionResult<ChannelAdvancedInfo> GetChannelAdvancedInfo(Guid id)
+        public ActionResult<ChannelAdvancedInfoDTO> GetChannelAdvancedInfo(Guid id)
         {
             if (_context.ChannelAdvancedInfos == null)
             {
                 return NotFound();
             }
-            var channelAdvancedInfo = _context.ChannelAdvancedInfos.Where(x => x.ChannelId == id).FirstOrDefault();
+            var channelAdvancedInfo = _context.ChannelAdvancedInfos.Where(x => x.ChannelId == id).Include(x => x.RelatedChannels).FirstOrDefault();
             if (channelAdvancedInfo == null)
             {
                 return NotFound();
             }
-            return channelAdvancedInfo;
+            return channelAdvancedInfo.ToDTO();
         }
 
         [HttpGet("{id}/channel-user-info")]
@@ -195,6 +196,16 @@ namespace Backend.Controllers
             {
                 throw;
             }
+            var channel = _context.Channels.Where(x => x.Id == id).FirstOrDefault();
+            if (channel != null)
+            {
+                var count = channel.SubscribersCount;
+                channel.SubscribersCount = _context.ChannelUserSpecificInfos.Where(x => x.ChannelId == id).Count();
+                await _context.SaveChangesAsync();
+            }
+            
+
+
 
             return NoContent();
         }
@@ -229,7 +240,14 @@ namespace Backend.Controllers
             channel.Name = channelDTO.Name;
             channel.PinnedVideoId = channelDTO.PinnedVideoId;
             channelAdvancedInfo.Description = channelDTO.Description;
-            channelAdvancedInfo.RelatedChannels = channelDTO.RelatedChannels;
+            if (channelDTO?.RelatedChannels?.Any() ?? false)
+            {
+                var related = _context.Channels.Where(x => channelDTO.RelatedChannels.Contains(x.Id));
+                if (related.Any())
+                {
+                    channelAdvancedInfo.RelatedChannels = related.ToList();
+                }
+            }
             if (channelDTO.Poster != null)
             {
                 var posterName = $"{channelDTO.Name}[GUID].{channelDTO.Poster.FileName.Split(".")[1]}";
@@ -285,18 +303,22 @@ namespace Backend.Controllers
                 channel.AvatarUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, avatarName, channelDTO.Avatar);
             }
             _context.Channels.Add(channel);
+
             var channelAdvancedInfo = new ChannelAdvancedInfo()
             {
                 ChannelId = channel.Id,
                 DateOfRegistration = DateTime.UtcNow,
                 Description = channelDTO.Description,
-                Email = userEmail,
-                RelatedChannels = channelDTO.RelatedChannels
-                
+                Email = userEmail                
             };
-
-
-
+            if (channelDTO?.RelatedChannels?.Any() ?? false)
+            {
+                var related = _context.Channels.Where(x => channelDTO.RelatedChannels.Contains(x.Id));
+                if (related.Any())
+                {
+                    channelAdvancedInfo.RelatedChannels.AddRange(related);
+                }
+            }
             _context.ChannelAdvancedInfos.Add(channelAdvancedInfo);
             await _context.SaveChangesAsync();
 

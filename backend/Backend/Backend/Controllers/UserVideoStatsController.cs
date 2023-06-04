@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Backend.Utils;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Controllers
 {
@@ -15,6 +16,7 @@ namespace Backend.Controllers
     public class UserVideoStatsController : ControllerBase
     {
         private readonly MyDbContext _context;
+
 
         public UserVideoStatsController(MyDbContext context)
         {
@@ -62,20 +64,52 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
+            if (userVideoStats.Like && userVideoStats.Dislike)
+            {
+                return BadRequest();
+            }
             
             var result = _context.UserVideoStats.Where(x => x.UserId == userId && x.VideoId == videoId).FirstOrDefault();
             if (result == null)
             {
                 _context.Entry(userVideoStats).State = EntityState.Added;
             }
-            _context.Entry(userVideoStats).State = EntityState.Modified;
+            else
+            {
+                result.Dislike = userVideoStats.Dislike;
+                result.Like = userVideoStats.Like;
+                result.AddedToPlaylist = userVideoStats.AddedToPlaylist;
+                result.TimeWatchedSec = userVideoStats.TimeWatchedSec;
+                _context.Entry(result).State = EntityState.Modified;
+            }
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private UserVideoStats CreateEmpty(Guid userId, Guid videoId) => new UserVideoStats()
+        [HttpPut("{videoId}/watched")]
+        public async Task<IActionResult> PutVideoWatchedtime(Guid videoId,[FromBody] int watchedSec)
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = _context.UserVideoStats.Where(x => x.UserId == userId && x.VideoId == videoId).FirstOrDefault();
+            if (result == null)
+            {
+                result = CreateEmpty((Guid)userId, videoId);
+                _context.UserVideoStats.Add(result);
+            }
+            result.TimeWatchedSec = watchedSec;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+            private UserVideoStats CreateEmpty(Guid userId, Guid videoId) => new UserVideoStats()
         {
             VideoId = videoId,
             UserId = userId,

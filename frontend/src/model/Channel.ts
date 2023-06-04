@@ -1,10 +1,10 @@
 import { AxiosQuery } from 'api';
-import { ChannelAdvancedInfo, ChannelDTO, ChannelUserSpecificInfoDTO } from 'api/axios-client';
+import { ChannelAdvancedInfoDTO, ChannelDTO, ChannelUserSpecificInfoDTO } from 'api/axios-client';
 import { getPlaylistById, PlaylistModel } from './Playlist';
 
 export {
   ChannelDTO as Channel,
-  ChannelAdvancedInfo,
+  ChannelAdvancedInfoDTO as ChannelAdvancedInfo,
   ChannelUserSpecificInfoDTO as ChannelUserSpecificInfo,
 };
 
@@ -12,7 +12,7 @@ export async function getChannelById(id: string): Promise<ChannelDTO> {
   return AxiosQuery.Client.channelsGET(id);
 }
 
-export async function getChannelAdvancedInfo(id: string): Promise<ChannelAdvancedInfo> {
+export async function getChannelAdvancedInfo(id: string): Promise<ChannelAdvancedInfoDTO> {
   return AxiosQuery.Client.channelAdvancedInfo(id);
 }
 

@@ -1,39 +1,58 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { AxiosQuery } from 'api';
+import { ChannelDTO } from 'api/axios-client';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
+import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import { ApiPath } from 'components/Utils/APIUtils';
-import { NumberToWords } from 'components/Utils/NumberUtils';
+import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
+
+function AvatarButtonInRow({ id, name, avatarUrl }: ChannelDTO) {
+  return <AvatarButton key={id} text={name} image={ApiPath(avatarUrl)} />;
+}
 
 export function MyChannels() {
   const arr = AxiosQuery.Query.useMyChannelsQuery().data;
+  const navigate = useNavigate();
+
+  const attributes: Attribute<ChannelDTO>[] = [
+    {
+      id: 'avatarUrl',
+      imageCustomElement: (row) => AvatarButtonInRow(row),
+      label: 'Název',
+    },
+    {
+      id: 'subscribersCount',
+      label: 'Počet odběratelů',
+    },
+  ];
+
+  const staticButtons: ToolbarButton[] = [
+    {
+      icon: <AddIcon />,
+      label: 'Vytvořit nový kanál',
+      onClick: () => navigate('/mychannels/create'),
+    },
+  ];
+
+  const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
+    navigate({
+      pathname: `/mychannels/${id}`,
+    });
+  };
 
   return (
-    <Grid container xs={6} m={4}>
-      <Grid item xs={12} pb={2}>
-        <Typography variant="h6">Seznam mých kanálů</Typography>
-      </Grid>
-      {arr &&
-        arr.map((channel) => (
-          <Grid item xs={12} key={channel.id}>
-            <Box display="inline-flex">
-              <AvatarButton
-                key={channel.id}
-                url={`/mychannels/${channel.id}`}
-                text={channel.name}
-                image={ApiPath(channel.avatarUrl)}
-              />
-              <Typography>{NumberToWords(channel.subscribersCount ?? 0)} odběratelů</Typography>
-            </Box>
-          </Grid>
-        ))}
-      <Grid item xs={12} key="new">
-        <AvatarButton
-          key="new"
-          url="/mychannels/create"
-          text="Vytvořit nový kanál"
-          customAvatarText="+"
+    <Box m={4}>
+      {arr && (
+        <EnhancedTable
+          attributes={attributes}
+          rows={arr}
+          orderBy="name"
+          desc="asc"
+          staticButtons={staticButtons}
+          rowClick={rowClick}
         />
-      </Grid>
-    </Grid>
+      )}
+    </Box>
   );
 }

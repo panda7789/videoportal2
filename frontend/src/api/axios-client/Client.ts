@@ -16,8 +16,12 @@ import { getAxios, getBaseUrl } from './helpers';
 /**
  * @return Success
  */
-export function commentsAll(config?: AxiosRequestConfig | undefined): Promise<Types.CommentDTO[]> {
-    let url_ = getBaseUrl() + "/api/Comments";
+export function commentsAll(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.CommentDTO[]> {
+    let url_ = getBaseUrl() + "/api/Comments/{videoId}";
+
+    if (videoId === undefined || videoId === null)
+      throw new Error("The parameter 'videoId' must be defined.");
+    url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -70,59 +74,6 @@ function processCommentsAll(response: AxiosResponse): Promise<Types.CommentDTO[]
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<Types.CommentDTO[]>(null as any);
-}
-
-/**
- * @param body (optional) 
- * @return Success
- */
-export function commentsPOST(body?: Types.CommentPostDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/api/Comments";
-      url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(body);
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigCommentsPOST,
-        ...config,
-        data: content_,
-        method: "POST",
-        url: url_,
-        headers: {
-            "Content-Type": "application/json",
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processCommentsPOST(_response);
-    });
-}
-
-function processCommentsPOST(response: AxiosResponse): Promise<void> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-    }
-    return Promise.resolve<void>(null as any);
 }
 
 /**
@@ -214,6 +165,59 @@ export function commentsDELETE(id: string, config?: AxiosRequestConfig | undefin
 }
 
 function processCommentsDELETE(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function commentsPOST(body?: Types.CommentPostDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Comments";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigCommentsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processCommentsPOST(_response);
+    });
+}
+
+function processCommentsPOST(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -361,7 +365,7 @@ function processChannelsAll(response: AxiosResponse): Promise<Types.ChannelDTO[]
  * @param relatedChannels (optional) 
  * @return Success
  */
-export function channelsPOST(name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: Types.Channel[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO> {
+export function channelsPOST(name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelDTO> {
     let url_ = getBaseUrl() + "/api/Channels";
       url_ = url_.replace(/[?&]$/, "");
 
@@ -490,7 +494,7 @@ function processChannelsGET(response: AxiosResponse): Promise<Types.ChannelDTO> 
  * @param relatedChannels (optional) 
  * @return Success
  */
-export function channelsPUT(id: string, name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: Types.Channel[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function channelsPUT(id: string, name?: string | null | undefined, poster?: Types.FileParameter | null | undefined, pinnedVideoId?: string | null | undefined, avatar?: Types.FileParameter | null | undefined, description?: string | null | undefined, relatedChannels?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Channels/{id}";
 
     if (id === undefined || id === null)
@@ -675,7 +679,7 @@ function processChannelVideos(response: AxiosResponse): Promise<Types.WithTotalC
 /**
  * @return Success
  */
-export function channelAdvancedInfo(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelAdvancedInfo> {
+export function channelAdvancedInfo(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelAdvancedInfoDTO> {
     let url_ = getBaseUrl() + "/api/Channels/{id}/channel-advanced-info";
 
     if (id === undefined || id === null)
@@ -704,7 +708,7 @@ export function channelAdvancedInfo(id: string, config?: AxiosRequestConfig | un
     });
 }
 
-function processChannelAdvancedInfo(response: AxiosResponse): Promise<Types.ChannelAdvancedInfo> {
+function processChannelAdvancedInfo(response: AxiosResponse): Promise<Types.ChannelAdvancedInfoDTO> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -718,14 +722,14 @@ function processChannelAdvancedInfo(response: AxiosResponse): Promise<Types.Chan
         const _responseText = response.data;
         let result200: any = null;
         let resultData200  = _responseText;
-        result200 = Types.ChannelAdvancedInfo.fromJS(resultData200);
-        return Promise.resolve<Types.ChannelAdvancedInfo>(result200);
+        result200 = Types.ChannelAdvancedInfoDTO.fromJS(resultData200);
+        return Promise.resolve<Types.ChannelAdvancedInfoDTO>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.ChannelAdvancedInfo>(null as any);
+    return Promise.resolve<Types.ChannelAdvancedInfoDTO>(null as any);
 }
 
 /**
@@ -906,6 +910,229 @@ function processSearch(response: AxiosResponse): Promise<Types.WithTotalCountOfV
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<Types.WithTotalCountOfVideoDTO>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function tagsAll(config?: AxiosRequestConfig | undefined): Promise<Types.TagDTO[]> {
+    let url_ = getBaseUrl() + "/api/Tags";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigTagsAll,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processTagsAll(_response);
+    });
+}
+
+function processTagsAll(response: AxiosResponse): Promise<Types.TagDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.TagDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.TagDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.TagDTO[]>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function tagsPOST(body?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Tags";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigTagsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processTagsPOST(_response);
+    });
+}
+
+function processTagsPOST(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function tagsWithVideos(config?: AxiosRequestConfig | undefined): Promise<Types.Tag[]> {
+    let url_ = getBaseUrl() + "/api/Tags/tagsWithVideos";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigTagsWithVideos,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processTagsWithVideos(_response);
+    });
+}
+
+function processTagsWithVideos(response: AxiosResponse): Promise<Types.Tag[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.Tag.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.Tag[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.Tag[]>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function tagsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Tags/{id}";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigTagsDELETE,
+        ...config,
+        method: "DELETE",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processTagsDELETE(_response);
+    });
+}
+
+function processTagsDELETE(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
 }
 
 /**
@@ -1414,6 +1641,63 @@ function processUserVideoStatsPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * @param body (optional) 
+ * @return Success
+ */
+export function watched(videoId: string, body?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}/watched";
+
+    if (videoId === undefined || videoId === null)
+      throw new Error("The parameter 'videoId' must be defined.");
+    url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigWatched,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processWatched(_response);
+    });
+}
+
+function processWatched(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -1497,7 +1781,7 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
  * @param tags (optional) 
  * @return Success
  */
-export function videosPOST(fileName?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: Types.Tag[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PostVideoResponse> {
+export function videosPOST(fileName?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PostVideoResponse> {
     let url_ = getBaseUrl() + "/api/Videos";
       url_ = url_.replace(/[?&]$/, "");
 
@@ -1631,7 +1915,7 @@ function processVideosGET(response: AxiosResponse): Promise<Types.VideoDTO> {
  * @param tags (optional) 
  * @return Success
  */
-export function videosPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: Types.Tag[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function videosPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, image?: Types.FileParameter | null | undefined, channelId?: string | undefined, tags?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Videos/{id}";
 
     if (id === undefined || id === null)
@@ -1933,17 +2217,6 @@ export function patchCommentsAllRequestConfig(patch: (value: Partial<AxiosReques
   _requestConfigCommentsAll = patch(_requestConfigCommentsAll ?? {});
 }
 
-let _requestConfigCommentsPOST: Partial<AxiosRequestConfig> | undefined;
-export function getCommentsPOSTRequestConfig() {
-  return _requestConfigCommentsPOST;
-}
-export function setCommentsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigCommentsPOST = value;
-}
-export function patchCommentsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigCommentsPOST = patch(_requestConfigCommentsPOST ?? {});
-}
-
 let _requestConfigCommentsPUT: Partial<AxiosRequestConfig> | undefined;
 export function getCommentsPUTRequestConfig() {
   return _requestConfigCommentsPUT;
@@ -1964,6 +2237,17 @@ export function setCommentsDELETERequestConfig(value: Partial<AxiosRequestConfig
 }
 export function patchCommentsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigCommentsDELETE = patch(_requestConfigCommentsDELETE ?? {});
+}
+
+let _requestConfigCommentsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getCommentsPOSTRequestConfig() {
+  return _requestConfigCommentsPOST;
+}
+export function setCommentsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigCommentsPOST = value;
+}
+export function patchCommentsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigCommentsPOST = patch(_requestConfigCommentsPOST ?? {});
 }
 
 let _requestConfigMyChannels: Partial<AxiosRequestConfig> | undefined;
@@ -2087,6 +2371,50 @@ export function patchSearchRequestConfig(patch: (value: Partial<AxiosRequestConf
   _requestConfigSearch = patch(_requestConfigSearch ?? {});
 }
 
+let _requestConfigTagsAll: Partial<AxiosRequestConfig> | undefined;
+export function getTagsAllRequestConfig() {
+  return _requestConfigTagsAll;
+}
+export function setTagsAllRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigTagsAll = value;
+}
+export function patchTagsAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigTagsAll = patch(_requestConfigTagsAll ?? {});
+}
+
+let _requestConfigTagsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getTagsPOSTRequestConfig() {
+  return _requestConfigTagsPOST;
+}
+export function setTagsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigTagsPOST = value;
+}
+export function patchTagsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigTagsPOST = patch(_requestConfigTagsPOST ?? {});
+}
+
+let _requestConfigTagsWithVideos: Partial<AxiosRequestConfig> | undefined;
+export function getTagsWithVideosRequestConfig() {
+  return _requestConfigTagsWithVideos;
+}
+export function setTagsWithVideosRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigTagsWithVideos = value;
+}
+export function patchTagsWithVideosRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigTagsWithVideos = patch(_requestConfigTagsWithVideos ?? {});
+}
+
+let _requestConfigTagsDELETE: Partial<AxiosRequestConfig> | undefined;
+export function getTagsDELETERequestConfig() {
+  return _requestConfigTagsDELETE;
+}
+export function setTagsDELETERequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigTagsDELETE = value;
+}
+export function patchTagsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigTagsDELETE = patch(_requestConfigTagsDELETE ?? {});
+}
+
 let _requestConfigLogin: Partial<AxiosRequestConfig> | undefined;
 export function getLoginRequestConfig() {
   return _requestConfigLogin;
@@ -2184,6 +2512,17 @@ export function setUserVideoStatsPUTRequestConfig(value: Partial<AxiosRequestCon
 }
 export function patchUserVideoStatsPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigUserVideoStatsPUT = patch(_requestConfigUserVideoStatsPUT ?? {});
+}
+
+let _requestConfigWatched: Partial<AxiosRequestConfig> | undefined;
+export function getWatchedRequestConfig() {
+  return _requestConfigWatched;
+}
+export function setWatchedRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigWatched = value;
+}
+export function patchWatchedRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigWatched = patch(_requestConfigWatched ?? {});
 }
 
 let _requestConfigVideosAll: Partial<AxiosRequestConfig> | undefined;

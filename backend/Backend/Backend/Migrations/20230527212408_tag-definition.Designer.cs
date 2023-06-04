@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230527212408_tag-definition")]
+    partial class tagdefinition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,22 +158,22 @@ namespace Backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "daaeee99-85f3-49e5-9b99-a43e0107e740",
+                            Id = new Guid("dfec2f06-d5a8-47e2-bcea-a91c886cc36c"),
+                            ConcurrencyStamp = "0d497618-7273-4540-b9be-d29778cf0165",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "7fa1983e-35b2-4909-9e2a-16a8ec17ed38",
+                            Id = new Guid("e29318bd-fb80-4796-bd41-d44ff07614d3"),
+                            ConcurrencyStamp = "3c1b4b9d-30ea-42a1-bc51-867ebeaba3c8",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "42a2ded4-754b-4616-8d72-d6f8fd88b11f",
+                            Id = new Guid("bfab7d6f-3496-46e5-8729-f4d2b6be9fea"),
+                            ConcurrencyStamp = "1f337a94-d42f-4348-8f03-b84396bd45b1",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });

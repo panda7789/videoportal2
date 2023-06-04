@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useContext, useState, useEffect, useRef } from 'react';
 import {
   Typography,
   Grid,
@@ -13,7 +13,7 @@ import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import ChipEditLine from 'components/Chip/ChipEditLine';
+import ChipEditLine, { ChipData, ChipLineFunctions } from 'components/Chip/ChipEditLine';
 import nanoMetadata from 'nano-metadata';
 import ChunkedUploady, {
   useBatchAddListener,
@@ -27,9 +27,19 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { AxiosQuery } from 'api';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
-import { uploadUrl } from 'api/axios-client/Query';
+import {
+  uploadUrl,
+  useMyChannelsQuery,
+  useTagsAllQuery,
+  useTagsDELETEMutation,
+  useTagsPOSTMutation,
+  useVideosPOSTMutation,
+  useVideosPUTMutation,
+} from 'api/axios-client/Query';
 import { PostVideoResponse } from 'api/axios-client';
 import { SizeToWords } from 'components/Utils/NumberUtils';
+import { GetRandomColor } from 'components/Utils/CoolColors';
+import { UserContext } from './Root';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -69,11 +79,15 @@ function VideoEditInner({ newVideo }: InnerProps) {
     size: string;
     duration: number;
   }>();
+  const tagsRef = useRef<ChipLineFunctions>(null);
+  const userContext = useContext(UserContext);
 
-  const uploadVideoMutation = AxiosQuery.Query.useVideosPOSTMutation();
-  const updateVideoMutation = AxiosQuery.Query.useVideosPUTMutation(video?.id ?? '');
-  const myChannels = AxiosQuery.Query.useMyChannelsQuery();
+  const uploadVideoMutation = useVideosPOSTMutation();
+  const updateVideoMutation = useVideosPUTMutation(video?.id ?? '');
+  const myChannels = useMyChannelsQuery();
   const uploady = useUploadyContext();
+  const allTagsQuery = useTagsAllQuery({ refetchOnWindowFocus: false });
+  const createTagMutation = useTagsPOSTMutation();
 
   useChunkStartListener((data) => {
     setProgress((data.chunk.index / data.totalCount) * 100);
@@ -101,6 +115,14 @@ function VideoEditInner({ newVideo }: InnerProps) {
       }
     })();
   });
+  const handleTagAdd = async (name: string) => {
+    return createTagMutation.mutateAsync(name);
+  };
+
+  const handleTagDelete = (id: string) => {
+    AxiosQuery.Client.tagsDELETE(id);
+  };
+
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
@@ -108,6 +130,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
     const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
     const channelId = data.get('channelSelect')?.toString()!;
+    const tags = tagsRef?.current?.getActiveChips()?.map((x) => x.label) ?? [];
 
     if (newVideo) {
       if (!imageToUpload) {
@@ -126,7 +149,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
           description,
           durationSec: Math.floor(fileUploadInfo.duration),
           name,
-          tags: [],
+          tags,
           fileName: fileUploadInfo.name,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
         },
@@ -156,7 +179,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
           channelId,
           description,
           name,
-          tags: [],
+          tags,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
         },
         {
@@ -173,6 +196,10 @@ function VideoEditInner({ newVideo }: InnerProps) {
       );
     }
   };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user)
+      throw new Error('Nejste přihlášení nebo nemáte oprávnění editovat video.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4} component="form" onSubmit={submitHandler}>
@@ -215,7 +242,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
               <TextField
                 fullWidth
                 name="channelSelect"
-                select
+                select={(myChannels?.data?.length ?? 0) > 0}
                 required
                 label="Kanál"
                 defaultValue={
@@ -312,7 +339,19 @@ function VideoEditInner({ newVideo }: InnerProps) {
             <Typography variant="caption" pl={2}>
               Tagy
             </Typography>
-            <ChipEditLine />
+            <ChipEditLine
+              chips={allTagsQuery?.data?.map(
+                (x) =>
+                  ({
+                    active: video?.tags?.some((y) => y.name === x.name),
+                    bgColor: GetRandomColor(),
+                    key: x.id,
+                    label: x.name,
+                  } as ChipData),
+              )}
+              addChipHandle={handleTagAdd}
+              ref={tagsRef}
+            />
           </Grid>
         </Grid>
       </Grid>

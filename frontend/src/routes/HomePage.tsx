@@ -1,31 +1,19 @@
-import { useEffect, useState } from 'react';
 import { Grid, Skeleton, Typography } from '@mui/material';
-import { getTags } from 'model/Video';
-import { Channel } from 'model/Channel';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
 import CustomChip from 'components/Chip/CustomChip';
-import { AxiosQuery } from 'api';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
+import { useChannelsAllQuery, useTagsAllQuery, useVideosAllQuery } from 'api/axios-client/Query';
 
 function HomePage() {
-  const [tags, setTags] = useState<string[] | null>(null);
-  const videos = AxiosQuery.Query.useVideosAllQuery(undefined, 5);
-  const channels = AxiosQuery.Query.useChannelsAllQuery();
-
-  const loadTags = async () => {
-    const tag = await getTags();
-    setTags(tag);
-  };
-
-  useEffect(() => {
-    loadTags();
-  }, []);
+  const videos = useVideosAllQuery(undefined, 5);
+  const channels = useChannelsAllQuery();
+  const tags = useTagsAllQuery();
 
   return (
     <Grid container p={2}>
       <Grid item xs={12}>
-        <Typography variant="h6">Videa</Typography>
+        <Typography variant="h6">Nejnovější videa</Typography>
         <Grid container spacing={1} p={2} sx={{ overflow: 'hidden', gridRow: 1 }}>
           <VideoInlineList videos={videos.data} showChannel />
         </Grid>
@@ -33,8 +21,8 @@ function HomePage() {
       <Grid item xs={12} md={6}>
         <Typography variant="h6">Populární tagy</Typography>
         <Grid container gap={0.5} pt={1}>
-          {tags
-            ? tags.map((tag) => <CustomChip key={tag} text={tag} />)
+          {tags?.data
+            ? tags?.data.map((tag) => <CustomChip key={tag.id} text={tag.name} />)
             : [...Array(6)].map((_, i) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <Grid key={`${i}-skeleton`} item xs={6} p={0.5}>

@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 // eslint-disable-next-line import/prefer-default-export
 export function NumberToWords(input: number): string {
   if (input > 999999) {
@@ -24,9 +26,9 @@ export function TimeSpanToReadableFormat(input: string, includeHours = false): s
   return includeHours ? input : input.slice(3);
 }
 
-export function TimestampToAgoWords(input: number): string {
-  const now = Date.now();
-  const diff = new Date(now - input);
+export function TimestampToAgoWords(input: Date): string {
+  const now = dayjs(Date.now());
+  const diff = new Date(now.diff(input));
   const years = diff.getFullYear() - 1970;
   if (years > 0) {
     if (years === 1) {

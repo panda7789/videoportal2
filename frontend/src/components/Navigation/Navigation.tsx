@@ -11,6 +11,7 @@ import { UserContext } from 'routes/Root';
 import { UserRoles } from 'api/axios-client';
 import AndroidNavigation from './AndroidNavigation';
 import DesktopNavigation from './DesktopNavigation';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 export interface NavigationItem {
   route: string;
@@ -52,6 +53,13 @@ export const NavigationItems: NavigationItem[] = [
     route: '/users',
     title: 'Správa uživatelů',
     icon: <ManageAccountsIcon />,
+    signed: true,
+    userRole: ['administrator'],
+  },
+  {
+    route: '/tagEdit',
+    title: 'Správa tagů',
+    icon: <LocalOfferIcon />,
     signed: true,
     userRole: ['administrator'],
   },

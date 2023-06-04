@@ -21,19 +21,19 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
         builder.Entity<Role>().HasData(new[] {
             new Role()
             {
-                Id = Guid.NewGuid(),
+                Id = new Guid("EF1279C9-4E92-447F-8617-924E536BE6F1"),
                 Name = "Admin",
                 NormalizedName = RoleNames.Admin
             },
             new Role()
             {
-                Id = Guid.NewGuid(),
+                Id = new Guid("DF782EF4-097C-4BC5-9EE3-E65F1863FCF8"),
                 Name = "User",
                 NormalizedName = RoleNames.User
             },
             new Role()
             {
-                Id = Guid.NewGuid(),
+                Id = new Guid("3AC3367C-F9FF-44D9-BE8F-8BDC5377FA46"),
                 Name = "Editor",
                 NormalizedName = RoleNames.Editor
             }

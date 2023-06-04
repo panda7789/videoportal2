@@ -14,6 +14,7 @@ interface NavigationContextInterface {
 }
 
 interface UserContextInterface {
+  isLoading: boolean;
   user: User | undefined;
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
@@ -25,6 +26,7 @@ export default function Root() {
   const navigation = useNavigation();
   const [navigationOpen, setNavigationOpen] = useState(true);
   const [user, setUser] = useState<User | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const getCurrentUser = AxiosQuery.Query.useMeQuery({
     enabled: false,
@@ -38,15 +40,18 @@ export default function Root() {
           roles: result.roles,
         }),
       );
+      setIsLoading(false);
     },
     onError: () => {
       setUser(undefined);
       localStorage.removeItem('token');
+      setIsLoading(false);
     },
   });
 
   const userContextMemo = useMemo<UserContextInterface>(
     () => ({
+      isLoading,
       user,
       setUser,
     }),
@@ -63,6 +68,7 @@ export default function Root() {
 
   useEffect(() => {
     if (!user && localStorage.getItem('token')) {
+      setIsLoading(true);
       getCurrentUser.refetch();
     }
   }, [user]);

@@ -12,7 +12,6 @@ function ChipLine({ chipData }: Props) {
       sx={{
         display: 'flex',
         gap: 1,
-        position: 'relative',
       }}
     >
       {chipData
