@@ -677,6 +677,72 @@ function processChannelVideos(response: AxiosResponse): Promise<Types.WithTotalC
 }
 
 /**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function channelPlaylists(id: string, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.WithTotalCountOfPlaylistDTO> {
+    let url_ = getBaseUrl() + "/api/Channels/{id}/channel-playlists?";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    if (limit === null)
+        throw new Error("The parameter 'limit' cannot be null.");
+    else if (limit !== undefined)
+        url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+    if (offset === null)
+        throw new Error("The parameter 'offset' cannot be null.");
+    else if (offset !== undefined)
+        url_ += "offset=" + encodeURIComponent("" + offset) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigChannelPlaylists,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processChannelPlaylists(_response);
+    });
+}
+
+function processChannelPlaylists(response: AxiosResponse): Promise<Types.WithTotalCountOfPlaylistDTO> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.WithTotalCountOfPlaylistDTO.fromJS(resultData200);
+        return Promise.resolve<Types.WithTotalCountOfPlaylistDTO>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.WithTotalCountOfPlaylistDTO>(null as any);
+}
+
+/**
  * @return Success
  */
 export function channelAdvancedInfo(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ChannelAdvancedInfoDTO> {
@@ -825,6 +891,370 @@ export function channelUserInfoPUT(id: string, body?: Types.ChannelUserSpecificI
 }
 
 function processChannelUserInfoPUT(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function myPlaylists(config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO[]> {
+    let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigMyPlaylists,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processMyPlaylists(_response);
+    });
+}
+
+function processMyPlaylists(response: AxiosResponse): Promise<Types.PlaylistDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.PlaylistDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.PlaylistDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.PlaylistDTO[]>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function playlistsGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO> {
+    let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPlaylistsGET,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPlaylistsGET(_response);
+    });
+}
+
+function processPlaylistsGET(response: AxiosResponse): Promise<Types.PlaylistDTO> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.PlaylistDTO.fromJS(resultData200);
+        return Promise.resolve<Types.PlaylistDTO>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.PlaylistDTO>(null as any);
+}
+
+/**
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param thumbnail (optional) 
+ * @param videos (optional) 
+ * @param channelId (optional) 
+ * @return Success
+ */
+export function playlistsPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: Types.Video[] | null | undefined, channelId?: string | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = new FormData();
+    if (name !== null && name !== undefined)
+        content_.append("Name", name.toString());
+    if (description !== null && description !== undefined)
+        content_.append("Description", description.toString());
+    if (thumbnail !== null && thumbnail !== undefined)
+        content_.append("Thumbnail", thumbnail.data, thumbnail.fileName ? thumbnail.fileName : "Thumbnail");
+    if (videos !== null && videos !== undefined)
+        videos.forEach(item_ => content_.append("Videos", item_.toString()));
+    if (channelId !== null && channelId !== undefined)
+        content_.append("ChannelId", channelId.toString());
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPlaylistsPUT,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPlaylistsPUT(_response);
+    });
+}
+
+function processPlaylistsPUT(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function playlistsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPlaylistsDELETE,
+        ...config,
+        method: "DELETE",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPlaylistsDELETE(_response);
+    });
+}
+
+function processPlaylistsDELETE(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param add (optional) 
+ * @return Success
+ */
+export function video(id: string, videoId: string, add?: boolean | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Playlists/{id}/video/{videoId}?";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+
+    if (videoId === undefined || videoId === null)
+      throw new Error("The parameter 'videoId' must be defined.");
+    url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+    if (add === null)
+        throw new Error("The parameter 'add' cannot be null.");
+    else if (add !== undefined)
+        url_ += "add=" + encodeURIComponent("" + add) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigVideo,
+        ...config,
+        method: "PUT",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processVideo(_response);
+    });
+}
+
+function processVideo(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param thumbnail (optional) 
+ * @param videos (optional) 
+ * @param channelId (optional) 
+ * @return Success
+ */
+export function playlistsPOST(name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: Types.Video[] | null | undefined, channelId?: string | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/Playlists";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = new FormData();
+    if (name !== null && name !== undefined)
+        content_.append("Name", name.toString());
+    if (description !== null && description !== undefined)
+        content_.append("Description", description.toString());
+    if (thumbnail !== null && thumbnail !== undefined)
+        content_.append("Thumbnail", thumbnail.data, thumbnail.fileName ? thumbnail.fileName : "Thumbnail");
+    if (videos !== null && videos !== undefined)
+        videos.forEach(item_ => content_.append("Videos", item_.toString()));
+    if (channelId !== null && channelId !== undefined)
+        content_.append("ChannelId", channelId.toString());
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPlaylistsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPlaylistsPOST(_response);
+    });
+}
+
+function processPlaylistsPOST(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -2034,6 +2464,69 @@ function processVideosDELETE(response: AxiosResponse): Promise<void> {
 /**
  * @return Success
  */
+export function videoPlaylists(id: string, config?: AxiosRequestConfig | undefined): Promise<string[]> {
+    let url_ = getBaseUrl() + "/api/Videos/{id}/video-playlists";
+
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigVideoPlaylists,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processVideoPlaylists(_response);
+    });
+}
+
+function processVideoPlaylists(response: AxiosResponse): Promise<string[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(item);
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<string[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<string[]>(null as any);
+}
+
+/**
+ * @return Success
+ */
 export function myVideos(config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
     let url_ = getBaseUrl() + "/api/Videos/my-videos";
       url_ = url_.replace(/[?&]$/, "");
@@ -2327,6 +2820,17 @@ export function patchChannelVideosRequestConfig(patch: (value: Partial<AxiosRequ
   _requestConfigChannelVideos = patch(_requestConfigChannelVideos ?? {});
 }
 
+let _requestConfigChannelPlaylists: Partial<AxiosRequestConfig> | undefined;
+export function getChannelPlaylistsRequestConfig() {
+  return _requestConfigChannelPlaylists;
+}
+export function setChannelPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigChannelPlaylists = value;
+}
+export function patchChannelPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigChannelPlaylists = patch(_requestConfigChannelPlaylists ?? {});
+}
+
 let _requestConfigChannelAdvancedInfo: Partial<AxiosRequestConfig> | undefined;
 export function getChannelAdvancedInfoRequestConfig() {
   return _requestConfigChannelAdvancedInfo;
@@ -2358,6 +2862,72 @@ export function setChannelUserInfoPUTRequestConfig(value: Partial<AxiosRequestCo
 }
 export function patchChannelUserInfoPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigChannelUserInfoPUT = patch(_requestConfigChannelUserInfoPUT ?? {});
+}
+
+let _requestConfigMyPlaylists: Partial<AxiosRequestConfig> | undefined;
+export function getMyPlaylistsRequestConfig() {
+  return _requestConfigMyPlaylists;
+}
+export function setMyPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigMyPlaylists = value;
+}
+export function patchMyPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigMyPlaylists = patch(_requestConfigMyPlaylists ?? {});
+}
+
+let _requestConfigPlaylistsGET: Partial<AxiosRequestConfig> | undefined;
+export function getPlaylistsGETRequestConfig() {
+  return _requestConfigPlaylistsGET;
+}
+export function setPlaylistsGETRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsGET = value;
+}
+export function patchPlaylistsGETRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsGET = patch(_requestConfigPlaylistsGET ?? {});
+}
+
+let _requestConfigPlaylistsPUT: Partial<AxiosRequestConfig> | undefined;
+export function getPlaylistsPUTRequestConfig() {
+  return _requestConfigPlaylistsPUT;
+}
+export function setPlaylistsPUTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsPUT = value;
+}
+export function patchPlaylistsPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsPUT = patch(_requestConfigPlaylistsPUT ?? {});
+}
+
+let _requestConfigPlaylistsDELETE: Partial<AxiosRequestConfig> | undefined;
+export function getPlaylistsDELETERequestConfig() {
+  return _requestConfigPlaylistsDELETE;
+}
+export function setPlaylistsDELETERequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsDELETE = value;
+}
+export function patchPlaylistsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsDELETE = patch(_requestConfigPlaylistsDELETE ?? {});
+}
+
+let _requestConfigVideo: Partial<AxiosRequestConfig> | undefined;
+export function getVideoRequestConfig() {
+  return _requestConfigVideo;
+}
+export function setVideoRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigVideo = value;
+}
+export function patchVideoRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigVideo = patch(_requestConfigVideo ?? {});
+}
+
+let _requestConfigPlaylistsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getPlaylistsPOSTRequestConfig() {
+  return _requestConfigPlaylistsPOST;
+}
+export function setPlaylistsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsPOST = value;
+}
+export function patchPlaylistsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistsPOST = patch(_requestConfigPlaylistsPOST ?? {});
 }
 
 let _requestConfigSearch: Partial<AxiosRequestConfig> | undefined;
@@ -2578,6 +3148,17 @@ export function setVideosDELETERequestConfig(value: Partial<AxiosRequestConfig>)
 }
 export function patchVideosDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigVideosDELETE = patch(_requestConfigVideosDELETE ?? {});
+}
+
+let _requestConfigVideoPlaylists: Partial<AxiosRequestConfig> | undefined;
+export function getVideoPlaylistsRequestConfig() {
+  return _requestConfigVideoPlaylists;
+}
+export function setVideoPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigVideoPlaylists = value;
+}
+export function patchVideoPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigVideoPlaylists = patch(_requestConfigVideoPlaylists ?? {});
 }
 
 let _requestConfigMyVideos: Partial<AxiosRequestConfig> | undefined;

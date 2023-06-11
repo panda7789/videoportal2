@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useMyVideosQuery } from 'api/axios-client/Query';
+import { Route } from 'routes/RouteNames';
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyVideos() {
@@ -45,14 +46,14 @@ export function MyVideos() {
     onClick: (selectedIDs: readonly string[]) => {
       console.log(selectedIDs);
       navigate({
-        pathname: `/video/${selectedIDs[0]}`,
+        pathname: `/${Route.video}/${selectedIDs[0]}`,
       });
     },
   });
 
   const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
     navigate({
-      pathname: `/videoedit/${id}`,
+      pathname: `/${Route.videoEdit}/${id}`,
     });
   };
 

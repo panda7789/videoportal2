@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
 import React, { useState } from 'react';
@@ -17,9 +17,10 @@ export interface Props {
   videos: Video[];
   draggable?: boolean;
   onDragEnd?(newVideos: Video[]): void;
+  emptyText?: string;
 }
 
-export function VerticalList({ videos: videosProp, draggable, onDragEnd }: Props) {
+export function VerticalList({ videos: videosProp, draggable, onDragEnd, emptyText }: Props) {
   const [videos, setVideos] = useState<Video[]>(videosProp);
 
   const onDragEndLocal = (result: DropResult) => {
@@ -46,50 +47,75 @@ export function VerticalList({ videos: videosProp, draggable, onDragEnd }: Props
         {(provided: DroppableProvided) => (
           <Grid
             container
-            paddingLeft="calc(100% / 3.3)"
             item
             spacing={2}
             xs={12}
             ref={provided.innerRef}
             {...provided.droppableProps}
+            sx={{ border: '1px solid #30BCED', borderRadius: '10px' }}
+            height="100%"
+            alignContent="flex-start"
           >
-            {videos.map((video, index) => {
-              return (
-                <Draggable
-                  key={video.id}
-                  draggableId={video.id}
-                  index={index}
-                  isDragDisabled={!draggable}
-                >
-                  {(draggableProvided: DraggableProvided) => (
-                    <Grid
-                      ref={draggableProvided.innerRef}
-                      {...draggableProvided.draggableProps}
-                      key={video.id}
-                      item
-                      xs={12}
-                      display="flex"
-                      alignItems="stretch"
-                    >
-                      {draggable && (
-                        <Box {...draggableProvided.dragHandleProps} padding={2} display="flex">
-                          <Box alignSelf="center">
-                            <ReorderIcon />
-                          </Box>
-                        </Box>
-                      )}
-                      <VideoCard
+            {videos.length > 0 ? (
+              videos.map((video, index) => {
+                return (
+                  <Draggable
+                    key={video.id}
+                    draggableId={video.id}
+                    index={index}
+                    isDragDisabled={!draggable}
+                  >
+                    {(draggableProvided: DraggableProvided) => (
+                      <Grid
+                        ref={draggableProvided.innerRef}
+                        {...draggableProvided.draggableProps}
                         key={video.id}
-                        video={{ ...video }}
-                        fullWidth
-                        smallThumbnail
-                        showDescription={false}
-                      />
-                    </Grid>
-                  )}
-                </Draggable>
-              );
-            })}
+                        item
+                        xs={12}
+                        display="flex"
+                        alignItems="stretch"
+                        maxHeight="125px"
+                        p={1}
+                        pl={-1}
+                        pr={2}
+                      >
+                        {draggable && (
+                          <Box
+                            {...draggableProvided.dragHandleProps}
+                            padding={1}
+                            pl={0}
+                            display="flex"
+                          >
+                            <Box alignSelf="center">
+                              <ReorderIcon />
+                            </Box>
+                          </Box>
+                        )}
+                        <VideoCard
+                          key={video.id}
+                          video={{ ...video }}
+                          fullWidth
+                          smallThumbnail
+                          showDescription={false}
+                        />
+                      </Grid>
+                    )}
+                  </Draggable>
+                );
+              })
+            ) : (
+              <Box
+                height="75vh"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexDirection="column"
+                width="100%"
+              >
+                <Typography variant="body1">Seznam neobsahuje žádný záznam 😥</Typography>
+                {emptyText && <Typography variant="caption">{emptyText}</Typography>}
+              </Box>
+            )}
           </Grid>
         )}
       </StrictModeDroppable>

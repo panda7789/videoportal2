@@ -420,6 +420,165 @@ export interface ILoginDTO {
     password: string;
 }
 
+export class Playlist implements IPlaylist {
+    id!: string;
+    name!: string;
+    createdTimestamp!: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    videos?: Video[] | undefined;
+    owner!: User;
+    idOwner!: string;
+    channel?: Channel | undefined;
+    channelId?: string | undefined;
+
+    constructor(data?: IPlaylist) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.owner = new User();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.createdTimestamp = _data["createdTimestamp"] ? new Date(_data["createdTimestamp"].toString()) : <any>undefined;
+            this.description = _data["description"];
+            this.thumbnailUrl = _data["thumbnailUrl"];
+            if (Array.isArray(_data["videos"])) {
+                this.videos = [] as any;
+                for (let item of _data["videos"])
+                    this.videos!.push(Video.fromJS(item));
+            }
+            this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
+            this.idOwner = _data["idOwner"];
+            this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : <any>undefined;
+            this.channelId = _data["channelId"];
+        }
+    }
+
+    static fromJS(data: any): Playlist {
+        data = typeof data === 'object' ? data : {};
+        let result = new Playlist();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["createdTimestamp"] = this.createdTimestamp ? this.createdTimestamp.toISOString() : <any>undefined;
+        data["description"] = this.description;
+        data["thumbnailUrl"] = this.thumbnailUrl;
+        if (Array.isArray(this.videos)) {
+            data["videos"] = [];
+            for (let item of this.videos)
+                data["videos"].push(item.toJSON());
+        }
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["idOwner"] = this.idOwner;
+        data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
+        data["channelId"] = this.channelId;
+        return data;
+    }
+}
+
+export interface IPlaylist {
+    id: string;
+    name: string;
+    createdTimestamp: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    videos?: Video[] | undefined;
+    owner: User;
+    idOwner: string;
+    channel?: Channel | undefined;
+    channelId?: string | undefined;
+}
+
+export class PlaylistDTO implements IPlaylistDTO {
+    id!: string;
+    name!: string;
+    createdTimestamp!: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    videos?: VideoDTO[] | undefined;
+    ownerId!: string;
+    channel?: Channel | undefined;
+    totalDuration!: string;
+
+    constructor(data?: IPlaylistDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.createdTimestamp = _data["createdTimestamp"] ? new Date(_data["createdTimestamp"].toString()) : <any>undefined;
+            this.description = _data["description"];
+            this.thumbnailUrl = _data["thumbnailUrl"];
+            if (Array.isArray(_data["videos"])) {
+                this.videos = [] as any;
+                for (let item of _data["videos"])
+                    this.videos!.push(VideoDTO.fromJS(item));
+            }
+            this.ownerId = _data["ownerId"];
+            this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : <any>undefined;
+            this.totalDuration = _data["totalDuration"];
+        }
+    }
+
+    static fromJS(data: any): PlaylistDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlaylistDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["createdTimestamp"] = this.createdTimestamp ? this.createdTimestamp.toISOString() : <any>undefined;
+        data["description"] = this.description;
+        data["thumbnailUrl"] = this.thumbnailUrl;
+        if (Array.isArray(this.videos)) {
+            data["videos"] = [];
+            for (let item of this.videos)
+                data["videos"].push(item.toJSON());
+        }
+        data["ownerId"] = this.ownerId;
+        data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
+        data["totalDuration"] = this.totalDuration;
+        return data;
+    }
+}
+
+export interface IPlaylistDTO {
+    id: string;
+    name: string;
+    createdTimestamp: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    videos?: VideoDTO[] | undefined;
+    ownerId: string;
+    channel?: Channel | undefined;
+    totalDuration: string;
+}
+
 export class PostVideoResponse implements IPostVideoResponse {
     dataUrl!: string;
 
@@ -871,6 +1030,7 @@ export class Video implements IVideo {
     tags?: Tag[] | undefined;
     channelId!: string;
     channel!: Channel;
+    playlists?: Playlist[] | undefined;
 
     constructor(data?: IVideo) {
         if (data) {
@@ -903,6 +1063,11 @@ export class Video implements IVideo {
             }
             this.channelId = _data["channelId"];
             this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : new Channel();
+            if (Array.isArray(_data["playlists"])) {
+                this.playlists = [] as any;
+                for (let item of _data["playlists"])
+                    this.playlists!.push(Playlist.fromJS(item));
+            }
         }
     }
 
@@ -932,6 +1097,11 @@ export class Video implements IVideo {
         }
         data["channelId"] = this.channelId;
         data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
+        if (Array.isArray(this.playlists)) {
+            data["playlists"] = [];
+            for (let item of this.playlists)
+                data["playlists"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -950,6 +1120,7 @@ export interface IVideo {
     tags?: Tag[] | undefined;
     channelId: string;
     channel: Channel;
+    playlists?: Playlist[] | undefined;
 }
 
 export class VideoDTO implements IVideoDTO {
@@ -966,6 +1137,7 @@ export class VideoDTO implements IVideoDTO {
     tags?: Tag[] | undefined;
     channelId!: string;
     channel!: Channel;
+    playlists?: Playlist[] | undefined;
     channelName!: string;
     channelAvatarUrl?: string | undefined;
 
@@ -1000,6 +1172,11 @@ export class VideoDTO implements IVideoDTO {
             }
             this.channelId = _data["channelId"];
             this.channel = _data["channel"] ? Channel.fromJS(_data["channel"]) : new Channel();
+            if (Array.isArray(_data["playlists"])) {
+                this.playlists = [] as any;
+                for (let item of _data["playlists"])
+                    this.playlists!.push(Playlist.fromJS(item));
+            }
             this.channelName = _data["channelName"];
             this.channelAvatarUrl = _data["channelAvatarUrl"];
         }
@@ -1031,6 +1208,11 @@ export class VideoDTO implements IVideoDTO {
         }
         data["channelId"] = this.channelId;
         data["channel"] = this.channel ? this.channel.toJSON() : <any>undefined;
+        if (Array.isArray(this.playlists)) {
+            data["playlists"] = [];
+            for (let item of this.playlists)
+                data["playlists"].push(item.toJSON());
+        }
         data["channelName"] = this.channelName;
         data["channelAvatarUrl"] = this.channelAvatarUrl;
         return data;
@@ -1051,8 +1233,60 @@ export interface IVideoDTO {
     tags?: Tag[] | undefined;
     channelId: string;
     channel: Channel;
+    playlists?: Playlist[] | undefined;
     channelName: string;
     channelAvatarUrl?: string | undefined;
+}
+
+export class WithTotalCountOfPlaylistDTO implements IWithTotalCountOfPlaylistDTO {
+    items!: PlaylistDTO[];
+    totalCount!: number;
+
+    constructor(data?: IWithTotalCountOfPlaylistDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.items = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(PlaylistDTO.fromJS(item));
+            }
+            this.totalCount = _data["totalCount"];
+        }
+    }
+
+    static fromJS(data: any): WithTotalCountOfPlaylistDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new WithTotalCountOfPlaylistDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["totalCount"] = this.totalCount;
+        return data;
+    }
+}
+
+export interface IWithTotalCountOfPlaylistDTO {
+    items: PlaylistDTO[];
+    totalCount: number;
 }
 
 export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {
@@ -1243,8 +1477,11 @@ export function initPersister() {
   addResultTypeFactory('Client___channelsAll', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelsGET', (data: any) => { const result = new ChannelDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelVideos', (data: any) => { const result = new WithTotalCountOfVideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___channelPlaylists', (data: any) => { const result = new WithTotalCountOfPlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelAdvancedInfo', (data: any) => { const result = new ChannelAdvancedInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___channelUserInfoGET', (data: any) => { const result = new ChannelUserSpecificInfoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___myPlaylists', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___playlistsGET', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsWithVideos', (data: any) => { const result = new Tag(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });

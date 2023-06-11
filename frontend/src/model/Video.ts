@@ -1,6 +1,6 @@
 import { UserVideoStats } from 'api/axios-client';
-import { v4 as uuidv4 } from 'uuid';
 import { AxiosQuery } from 'api';
+import { Route } from 'routes/RouteNames';
 import { PlaylistModel } from './Playlist';
 import { VideoDTO } from '../api/axios-client';
 
@@ -47,7 +47,7 @@ export async function searchTags(tags: string[]): Promise<VideoDTO[]> {
 }
 
 export function videoUrl(video: VideoDTO) {
-  return `/video/${video.id}`;
+  return `/${Route.video}/${video.id}`;
 }
 
 export function playlistParams(playlist: PlaylistModel, index: number) {

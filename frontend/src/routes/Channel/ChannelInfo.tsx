@@ -3,6 +3,7 @@ import { useLoaderData } from 'react-router-dom';
 import { ChannelAdvancedInfo, getChannelAdvancedInfo } from 'model/Channel';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
 import { ApiPath } from 'components/Utils/APIUtils';
+import { Route } from 'routes/RouteNames';
 
 export async function loader({ params }: { params: any }) {
   return getChannelAdvancedInfo(params.channelId);
@@ -43,7 +44,7 @@ export function ChannelInfo() {
           {info.relatedChannels?.map((channel) => (
             <AvatarButton
               key={channel.id}
-              url={`/channel/${channel.id}`}
+              url={`/${Route.channel}/${channel.id}`}
               text={channel.name}
               image={ApiPath(channel.avatarUrl)}
             />

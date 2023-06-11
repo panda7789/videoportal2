@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, IconButton, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { CommentDTO, UserDTO } from 'api/axios-client';
+import { CommentDTO } from 'api/axios-client';
 import Emoji from 'react-emoji-render';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCommentsDELETEMutation } from 'api/axios-client/Query';

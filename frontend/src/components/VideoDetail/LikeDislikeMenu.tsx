@@ -3,16 +3,19 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ShareIcon from '@mui/icons-material/Share';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import QueueIcon from '@mui/icons-material/Queue';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import theme from 'Theme';
-import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
+import DropDownMenu, {
+  DropDownMenuAction,
+  DropDownMenuCustomAction,
+} from 'components/DropDownMenu/DropDownMenu';
 import { AxiosQuery } from 'api';
 import { useUserVideoStatsPUTMutation } from 'api/axios-client/Query';
 import { UserVideoStats } from 'api/axios-client';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 import { UseQueryResult } from '@tanstack/react-query';
+import { AddToPlaylistDropDownFactory } from 'components/DropDownMenu/AddToPlaylistDropdown';
 
 export interface Props {
   videoId: string;
@@ -29,19 +32,6 @@ const Item = styled(Box)(() => ({
   width: '48px',
 }));
 
-const dropdownActions: DropDownMenuAction[] = [
-  {
-    name: 'Přehrát později',
-    icon: <WatchLaterIcon />,
-    onClick: () => console.log('přidat do přehrát později'),
-  },
-  {
-    name: 'Přidat do playlistu',
-    icon: <PlaylistAddIcon />,
-    onClick: () => console.log('přidat do playlistu'),
-  },
-];
-
 function LikeDislikeMenu({
   likeCount,
   dislikeCount,
@@ -49,20 +39,24 @@ function LikeDislikeMenu({
   userStatsQuery,
   enabled = true,
 }: Props) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const videoUserStatsMutation = useUserVideoStatsPUTMutation(videoId, {
     onSuccess: () => {
       userStatsQuery?.refetch();
     },
   });
+  const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
+    {
+      name: 'Přehrát později',
+      icon: <WatchLaterIcon />,
+      onClick: () => console.log('přidat do přehrát později'),
+    },
+    {
+      elementFactory: (props) =>
+        AddToPlaylistDropDownFactory({ ...props, parentObjectId: videoId }),
+    },
+  ];
 
-  const handleAddToPlaylistClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleAddToPlaylistClose = () => {
-    setAnchorEl(null);
-  };
   const handleLikeClick = () => {
     // todo send like to api
     if (userStatsQuery?.data) {

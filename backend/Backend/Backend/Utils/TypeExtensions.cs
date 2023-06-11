@@ -33,5 +33,10 @@ namespace Backend.Utils
             var chopIndex = fullName.IndexOf("[[");
             return (chopIndex == -1) ? fullName : fullName.Substring(0, chopIndex);
         }
+
+        public static TimeSpan Sum(this IEnumerable<TimeSpan> source)
+        {
+            return source.Aggregate(TimeSpan.Zero, (subtotal, time) => subtotal.Add(time));
+        }
     }
 }

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { getUserPlaylistInfo, PlaylistModel, UserPlaylistInfo } from 'model/Playlist';
+import React from 'react';
 import { PlaylistCard } from 'components/Thumbnail/PlaylistCard';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Typography } from '@mui/material';
@@ -7,11 +6,13 @@ import { Box } from '@mui/system';
 import EditIcon from '@mui/icons-material/Edit';
 import { LinkButton } from 'components/Buttons/LinkButton';
 import { playlistParams, videoUrl } from 'model/Video';
+import { PlaylistDTO } from 'api/axios-client';
+import { Route } from 'routes/RouteNames';
 import { InlineList } from './InlineList';
 import { VideoInlineList } from './VideoInlineList';
 
 export interface Props {
-  playlists: PlaylistModel[];
+  playlists: PlaylistDTO[];
 }
 
 export function PlaylistInlineList({ playlists }: Props) {
@@ -25,7 +26,7 @@ export function PlaylistInlineList({ playlists }: Props) {
 }
 
 export interface ExtendedProps {
-  playlist: PlaylistModel;
+  playlist: PlaylistDTO;
   currentlyPlaying?: number;
   editable?: boolean;
   showPlayAllButton?: boolean;
@@ -37,15 +38,7 @@ export function ExpandedPlaylistInlineList({
   editable,
   showPlayAllButton,
 }: ExtendedProps) {
-  const [userPlaylistInfo, setUserPlaylistInfo] = useState<UserPlaylistInfo>();
-
-  useEffect(() => {
-    (async () => {
-      setUserPlaylistInfo(await getUserPlaylistInfo(playlist.id));
-    })();
-  }, [editable, playlist]);
-
-  return (
+  return (playlist?.videos?.length ?? 0) > 0 ? (
     <Box>
       <Typography variant="h6" display="inline-block" sx={{ verticalAlign: 'middle' }}>
         {playlist.name}
@@ -60,8 +53,8 @@ export function ExpandedPlaylistInlineList({
           icon={<PlayArrowIcon />}
         />
       )}
-      {editable && (userPlaylistInfo?.editable ?? false) && (
-        <LinkButton to="/playlist/123" text="Upravit" icon={<EditIcon />} />
+      {editable && /* userPlaylistInfo?.editable ?? */ false && (
+        <LinkButton to={`${Route.playlist}/123`} text="Upravit" icon={<EditIcon />} />
       )}
       <Typography variant="body2" pt={1}>
         {playlist.description}
@@ -72,5 +65,7 @@ export function ExpandedPlaylistInlineList({
         urlParamsGenerator={(_, index) => playlistParams(playlist, index)}
       />
     </Box>
+  ) : (
+    <></>
   );
 }

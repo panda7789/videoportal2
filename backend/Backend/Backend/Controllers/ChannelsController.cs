@@ -112,6 +112,48 @@ namespace Backend.Controllers
             };
         }
 
+        [HttpGet("{id}/channel-playlists")]
+        public async Task<ActionResult<WithTotalCount<PlaylistDTO>>> GetChannelPlaylists(Guid id, [FromQuery] int? limit = null, int? offset = null)
+        {
+            if (_context.Channels == null)
+            {
+                return NotFound();
+            }
+            IQueryable<Playlist> query = _context.Playlists
+                .Include(x => x.Channel)
+                .Include(x => x.Owner)
+                .Include(x => x.Videos)
+                .Where(x => x.ChannelId == id)
+                .OrderByDescending(x => x.CreatedTimestamp);
+
+            var totalCount = query.Count();
+
+
+            if (offset.HasValue)
+            {
+                query = query.Skip(offset.Value);
+            }
+            if (limit.HasValue)
+            {
+                query = query.Take(limit.Value);
+            }
+            else
+            {
+                query = query.Take(10);
+            }
+
+            var latestVideos = await query.Select(x => x.ToDTO()).ToListAsync();
+            if (latestVideos == null)
+            {
+                return NotFound();
+            }
+            return new WithTotalCount<PlaylistDTO>()
+            {
+                Items = latestVideos,
+                TotalCount = totalCount
+            };
+        }
+
         [HttpGet("{id}/channel-advanced-info")]
         public ActionResult<ChannelAdvancedInfoDTO> GetChannelAdvancedInfo(Guid id)
         {

@@ -50,12 +50,38 @@ export type ChannelVideosQueryParameters = {
   offset?: number | undefined;
 };
 
+export type ChannelPlaylistsQueryParameters = {
+  id: string;
+  limit?: number | undefined;
+  offset?: number | undefined;
+};
+
 export type ChannelAdvancedInfoQueryParameters = {
   id: string;
 };
 
 export type ChannelUserInfoGETQueryParameters = {
   id: string;
+};
+
+export type PlaylistsGETQueryParameters = {
+  id: string;
+};
+
+export type PlaylistsPUTMutationParameters = {
+  name?: string | null | undefined ; 
+  description?: string | null | undefined ; 
+  thumbnail?: Types.FileParameter | null | undefined ; 
+  videos?: Types.Video[] | null | undefined ; 
+  channelId?: string | null | undefined ; 
+};
+
+export type PlaylistsPOSTMutationParameters = {
+  name?: string | null | undefined ; 
+  description?: string | null | undefined ; 
+  thumbnail?: Types.FileParameter | null | undefined ; 
+  videos?: Types.Video[] | null | undefined ; 
+  channelId?: string | null | undefined ; 
 };
 
 export type UsersGETQueryParameters = {
@@ -92,6 +118,10 @@ export type VideosPUTMutationParameters = {
   image?: Types.FileParameter | null | undefined ; 
   channelId?: string | undefined ; 
   tags?: string[] | null | undefined ; 
+};
+
+export type VideoPlaylistsQueryParameters = {
+  id: string;
 };
 
 export type RelatedVideosQueryParameters = {
@@ -736,6 +766,119 @@ export function setChannelVideosDataByQueryId(queryClient: QueryClient, queryKey
 }
     
     
+export function channelPlaylistsUrl(id: string, limit?: number | undefined, offset?: number | undefined): string {
+  let url_ = getBaseUrl() + "/api/Channels/{id}/channel-playlists?";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+if (limit === null)
+    throw new Error("The parameter 'limit' cannot be null.");
+else if (limit !== undefined)
+    url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+if (offset === null)
+    throw new Error("The parameter 'offset' cannot be null.");
+else if (offset !== undefined)
+    url_ += "offset=" + encodeURIComponent("" + offset) + "&";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let channelPlaylistsDefaultOptions: UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, unknown, Types.WithTotalCountOfPlaylistDTO> = {
+  queryFn: __channelPlaylists,
+};
+export function getChannelPlaylistsDefaultOptions(): UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, unknown, Types.WithTotalCountOfPlaylistDTO> {
+  return channelPlaylistsDefaultOptions;
+};
+export function setChannelPlaylistsDefaultOptions(options: UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, unknown, Types.WithTotalCountOfPlaylistDTO>) {
+  channelPlaylistsDefaultOptions = options;
+}
+
+export function channelPlaylistsQueryKey(dto: ChannelPlaylistsQueryParameters): QueryKey;
+export function channelPlaylistsQueryKey(id: string, limit?: number | undefined, offset?: number | undefined): QueryKey;
+export function channelPlaylistsQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id, limit, offset,  } = params[0] as ChannelPlaylistsQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'channelPlaylists',
+        id as any,
+        limit as any,
+        offset as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'channelPlaylists',
+        ...params
+      ]);
+  }
+}
+function __channelPlaylists(context: QueryFunctionContext) {
+  return Client.channelPlaylists(
+      context.queryKey[2] as string,       context.queryKey[3] as number | undefined,       context.queryKey[4] as number | undefined    );
+}
+
+export function useChannelPlaylistsQuery<TSelectData = Types.WithTotalCountOfPlaylistDTO, TError = unknown>(dto: ChannelPlaylistsQueryParameters, options?: UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function useChannelPlaylistsQuery<TSelectData = Types.WithTotalCountOfPlaylistDTO, TError = unknown>(id: string, limit?: number | undefined, offset?: number | undefined, options?: UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useChannelPlaylistsQuery<TSelectData = Types.WithTotalCountOfPlaylistDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  let limit: any = undefined;
+  let offset: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id, limit, offset,  } = params[0] as ChannelPlaylistsQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, limit, offset, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.WithTotalCountOfPlaylistDTO, TError, TSelectData>({
+    queryFn: __channelPlaylists,
+    queryKey: channelPlaylistsQueryKey(id, limit, offset),
+    ...channelPlaylistsDefaultOptions as unknown as UseQueryOptions<Types.WithTotalCountOfPlaylistDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setChannelPlaylistsData(queryClient: QueryClient, updater: (data: Types.WithTotalCountOfPlaylistDTO | undefined) => Types.WithTotalCountOfPlaylistDTO, id: string, limit?: number | undefined, offset?: number | undefined) {
+  queryClient.setQueryData(channelPlaylistsQueryKey(id, limit, offset),
+    updater
+  );
+}
+
+/**
+ * @param limit (optional) 
+ * @param offset (optional) 
+ * @return Success
+ */
+export function setChannelPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.WithTotalCountOfPlaylistDTO | undefined) => Types.WithTotalCountOfPlaylistDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
 export function channelAdvancedInfoUrl(id: string): string {
   let url_ = getBaseUrl() + "/api/Channels/{id}/channel-advanced-info";
 
@@ -953,6 +1096,311 @@ export function useChannelUserInfoPUTMutation<TContext>(id: string, options?: Om
   options = addMetaToOptions(options, metaContext);
   
       return useMutation((body: Types.ChannelUserSpecificInfoDTO) => Client.channelUserInfoPUT(id, body), {...options, mutationKey: key});
+}
+  
+    
+export function myPlaylistsUrl(): string {
+  let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let myPlaylistsDefaultOptions: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> = {
+  queryFn: __myPlaylists,
+};
+export function getMyPlaylistsDefaultOptions(): UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> {
+  return myPlaylistsDefaultOptions;
+};
+export function setMyPlaylistsDefaultOptions(options: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]>) {
+  myPlaylistsDefaultOptions = options;
+}
+
+export function myPlaylistsQueryKey(): QueryKey;
+export function myPlaylistsQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'myPlaylists',
+    ]);
+}
+function __myPlaylists() {
+  return Client.myPlaylists(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(options?: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.PlaylistDTO[], TError, TSelectData>({
+    queryFn: __myPlaylists,
+    queryKey: myPlaylistsQueryKey(),
+    ...myPlaylistsDefaultOptions as unknown as UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setMyPlaylistsData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[], ) {
+  queryClient.setQueryData(myPlaylistsQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setMyPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function playlistsGETUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let playlistsGETDefaultOptions: UseQueryOptions<Types.PlaylistDTO, unknown, Types.PlaylistDTO> = {
+  queryFn: __playlistsGET,
+};
+export function getPlaylistsGETDefaultOptions(): UseQueryOptions<Types.PlaylistDTO, unknown, Types.PlaylistDTO> {
+  return playlistsGETDefaultOptions;
+};
+export function setPlaylistsGETDefaultOptions(options: UseQueryOptions<Types.PlaylistDTO, unknown, Types.PlaylistDTO>) {
+  playlistsGETDefaultOptions = options;
+}
+
+export function playlistsGETQueryKey(id: string): QueryKey;
+export function playlistsGETQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as PlaylistsGETQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'playlistsGET',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'playlistsGET',
+        ...params
+      ]);
+  }
+}
+function __playlistsGET(context: QueryFunctionContext) {
+  return Client.playlistsGET(
+      context.queryKey[2] as string    );
+}
+
+export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = unknown>(dto: PlaylistsGETQueryParameters, options?: UseQueryOptions<Types.PlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.PlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.PlaylistDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as PlaylistsGETQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.PlaylistDTO, TError, TSelectData>({
+    queryFn: __playlistsGET,
+    queryKey: playlistsGETQueryKey(id),
+    ...playlistsGETDefaultOptions as unknown as UseQueryOptions<Types.PlaylistDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setPlaylistsGETData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO | undefined) => Types.PlaylistDTO, id: string) {
+  queryClient.setQueryData(playlistsGETQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setPlaylistsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO | undefined) => Types.PlaylistDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+    
+export function playlistsPUTUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function playlistsPUTMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'playlistsPUT',
+      id as any,
+    ]);
+}
+
+/**
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param thumbnail (optional) 
+ * @param videos (optional) 
+ * @param channelId (optional) 
+ * @return Success
+ */
+export function usePlaylistsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, PlaylistsPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, PlaylistsPUTMutationParameters, TContext> {
+  const key = playlistsPUTMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((playlistsPUTMutationParameters: PlaylistsPUTMutationParameters) => Client.playlistsPUT(id, playlistsPUTMutationParameters.name, playlistsPUTMutationParameters.description, playlistsPUTMutationParameters.thumbnail, playlistsPUTMutationParameters.videos, playlistsPUTMutationParameters.channelId), {...options, mutationKey: key});
+}
+  
+    
+export function playlistsDELETEUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function playlistsDELETEMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'playlistsDELETE',
+      id as any,
+    ]);
+}
+
+/**
+ * @return Success
+ */
+export function usePlaylistsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = playlistsDELETEMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.playlistsDELETE(id), {...options, mutationKey: key});
+}
+  
+    
+export function videoUrl(id: string, videoId: string, add?: boolean | undefined): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}/video/{videoId}?";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+
+if (videoId === undefined || videoId === null)
+  throw new Error("The parameter 'videoId' must be defined.");
+url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+if (add === null)
+    throw new Error("The parameter 'add' cannot be null.");
+else if (add !== undefined)
+    url_ += "add=" + encodeURIComponent("" + add) + "&";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function videoMutationKey(id: string, videoId: string, add?: boolean | undefined): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'video',
+      id as any,
+      videoId as any,
+      add as any,
+    ]);
+}
+
+/**
+ * @param add (optional) 
+ * @return Success
+ */
+export function useVideoMutation<TContext>(id: string, videoId: string, add?: boolean | undefined, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = videoMutationKey(id, videoId, add);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation(() => Client.video(id, videoId, add), {...options, mutationKey: key});
+}
+  
+    
+export function playlistsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/Playlists";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function playlistsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'playlistsPOST',
+    ]);
+}
+
+/**
+ * @param name (optional) 
+ * @param description (optional) 
+ * @param thumbnail (optional) 
+ * @param videos (optional) 
+ * @param channelId (optional) 
+ * @return Success
+ */
+export function usePlaylistsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, PlaylistsPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, PlaylistsPOSTMutationParameters, TContext> {
+  const key = playlistsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+      return useMutation((playlistsPOSTMutationParameters: PlaylistsPOSTMutationParameters) => Client.playlistsPOST(playlistsPOSTMutationParameters.name, playlistsPOSTMutationParameters.description, playlistsPOSTMutationParameters.thumbnail, playlistsPOSTMutationParameters.videos, playlistsPOSTMutationParameters.channelId), {...options, mutationKey: key});
 }
   
     
@@ -2020,6 +2468,100 @@ export function useVideosDELETEMutation<TContext>(id: string, options?: Omit<Use
       return useMutation(() => Client.videosDELETE(id), {...options, mutationKey: key});
 }
   
+    
+export function videoPlaylistsUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Videos/{id}/video-playlists";
+
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let videoPlaylistsDefaultOptions: UseQueryOptions<string[], unknown, string[]> = {
+  queryFn: __videoPlaylists,
+};
+export function getVideoPlaylistsDefaultOptions(): UseQueryOptions<string[], unknown, string[]> {
+  return videoPlaylistsDefaultOptions;
+};
+export function setVideoPlaylistsDefaultOptions(options: UseQueryOptions<string[], unknown, string[]>) {
+  videoPlaylistsDefaultOptions = options;
+}
+
+export function videoPlaylistsQueryKey(id: string): QueryKey;
+export function videoPlaylistsQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as VideoPlaylistsQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'videoPlaylists',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'videoPlaylists',
+        ...params
+      ]);
+  }
+}
+function __videoPlaylists(context: QueryFunctionContext) {
+  return Client.videoPlaylists(
+      context.queryKey[2] as string    );
+}
+
+export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(dto: VideoPlaylistsQueryParameters, options?: UseQueryOptions<string[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(id: string, options?: UseQueryOptions<string[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<string[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as VideoPlaylistsQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<string[], TError, TSelectData>({
+    queryFn: __videoPlaylists,
+    queryKey: videoPlaylistsQueryKey(id),
+    ...videoPlaylistsDefaultOptions as unknown as UseQueryOptions<string[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setVideoPlaylistsData(queryClient: QueryClient, updater: (data: string[] | undefined) => string[], id: string) {
+  queryClient.setQueryData(videoPlaylistsQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setVideoPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: string[] | undefined) => string[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
     
 export function myVideosUrl(): string {
   let url_ = getBaseUrl() + "/api/Videos/my-videos";

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace Backend.Models
 {
@@ -29,6 +31,8 @@ namespace Backend.Models
         public ICollection<Tag>? Tags { get; set; }
         public Guid ChannelId { get; set; }
         public Channel Channel { get; set; }
+        [JsonIgnore]
+        public ICollection<Playlist>? Playlists { get; set; }
 
         public VideoDTO ToDTO()
         {

@@ -24,6 +24,8 @@ import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 import SearchResult from 'routes/SearchResult';
 import { TagEdit } from 'routes/TagEdit';
+import { MyPlaylists } from 'routes/MyPlaylists';
+import { Route } from 'routes/RouteNames';
 
 function App() {
   const router = createBrowserRouter([
@@ -40,11 +42,11 @@ function App() {
               element: <HomePage />,
             },
             {
-              path: 'myvideos',
+              path: Route.myVideos,
               element: <MyVideos />,
             },
             {
-              path: 'channel/:channelId',
+              path: `${Route.channel}/:channelId`,
               element: <Channel />,
               loader: channelLoader,
               children: [
@@ -71,7 +73,7 @@ function App() {
               ],
             },
             {
-              path: 'mychannels',
+              path: Route.myChannels,
               children: [
                 {
                   path: '',
@@ -89,45 +91,63 @@ function App() {
               ],
             },
             {
-              path: 'video/:videoId',
+              path: `${Route.video}/:videoId`,
               element: <VideoDetail />,
               loader: videoLoader,
             },
             {
-              path: 'videoedit/:videoId',
+              path: `${Route.videoEdit}/:videoId`,
               element: <VideoEdit />,
               loader: videoEditLoader,
             },
             {
-              path: 'upload',
+              path: Route.upload,
               element: <VideoEdit newVideo />,
             },
             {
-              path: 'search',
+              path: Route.search,
               element: <SearchResult />,
               loader: searchLoader,
             },
             {
-              path: 'playlist/:playlistId',
+              path: `${Route.playlist}/:Id`,
               element: <PlaylistDetail />,
               loader: playlistLoader,
             },
             {
-              path: 'users',
+              path: Route.users,
               element: <UsersEdit />,
             },
             {
-              path: 'userEdit/:Id',
+              path: `${Route.userEdit}/:Id`,
               element: <UserEditor />,
               loader: userEditLoader,
             },
             {
-              path: 'userEdit',
+              path: Route.userEdit,
               element: <UserEditor newUser />,
             },
             {
-              path: 'tagEdit',
+              path: Route.tagEdit,
               element: <TagEdit />,
+            },
+            {
+              path: Route.myPlaylists,
+              children: [
+                {
+                  path: '',
+                  element: <MyPlaylists />,
+                },
+                {
+                  path: 'create',
+                  element: <PlaylistDetail newPlaylist />,
+                },
+                {
+                  path: ':Id',
+                  element: <PlaylistDetail />,
+                  loader: playlistLoader,
+                },
+              ],
             },
           ],
         },

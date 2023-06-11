@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, Box, InputBase } from '@mui/material';
 import { createSearchParams, useNavigate } from 'react-router-dom';
+import { Route } from 'routes/RouteNames';
 
 export interface SearchQ {
   searchTerm?: string;
@@ -24,11 +25,11 @@ export async function loader({ request }: { request: any }): Promise<SearchQ> {
 }
 
 export const searchUrl = (searchedParam: string) => {
-  return `/search?q=${searchedParam}`;
+  return `/${Route.search}?q=${searchedParam}`;
 };
 
 export const searchTagsUrl = (searchedTags: string[]) => {
-  return `/search?tags=${searchedTags.toString()}`;
+  return `/${Route.search}?tags=${searchedTags.toString()}`;
 };
 
 function Search() {
@@ -46,7 +47,7 @@ function Search() {
       return;
     }
     navigate({
-      pathname: '/search',
+      pathname: `/${Route.search}`,
       search: `?${createSearchParams(params)}`,
     });
   };

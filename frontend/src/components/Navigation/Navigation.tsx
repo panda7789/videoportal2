@@ -9,59 +9,68 @@ import DatasetIcon from '@mui/icons-material/Dataset';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { UserContext } from 'routes/Root';
 import { UserRoles } from 'api/axios-client';
-import AndroidNavigation from './AndroidNavigation';
-import DesktopNavigation from './DesktopNavigation';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import AndroidNavigation from 'components/Navigation/AndroidNavigation';
+import DesktopNavigation from 'components/Navigation/DesktopNavigation';
+import { Route } from 'routes/RouteNames';
 
 export interface NavigationItem {
   route: string;
   title: string;
   icon: JSX.Element;
   signed?: boolean;
-  userRole?: [keyof UserRoles];
+  userRole?: (keyof UserRoles)[];
 }
 
 export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Domů', icon: <HomeIcon /> },
   {
-    route: '/myvideos',
+    route: `/${Route.myVideos}`,
     title: 'Moje videa',
     icon: <AccountBoxIcon />, // todo gearbox
     signed: true,
   },
   {
-    route: '/playlist/playLater',
+    route: `/${Route.playlist}/playLater`,
     title: 'Přehrát později',
     icon: <WatchLaterIcon />,
     signed: true,
   },
   {
-    route: '/upload',
+    route: `/${Route.upload}`,
     title: 'Nahrát video',
     icon: <CloudUploadIcon />,
     signed: true,
     userRole: ['videoEditor'],
   },
   {
-    route: '/mychannels',
+    route: `/${Route.myChannels}`,
     title: 'Moje kanály',
     icon: <DatasetIcon />,
     signed: true,
     userRole: ['videoEditor'],
   },
   {
-    route: '/users',
+    route: `/${Route.users}`,
     title: 'Správa uživatelů',
     icon: <ManageAccountsIcon />,
     signed: true,
     userRole: ['administrator'],
   },
   {
-    route: '/tagEdit',
+    route: `/${Route.tagEdit}`,
     title: 'Správa tagů',
     icon: <LocalOfferIcon />,
     signed: true,
     userRole: ['administrator'],
+  },
+  {
+    route: `/${Route.myPlaylists}`,
+    title: 'Správa playlistů',
+    icon: <PlaylistPlayIcon />,
+    signed: true,
+    userRole: ['user', 'administrator'],
   },
 ];
 

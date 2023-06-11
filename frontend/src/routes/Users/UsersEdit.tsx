@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { UserDTO } from 'api/axios-client';
 import { useUsersAllQuery } from 'api/axios-client/Query';
 import { AxiosQuery } from 'api';
+import { Route } from 'routes/RouteNames';
 
 // eslint-disable-next-line import/prefer-default-export
 export function UsersEdit() {
@@ -42,14 +43,14 @@ export function UsersEdit() {
     icon: <AddIcon />,
     onClick: async () => {
       navigate({
-        pathname: `/useredit/`,
+        pathname: `/${Route.userEdit}`,
       });
     },
   });
 
   const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
     navigate({
-      pathname: `/useredit/${id}`,
+      pathname: `/${Route.userEdit}/${id}`,
     });
   };
 

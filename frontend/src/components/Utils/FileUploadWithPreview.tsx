@@ -9,9 +9,15 @@ export interface Props {
   uploadedFile: File | undefined;
   setUploadedFile: React.Dispatch<React.SetStateAction<File | undefined>>;
   existingImageUrl?: string;
+  readOnly?: boolean;
 }
 
-export function FileUploadWithPreview({ uploadedFile, setUploadedFile, existingImageUrl }: Props) {
+export function FileUploadWithPreview({
+  uploadedFile,
+  setUploadedFile,
+  existingImageUrl,
+  readOnly,
+}: Props) {
   const [imagePreview, setImagePreview] = useState<string>();
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -34,22 +40,24 @@ export function FileUploadWithPreview({ uploadedFile, setUploadedFile, existingI
 
   return (
     <>
-      <AspectRatio ratio={16 / 9}>
+      <AspectRatio ratio={16 / 9} sx={{ border: '1px solid #30BCED', borderRadius: '6px' }}>
         <img
           width="100%"
           style={{ maxHeight: '100%', objectFit: 'contain' }}
           src={imagePreview ?? existingImageUrl}
         />
       </AspectRatio>
-      <Box display="flex" justifyContent="center" gap={2} padding={2}>
-        <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
-          <input hidden accept="image/*" type="file" onChange={handleChange} />
-          Nahrát
-        </Button>
-        <IconButton onClick={handleDelete} color="error" >
-          <DeleteIcon />
-        </IconButton>
-      </Box>
+      {!readOnly && (
+        <Box display="flex" justifyContent="center" gap={2} padding={2}>
+          <Button component="label" startIcon={<FileUploadIcon />} variant="outlined">
+            <input hidden accept="image/*" type="file" onChange={handleChange} />
+            Nahrát
+          </Button>
+          <IconButton onClick={handleDelete} color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      )}
     </>
   );
 }

@@ -101,6 +101,22 @@ namespace Backend.Controllers
             return video.ToDTO();
         }
 
+        [HttpGet("{id}/video-playlists")]
+        public async Task<ActionResult<IEnumerable<Guid>>> GetVideoPlaylists(Guid id)
+        {
+            if (_context.Videos == null)
+            {
+                return NotFound();
+            }
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+            var playlists = await _context.Playlists.Where(x => x.Videos.Contains(video)).Select(x => x.Id).ToListAsync();
+            return playlists;
+        }
+
         // GET: api/videos/my
         [HttpGet("my-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()

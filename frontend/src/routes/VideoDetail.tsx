@@ -16,74 +16,35 @@ import React, { useContext, useEffect } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getVideoById } from 'model/Video';
 import theme from 'Theme';
-import Comment, { CommentProps } from 'components/Comment/Comment';
+import Comment from 'components/Comment/Comment';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
 import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
-import { getPlaylistById, PlaylistModel } from 'model/Playlist';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
-import { CommentPostDTO, UserDTO, UserRoles, VideoDTO as Video } from 'api/axios-client';
-import { NumberToWords } from 'components/Utils/NumberUtils';
+import {
+  CommentPostDTO,
+  PlaylistDTO,
+  VideoDTO as Video,
+} from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { AxiosQuery } from 'api';
-import { NavigationContext, UserContext } from './Root';
 import {
   useCommentsAllQuery,
   useCommentsPOSTMutation,
   useUserVideoStatsGETQuery,
-  useUserVideoStatsPUTMutation,
   useWatchedMutation,
 } from 'api/axios-client/Query';
+import { Route } from 'routes/RouteNames';
+import { NavigationContext, UserContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
-
-const Users: UserDTO[] = [
-  new UserDTO({
-    id: '1',
-    name: 'Lillie Myers',
-    initials: 'LM',
-    email: 'a@b.cz',
-    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
-  }),
-  new UserDTO({
-    id: '2',
-    name: 'Gene Rose',
-    initials: 'GR',
-    email: 'a@b.cz',
-    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
-  }),
-  new UserDTO({
-    id: '3',
-    name: 'Thomas Reese',
-    initials: 'TR',
-    email: 'a@b.cz',
-    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
-  }),
-  new UserDTO({
-    id: '4',
-    name: 'Tillie Guzman',
-    initials: 'TG',
-    email: 'a@b.cz',
-    roles: new UserRoles({ user: true, administrator: false, videoEditor: false }),
-  }),
-];
-
-const Texts: string[] = [
-  'Voluptate ullamco fugiat elit amet eu. 👍😁',
-  'Irure amet. 😍🤩 Ullamco amet occaecat officia dolore velit ad dolor.😀😂',
-  'Ex non aute ut cillum minim Lorem consectetur veniam officia culpa tempor dolore aute.',
-  'Fugiat duis nisi magna reprehenderit 👍 velit incididunt eu irure enim deserunt nisi.',
-  'Sit occaecat aute ea esse commodo ex ad consequat mollit consectetur do consequat ad et.😀😂',
-  'Sit ut veniam et dolor do nulla irure amet quis laboris 👩‍🎨 culpa id voluptate.',
-  'Aliquip laboris fugiat excepteur duis minim labore cillum commodo.😫',
-];
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -95,7 +56,7 @@ function VideoDetail() {
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
   const [searchParams] = useSearchParams();
-  const [playlist, setPlaylist] = React.useState<PlaylistModel | undefined>(undefined);
+  const [playlist, setPlaylist] = React.useState<PlaylistDTO | undefined>(undefined);
   const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
   const [commentTimeout, setCommentTimeout] = React.useState(false);
   const userContext = useContext(UserContext);
@@ -120,7 +81,7 @@ function VideoDetail() {
     const index = searchParams.get('index') ?? '0';
     (async () => {
       if (playlistId) {
-        setPlaylist(await getPlaylistById(playlistId));
+        setPlaylist(await AxiosQuery.Client.playlistsGET(playlistId));
         setPlaylistIndex(parseInt(index, 10));
       }
     })();
@@ -227,7 +188,7 @@ function VideoDetail() {
                 <Box
                   display="flex"
                   component={Link}
-                  to={`/channel/${video.channelId}`}
+                  to={`/${Route.channel}/${video.channelId}`}
                   mt={2}
                   ml="10px"
                   mr={2}

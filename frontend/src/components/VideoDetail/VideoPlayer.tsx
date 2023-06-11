@@ -1,5 +1,4 @@
-import { useUserVideoStatsGETQuery } from 'api/axios-client/Query';
-import React, { useRef, useEffect, useContext, useState } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { UserContext } from 'routes/Root';
 import videojs, { VideoJsPlayer } from 'video.js';
 import 'video.js/dist/video-js.css';

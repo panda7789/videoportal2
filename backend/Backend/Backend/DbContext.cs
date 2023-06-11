@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.Reflection.Emit;
 using System.Reflection.Metadata;
 
 public class MyDbContext : IdentityDbContext<User, Role, Guid>
@@ -47,6 +48,7 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
     public DbSet<Channel> Channels { get; set; }
     public DbSet<ChannelAdvancedInfo> ChannelAdvancedInfos { get; set; }
     public DbSet<ChannelUserSpecificInfo> ChannelUserSpecificInfos { get; set; }
+    public DbSet<Playlist> Playlists { get; set; }
     public DbSet<Backend.Models.Comment>? Comment { get; set; }
 
 }

@@ -1,5 +1,4 @@
 import { Avatar } from '@mui/material';
-import { ApiPath } from 'components/Utils/APIUtils';
 import { GetInitials } from 'components/Utils/StringUtils';
 
 export interface Props {

@@ -1,6 +1,10 @@
 import { AxiosQuery } from 'api';
-import { ChannelAdvancedInfoDTO, ChannelDTO, ChannelUserSpecificInfoDTO } from 'api/axios-client';
-import { getPlaylistById, PlaylistModel } from './Playlist';
+import {
+  ChannelAdvancedInfoDTO,
+  ChannelDTO,
+  ChannelUserSpecificInfoDTO,
+  WithTotalCountOfPlaylist,
+} from 'api/axios-client';
 
 export {
   ChannelDTO as Channel,
@@ -20,10 +24,6 @@ export async function getChannelUserSpecificInfo(id: string): Promise<ChannelUse
   return AxiosQuery.Client.channelUserInfoGET(id);
 }
 
-export async function getChannelPlaylists(id: string): Promise<PlaylistModel[]> {
-  const playlists: Promise<PlaylistModel>[] = [];
-  for (let i = 0; i < 10; i++) {
-    playlists.push(getPlaylistById(id));
-  }
-  return Promise.all(playlists);
+export async function getChannelPlaylists(id: string): Promise<WithTotalCountOfPlaylist> {
+  return AxiosQuery.Client.channelPlaylists(id);
 }

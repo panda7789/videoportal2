@@ -6,6 +6,7 @@ import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/Enhanc
 import { ApiPath } from 'components/Utils/APIUtils';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import { Route } from 'routes/RouteNames';
 
 function AvatarButtonInRow({ id, name, avatarUrl }: ChannelDTO) {
   return <AvatarButton key={id} text={name} image={ApiPath(avatarUrl)} />;
@@ -31,13 +32,13 @@ export function MyChannels() {
     {
       icon: <AddIcon />,
       label: 'Vytvořit nový kanál',
-      onClick: () => navigate('/mychannels/create'),
+      onClick: () => navigate(`/${Route.myChannels}/create`),
     },
   ];
 
   const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
     navigate({
-      pathname: `/mychannels/${id}`,
+      pathname: `/${Route.myChannels}/${id}`,
     });
   };
 

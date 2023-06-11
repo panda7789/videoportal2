@@ -31,7 +31,6 @@ import {
   uploadUrl,
   useMyChannelsQuery,
   useTagsAllQuery,
-  useTagsDELETEMutation,
   useTagsPOSTMutation,
   useVideosPOSTMutation,
   useVideosPUTMutation,
@@ -40,6 +39,7 @@ import { PostVideoResponse } from 'api/axios-client';
 import { SizeToWords } from 'components/Utils/NumberUtils';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import { UserContext } from './Root';
+import { MyChannelsDropdown } from 'components/DropDownMenu/MyChannelsDropdown';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -239,22 +239,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                name="channelSelect"
-                select={(myChannels?.data?.length ?? 0) > 0}
-                required
-                label="Kanál"
-                defaultValue={
-                  video?.channelId ?? (myChannels.data?.length === 1 ? myChannels.data[0].id : '')
-                }
-              >
-                {myChannels.data?.map((channel) => (
-                  <MenuItem key={channel.id} value={channel.id}>
-                    {channel.name}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <MyChannelsDropdown channels={myChannels.data} defaultValue={video?.channelId} />
             </Grid>
             <Grid item xs={12}>
               <TextField

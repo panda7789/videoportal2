@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604194908_playlist-aditional-attrs")]
+    partial class playlistaditionalattrs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,7 +135,7 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("ChannelId")
+                    b.Property<Guid>("ChannelId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedTimestamp")
@@ -141,12 +144,12 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("IdOwner")
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ThumbnailUrl")
                         .HasColumnType("longtext");
@@ -155,7 +158,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("ChannelId");
 
-                    b.HasIndex("IdOwner");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Playlists");
                 });
@@ -190,21 +193,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "6a4ea213-ac5e-4747-a251-082be40fcfce",
+                            ConcurrencyStamp = "8436f34a-4a68-4e0b-9482-08bd81273af9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "1e322198-7528-4eb0-a9e6-8048c21e2053",
+                            ConcurrencyStamp = "a298db12-731f-43fe-ac02-853adf458cab",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "b13795a1-30d3-47ce-9ac8-6a97554924dc",
+                            ConcurrencyStamp = "3018e1d7-5845-45ff-9187-2fc50bfc2831",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -356,6 +359,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("PlaylistId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("UploadTimestamp")
                         .HasColumnType("datetime(6)");
 
@@ -365,6 +371,8 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChannelId");
+
+                    b.HasIndex("PlaylistId");
 
                     b.ToTable("Videos");
                 });
@@ -468,21 +476,6 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PlaylistVideo", b =>
-                {
-                    b.Property<Guid>("PlaylistsId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("VideosId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("PlaylistsId", "VideosId");
-
-                    b.HasIndex("VideosId");
-
-                    b.ToTable("PlaylistVideo");
-                });
-
             modelBuilder.Entity("TagVideo", b =>
                 {
                     b.Property<Guid>("TagsId")
@@ -535,11 +528,13 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.Channel", "Channel")
                         .WithMany()
-                        .HasForeignKey("ChannelId");
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("IdOwner")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -583,6 +578,10 @@ namespace Backend.Migrations
                         .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Backend.Models.Playlist", null)
+                        .WithMany("Videos")
+                        .HasForeignKey("PlaylistId");
 
                     b.Navigation("Channel");
                 });
@@ -638,21 +637,6 @@ namespace Backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PlaylistVideo", b =>
-                {
-                    b.HasOne("Backend.Models.Playlist", null)
-                        .WithMany()
-                        .HasForeignKey("PlaylistsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.Video", null)
-                        .WithMany()
-                        .HasForeignKey("VideosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TagVideo", b =>
                 {
                     b.HasOne("Backend.Models.Tag", null)
@@ -671,6 +655,11 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>
                 {
                     b.Navigation("RelatedChannels");
+                });
+
+            modelBuilder.Entity("Backend.Models.Playlist", b =>
+                {
+                    b.Navigation("Videos");
                 });
 #pragma warning restore 612, 618
         }

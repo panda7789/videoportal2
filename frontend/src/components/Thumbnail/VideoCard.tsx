@@ -1,8 +1,11 @@
 /* eslint-disable no-nested-ternary */
-import { Card, CardMedia, CardContent, Typography, Grid, Avatar } from '@mui/material';
-import React from 'react';
+import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
+import React, { useContext } from 'react';
 import { Video, videoUrl } from 'model/Video';
-import DropDownMenu, { DropDownMenuAction } from 'components/DropDownMenu/DropDownMenu';
+import DropDownMenu, {
+  DropDownMenuAction,
+  DropDownMenuCustomAction,
+} from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
@@ -16,6 +19,9 @@ import ChipLine from 'components/Chip/ChipLine';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
+import { Route } from 'routes/RouteNames';
+import { AddToPlaylistDropDownFactory } from 'components/DropDownMenu/AddToPlaylistDropdown';
+import { UserContext } from 'routes/Root';
 
 interface Props {
   video: Video;
@@ -45,17 +51,17 @@ function VideoCard({
   urlParams,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
+  const userContext = useContext(UserContext);
 
-  const dropdownActions: DropDownMenuAction[] = [
+  const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
       name: 'Přehrát později',
       icon: <WatchLaterIcon />,
       onClick: () => console.log('přidat do přehrát později'),
     },
     {
-      name: 'Přidat do playlistu',
-      icon: <PlaylistAddIcon />,
-      onClick: () => console.log('přidat do playlistu'),
+      elementFactory: (props) =>
+        AddToPlaylistDropDownFactory({ ...props, parentObjectId: video.id }),
     },
   ];
 
@@ -145,7 +151,7 @@ function VideoCard({
           xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12}
           display="flex"
           component={Link}
-          to={`/video/${id}`}
+          to={`/${Route.video}/${id}`}
           style={{ textDecoration: 'none' }}
         >
           <CardContent
@@ -185,7 +191,9 @@ function VideoCard({
                 >
                   {name}
                 </Typography>
-                <DropDownMenu actions={dropdownActions} icon={<MoreVertIcon />} />
+                {userContext?.user && (
+                  <DropDownMenu actions={dropdownActions} icon={<MoreVertIcon />} />
+                )}
               </Box>
               {(showDescription ?? false) && (
                 <Typography
@@ -216,7 +224,7 @@ function VideoCard({
                 display="flex"
                 alignItems="center"
                 component={Link}
-                to={`/channel/${video.channelId}`}
+                to={`/${Route.channel}/${video.channelId}`}
                 sx={{
                   textDecoration: 'none',
                   color: 'unset',

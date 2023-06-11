@@ -4,6 +4,7 @@ import CustomChip from 'components/Chip/CustomChip';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { useChannelsAllQuery, useTagsAllQuery, useVideosAllQuery } from 'api/axios-client/Query';
+import { Route } from 'routes/RouteNames';
 
 function HomePage() {
   const videos = useVideosAllQuery(undefined, 5);
@@ -39,7 +40,7 @@ function HomePage() {
                 <Grid item xs={6} key={channel.id}>
                   <AvatarButton
                     key={channel.id}
-                    url={`/channel/${channel.id}`}
+                    url={`/${Route.channel}/${channel.id}`}
                     text={channel.name}
                     image={ApiPath(channel.avatarUrl)}
                   />

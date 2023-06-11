@@ -16,21 +16,35 @@ import {
 } from '@mui/material';
 
 export interface Props {
-  actions: DropDownMenuAction[];
+  actions: (DropDownMenuAction | DropDownMenuCustomAction)[];
   icon: JSX.Element;
   text?: string;
   sx?: SxProps<Theme>;
   enabled?: boolean;
 }
-export interface DropDownMenuAction {
+export type DropDownMenuAction = {
   name: string;
   icon?: JSX.Element;
   onClick(): void;
+};
+
+export interface DropDownMenuCustomActionProps {
+  onClose?(e: React.MouseEvent<any, MouseEvent> | undefined): void;
+  onClick?(e: React.MouseEvent<any, MouseEvent>): void;
+  parentObjectId?: string;
+}
+
+export type DropDownMenuCustomAction = {
+  elementFactory(props: DropDownMenuCustomActionProps): JSX.Element;
+};
+export function IsDropDownMenuCustomAction(action: any): action is DropDownMenuCustomAction {
+  return action.elementFactory !== undefined;
 }
 
 function DropDownMenu({ actions, sx, icon, text, enabled = true }: Props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
+  const [listenClickAway, setListenClickAway] = React.useState(true);
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
@@ -91,7 +105,7 @@ function DropDownMenu({ actions, sx, icon, text, enabled = true }: Props) {
             }}
           >
             <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
+              <ClickAwayListener onClickAway={listenClickAway ? handleClose : () => {}}>
                 <MenuList
                   autoFocusItem={open}
                   id="composition-menu"
@@ -99,16 +113,33 @@ function DropDownMenu({ actions, sx, icon, text, enabled = true }: Props) {
                   onKeyDown={handleListKeyDown}
                 >
                   {actions.map((action) => {
+                    if (IsDropDownMenuCustomAction(action)) {
+                      return action.elementFactory({
+                        onClose: (e) => {
+                          if (e) {
+                            e.preventDefault();
+                          }
+                          setOpen(false);
+                          setListenClickAway(true);
+                        },
+                        onClick: (e: React.MouseEvent<any, MouseEvent>) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setListenClickAway(false);
+                        },
+                      });
+                    }
+                    const normalAction = action as DropDownMenuAction;
                     return (
                       <MenuItem
-                        key={action.name}
+                        key={normalAction.name}
                         onClick={(event) => {
                           handleClose(event);
-                          action.onClick();
+                          normalAction.onClick();
                         }}
                       >
-                        {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
-                        <ListItemText>{action.name}</ListItemText>
+                        {normalAction.icon && <ListItemIcon>{normalAction.icon}</ListItemIcon>}
+                        <ListItemText>{normalAction.name}</ListItemText>
                       </MenuItem>
                     );
                   })}

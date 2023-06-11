@@ -5,7 +5,6 @@ import {
   Checkbox,
   TableSortLabel,
   Toolbar,
-  Typography,
   Paper,
   TableContainer,
   Table,
@@ -194,7 +193,7 @@ export interface EnhancedTableProps<T> {
   rowClick?(event: React.MouseEvent<unknown>, name: string): void;
   rows: T[];
   orderBy: keyof T;
-  desc: Order;
+  desc?: Order;
   checkVisible?: boolean;
 }
 
@@ -342,10 +341,12 @@ export default function EnhancedTable<T extends TableDataBase>({
                             attr.imageCustomElement(row)
                           ) : attr.image ?? false ? (
                             <AspectRatio ratio={16 / 9}>
-                              <img
-                                style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
-                                src={ApiPath(String(row[attr.id]))}
-                              />
+                              {row[attr.id] && (
+                                <img
+                                  style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
+                                  src={ApiPath(String(row[attr.id]))}
+                                />
+                              )}
                             </AspectRatio>
                           ) : (
                             String(

@@ -1,4 +1,4 @@
-import { Box, Chip, Link } from '@mui/material';
+import { Chip } from '@mui/material';
 import { searchTagsUrl } from 'components/AppBar/Search';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import React from 'react';
