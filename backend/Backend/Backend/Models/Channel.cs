@@ -47,6 +47,7 @@ namespace Backend.Models
     {
         public Guid Id { get; set; }
         public Guid ChannelId { get; set; }
+        public Channel Channel { get; set; }
         public string? Description { get; set; }
         public DateTime DateOfRegistration { get; set; }
         public string? Email { get; set; }

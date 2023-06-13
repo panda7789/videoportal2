@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
@@ -9,11 +9,14 @@ import AddIcon from '@mui/icons-material/Add';
 import { Route } from 'routes/RouteNames';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AxiosQuery } from 'api';
+import { Alert, Typography } from '@mui/material';
+import { Grid } from 'react-loader-spinner';
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyPlaylists() {
   const playlistQuery = useMyPlaylistsQuery();
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState<string>();
 
   const attributes: Attribute<PlaylistDTO>[] = [
     {
@@ -43,10 +46,16 @@ export function MyPlaylists() {
     label: 'Smazat',
     icon: <DeleteIcon />,
     onClick: (selectedIDs: readonly string[]) => {
-      selectedIDs.forEach((id) => {
-        AxiosQuery.Client.playlistsDELETE(id);
-      });
-      playlistQuery.refetch();
+      setStatusText(undefined);
+      const promises = Promise.all(selectedIDs.map((id) => AxiosQuery.Client.playlistsDELETE(id)));
+      promises
+        .then(() => {
+          playlistQuery.refetch();
+          setStatusText('Playlist úspěšně smazán');
+        })
+        .catch(() => {
+          setStatusText('Playlist se nepodařilo smazat');
+        });
     },
   });
 
@@ -66,6 +75,7 @@ export function MyPlaylists() {
 
   return (
     <Box margin={4}>
+      {statusText && <Alert severity="info">{statusText}</Alert>}
       {playlistQuery.data && (
         <EnhancedTable
           attributes={attributes}

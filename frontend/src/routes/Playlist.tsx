@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { Button, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -111,16 +111,12 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   return (
     <Box margin={4}>
       <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
-        {statusText && (
-          <Grid item xs={12}>
-            <Typography variant="subtitle1">{statusText}</Typography>
-          </Grid>
-        )}
         <Grid
           item
           position={{ xs: 'initial', md: 'fixed' }}
           width={{ xs: '100%', md: editMode ? 'calc(100%/2.5)' : 'calc(100%/4.4)' }}
         >
+          {statusText && editMode && <Alert severity="info">{statusText}</Alert>}
           <Box component="form" onSubmit={submitHandler}>
             {editMode && (
               <Box

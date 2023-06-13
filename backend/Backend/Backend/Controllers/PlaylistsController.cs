@@ -41,6 +41,7 @@ namespace Backend.Controllers
                     .Include(x => x.Channel)
                     .Include(x => x.Owner)
                     .Include(x => x.Videos)
+                    .ThenInclude(y => y.Channel)
                     .Select(x => x.ToDTO())
                     .ToListAsync();
         }

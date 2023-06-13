@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { AxiosQuery } from 'api';
 import { ChannelDTO } from 'api/axios-client';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
@@ -6,15 +6,19 @@ import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/Enhanc
 import { ApiPath } from 'components/Utils/APIUtils';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import { Route } from 'routes/RouteNames';
+import { useState } from 'react';
 
 function AvatarButtonInRow({ id, name, avatarUrl }: ChannelDTO) {
   return <AvatarButton key={id} text={name} image={ApiPath(avatarUrl)} />;
 }
 
 export function MyChannels() {
-  const arr = AxiosQuery.Query.useMyChannelsQuery().data;
+  const myChannelsQuery = AxiosQuery.Query.useMyChannelsQuery();
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState<string>();
 
   const attributes: Attribute<ChannelDTO>[] = [
     {
@@ -25,6 +29,30 @@ export function MyChannels() {
     {
       id: 'subscribersCount',
       label: 'Počet odběratelů',
+    },
+  ];
+
+  const buttons: ToolbarButton[] = [
+    {
+      icon: <DeleteIcon />,
+      label: 'Smazat',
+      onClick(selectedIDs) {
+        if (!selectedIDs?.length) {
+          return;
+        }
+        setStatusText(undefined);
+        const promises = selectedIDs.map((id) => AxiosQuery.Client.channelsDELETE(id));
+        Promise.all(promises)
+          .then(() => {
+            myChannelsQuery.refetch();
+            setStatusText('Kanál byl úspěšně smazán');
+          })
+          .catch(() => {
+            setStatusText(
+              'Kanál se nepodařilo smazat, zkontrolujte že jste z něj odebrali všechna videa',
+            );
+          });
+      },
     },
   ];
 
@@ -44,12 +72,18 @@ export function MyChannels() {
 
   return (
     <Box m={4}>
-      {arr && (
+      {statusText && (
+        <Box mb={1}>
+          <Alert severity="info">{statusText}</Alert>
+        </Box>
+      )}
+      {myChannelsQuery?.data && (
         <EnhancedTable
           attributes={attributes}
-          rows={arr}
+          rows={myChannelsQuery?.data}
           orderBy="name"
           desc="asc"
+          buttons={buttons}
           staticButtons={staticButtons}
           rowClick={rowClick}
         />

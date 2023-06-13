@@ -18,6 +18,9 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
 
         builder.Entity<Channel>().HasOne(x => x.PinnedVideo).WithMany().HasForeignKey(x => x.PinnedVideoId).IsRequired(false).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Video>().HasOne(x => x.Channel).WithMany().HasForeignKey(x => x.ChannelId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<ChannelAdvancedInfo>()
+                .HasOne(x => x.Channel)
+                .WithOne();
 
         builder.Entity<Role>().HasData(new[] {
             new Role()

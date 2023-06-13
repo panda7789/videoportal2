@@ -8,6 +8,7 @@ import {
   MenuItem,
   LinearProgress,
   FormLabel,
+  Alert,
 } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
@@ -222,24 +223,17 @@ function VideoEditInner({ newVideo }: InnerProps) {
         </Box>
       </Box>
       <Grid container spacing={3}>
-        {statusText && (
-          <Grid item xs={12}>
-            <Typography
-              variant="subtitle1"
-              color={
-                ((newVideo && uploadVideoMutation.isSuccess) || true) && progress === 100
-                  ? 'success.main'
-                  : 'error'
-              }
-            >
-              {statusText}
-            </Typography>
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          {statusText && <Alert severity="info">{statusText}</Alert>}
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
-              <MyChannelsDropdown channels={myChannels.data} defaultValue={video?.channelId} />
+              <MyChannelsDropdown
+                channels={myChannels.data}
+                defaultValue={video?.channelId}
+                required
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField

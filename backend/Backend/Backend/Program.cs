@@ -109,7 +109,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
 builder.Services.AddDbContext<MyDbContext>(
 dbContextOptions => dbContextOptions
-            .UseMySql(connectionString, serverVersion)
+            .UseMySql(connectionString, serverVersion, o => o.EnableRetryOnFailure())
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors()

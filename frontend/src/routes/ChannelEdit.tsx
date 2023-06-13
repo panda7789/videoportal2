@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Grid, TextField, Box, Button, Autocomplete } from '@mui/material';
+import { Typography, Grid, TextField, Box, Button, Autocomplete, Alert } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
@@ -23,14 +23,21 @@ export function ChannelEdit({ newChannel = false }: Props) {
   if (!newChannel) {
     channel = useLoaderData() as Channel;
   }
+  const [statusText, setStatusText] = useState<string>();
   const channelAdvancedInfo =
     channel?.id ?? false ? useChannelAdvancedInfoQuery({ id: channel!.id }) : undefined;
   const [avatarToUpload, setAvatarToUpload] = useState<File>();
   const [posterToUpload, setPosterToUpload] = useState<File>();
   const [relatedChannels, setRelatedChannels] = useState<ChannelDTO[]>([]);
 
-  const channelPostMutation = AxiosQuery.Query.useChannelsPOSTMutation();
-  const channelPutMutation = AxiosQuery.Query.useChannelsPUTMutation(channel?.id ?? '');
+  const channelPostMutation = AxiosQuery.Query.useChannelsPOSTMutation({
+    onSuccess: () => setStatusText('Kanál byl úspěšně vytvořen'),
+    onError: (e) => setStatusText(`Kanál se nepovedlo vytvořit - ${e}`),
+  });
+  const channelPutMutation = AxiosQuery.Query.useChannelsPUTMutation(channel?.id ?? '', {
+    onSuccess: () => setStatusText('Kanál byl úspěšně aktualizován'),
+    onError: (e) => setStatusText(`Kanál se nepovedlo aktualizovat - ${e}`),
+  });
   const allChannelsQuery = AxiosQuery.Query.useChannelsAllQuery();
 
   useEffect(() => {
@@ -48,6 +55,7 @@ export function ChannelEdit({ newChannel = false }: Props) {
     const data = new FormData(event.currentTarget);
     const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
+    setStatusText(undefined);
     if (newChannel) {
       channelPostMutation.mutate({
         name,
@@ -93,6 +101,9 @@ export function ChannelEdit({ newChannel = false }: Props) {
         </Box>
       </Box>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          {statusText && <Alert severity="info">{statusText}</Alert>}
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
