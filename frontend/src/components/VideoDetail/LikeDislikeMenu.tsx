@@ -47,11 +47,6 @@ function LikeDislikeMenu({
   });
   const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
-      name: 'Přehrát později',
-      icon: <WatchLaterIcon />,
-      onClick: () => console.log('přidat do přehrát později'),
-    },
-    {
       elementFactory: (props) =>
         AddToPlaylistDropDownFactory({ ...props, parentObjectId: videoId }),
     },

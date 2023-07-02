@@ -29,7 +29,7 @@ export const searchUrl = (searchedParam: string) => {
 };
 
 export const searchTagsUrl = (searchedTags: string[]) => {
-  return `/${Route.search}?tags=${searchedTags.toString()}`;
+  return `/${Route.search}?q=tags:${searchedTags.toString()}`;
 };
 
 function Search() {

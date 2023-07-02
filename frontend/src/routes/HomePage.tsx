@@ -34,12 +34,11 @@ function HomePage() {
       </Grid>
       <Grid item xs={12} md={6}>
         <Typography variant="h6">Kanály</Typography>
-        <Grid container xs={12}>
+        <Grid container>
           {!channels.isLoading
             ? channels?.data?.map((channel) => (
                 <Grid item xs={6} key={channel.id}>
                   <AvatarButton
-                    key={channel.id}
                     url={`/${Route.channel}/${channel.id}`}
                     text={channel.name}
                     image={ApiPath(channel.avatarUrl)}

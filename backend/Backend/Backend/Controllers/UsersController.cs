@@ -118,7 +118,10 @@ namespace Backend.Controllers
 
             _context.Entry(user).State = EntityState.Modified;
             user.Name = userDto.Name;
-            user.Initials = userDto.Initials;
+            if (!string.IsNullOrEmpty(userDto.Initials))
+            {
+                user.Initials = userDto.Initials;
+            }
             var result = await UpdateUserRoles(_userManager, user, user.Roles, userDto.Roles);
             if (!result.Succeeded)
             {

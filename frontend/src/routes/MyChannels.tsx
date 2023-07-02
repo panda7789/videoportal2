@@ -4,15 +4,15 @@ import { ChannelDTO } from 'api/axios-client';
 import { AvatarButton } from 'components/Buttons/AvatarButton';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import { ApiPath } from 'components/Utils/APIUtils';
-import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Route } from 'routes/RouteNames';
 import { useState } from 'react';
 
 function AvatarButtonInRow({ id, name, avatarUrl }: ChannelDTO) {
-  return <AvatarButton key={id} text={name} image={ApiPath(avatarUrl)} />;
+  return <AvatarButton text={name} image={ApiPath(avatarUrl)} />;
 }
 
 export function MyChannels() {

@@ -18,9 +18,16 @@ export interface Props {
   draggable?: boolean;
   onDragEnd?(newVideos: Video[]): void;
   emptyText?: string;
+  urlParamsGenerator?: (video: Video, index: number) => string;
 }
 
-export function VerticalList({ videos: videosProp, draggable, onDragEnd, emptyText }: Props) {
+export function VerticalList({
+  videos: videosProp,
+  draggable,
+  onDragEnd,
+  emptyText,
+  urlParamsGenerator,
+}: Props) {
   const [videos, setVideos] = useState<Video[]>(videosProp);
 
   const onDragEndLocal = (result: DropResult) => {
@@ -93,10 +100,11 @@ export function VerticalList({ videos: videosProp, draggable, onDragEnd, emptyTe
                         )}
                         <VideoCard
                           key={video.id}
-                          video={{ ...video }}
+                          video={video}
                           fullWidth
                           smallThumbnail
                           showDescription={false}
+                          urlParams={urlParamsGenerator ? urlParamsGenerator(video, index) : ''}
                         />
                       </Grid>
                     )}

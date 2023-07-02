@@ -10,6 +10,7 @@
     "@mui/styled-engine-sc": "^5.10.6",
     "@mui/system": "^5.10.13",
     "@mui/utils": "^5.11.2",
+    "@rajesh896/video-thumbnails-generator": "^2.3.9",
     "@rpldy/chunked-uploady": "^1.4.1",
     "@rpldy/upload-button": "^1.4.1",
     "@rpldy/upload-preview": "^1.4.1",

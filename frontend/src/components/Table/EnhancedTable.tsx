@@ -167,11 +167,12 @@ function EnhancedTableToolbar({ selected, buttons, staticButtons }: EnhancedTabl
         </Button>
       ))}
       {staticButtons && selected.length > 0 && (
-        <Divider orientation="vertical" flexItem sx={{ margin: '8px' }} />
+        <Divider orientation="vertical" flexItem sx={{ margin: '8px 4px 8px 8px' }} />
       )}
       {selected.length > 0 &&
         buttons?.map((button) => (
           <Button
+            sx={{ ml: '4px', mr: '4px' }}
             key={button.label}
             startIcon={button.icon}
             onClick={() => {

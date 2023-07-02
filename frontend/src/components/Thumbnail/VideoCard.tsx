@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Grid, Button } from '@mui/material';
 import React, { useContext } from 'react';
 import { Video, videoUrl } from 'model/Video';
 import DropDownMenu, {
@@ -8,7 +8,7 @@ import DropDownMenu, {
 } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
@@ -52,13 +52,9 @@ function VideoCard({
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
   const userContext = useContext(UserContext);
+  const navigate = useNavigate();
 
   const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
-    {
-      name: 'Přehrát později',
-      icon: <WatchLaterIcon />,
-      onClick: () => console.log('přidat do přehrát později'),
-    },
     {
       elementFactory: (props) =>
         AddToPlaylistDropDownFactory({ ...props, parentObjectId: video.id }),
@@ -200,8 +196,8 @@ function VideoCard({
                   variant="caption"
                   sx={{
                     display: '-webkit-box',
-                    '-webkit-line-clamp': '2',
-                    '-webkit-box-orient': 'vertical',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                   }}
@@ -223,8 +219,10 @@ function VideoCard({
               <Box
                 display="flex"
                 alignItems="center"
-                component={Link}
-                to={`/${Route.channel}/${video.channelId}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/${Route.channel}/${video.channelId}`);
+                }}
                 sx={{
                   textDecoration: 'none',
                   color: 'unset',
@@ -232,6 +230,8 @@ function VideoCard({
                     backgroundColor: 'rgba(0, 0, 0, 0.04)',
                   },
                   borderRadius: '15px',
+                  zIndex: 999,
+                  cursor: 'pointer',
                 }}
               >
                 {(showAvatar ?? true) && (

@@ -6,26 +6,25 @@ import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/Enhanc
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useMyPlaylistsQuery, useMyVideosQuery } from 'api/axios-client/Query';
 import { Route } from 'routes/RouteNames';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   Alert,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
-  InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
 } from '@mui/material';
 import { AxiosQuery } from 'api';
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyVideos() {
-  const arr = useMyVideosQuery().data;
+  const myVideosQuery = useMyVideosQuery();
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
   const [addToPlaylistDialogOpen, setAddToPlaylistDialogOpen] = useState(false);
@@ -60,16 +59,42 @@ export function MyVideos() {
     },
   ];
 
-  const buttons: ToolbarButton[] = [];
-  buttons.push({
-    label: 'Přidat do playlistu',
-    icon: <PlaylistAddIcon />,
-    onClick: (_selectedIDs: readonly string[]) => {
-      setSelectedIds(_selectedIDs);
-      setAddToPlaylistDialogOpen(true);
-      setStatusText(undefined);
+  const staticButtons: ToolbarButton[] = [
+    {
+      icon: <AddIcon />,
+      label: 'Nahrát video',
+      onClick: () => navigate(`/${Route.upload}/`),
     },
-  });
+  ];
+
+  const buttons: ToolbarButton[] = [];
+  buttons.push(
+    {
+      label: 'Přidat do playlistu',
+      icon: <PlaylistAddIcon />,
+      onClick: (_selectedIDs: readonly string[]) => {
+        setSelectedIds(_selectedIDs);
+        setAddToPlaylistDialogOpen(true);
+        setStatusText(undefined);
+      },
+    },
+    {
+      label: 'Smazat',
+      icon: <DeleteIcon />,
+      onClick: (selectedIDs: readonly string[]) => {
+        setStatusText(undefined);
+        const promises = Promise.all(selectedIDs.map((id) => AxiosQuery.Client.videosDELETE(id)));
+        promises
+          .then(() => {
+            myVideosQuery.refetch();
+            setStatusText('Video úspěšně smazán');
+          })
+          .catch(() => {
+            setStatusText('Video se nepodařilo smazat');
+          });
+      },
+    },
+  );
 
   const rowClick = (event: React.MouseEvent<unknown>, id: string) => {
     navigate({
@@ -100,14 +125,15 @@ export function MyVideos() {
           <Alert severity="info">{statusText}</Alert>
         </Box>
       )}
-      {arr && (
+      {myVideosQuery?.data && (
         <EnhancedTable
           attributes={attributes}
-          rows={arr}
+          rows={myVideosQuery.data}
           orderBy="uploadTimestamp"
           desc="desc"
           buttons={buttons}
           rowClick={rowClick}
+          staticButtons={staticButtons}
         />
       )}
       <Dialog
@@ -127,8 +153,11 @@ export function MyVideos() {
               onChange={(e) => setSelectedPlaylist(e.target.value as string)}
             >
               {myPlaylistsQuery?.data?.map((playlist) => {
-                // eslint-disable-next-line react/jsx-key
-                return <MenuItem value={playlist.id}>{playlist.name}</MenuItem>;
+                return (
+                  <MenuItem key={playlist.id} value={playlist.id}>
+                    {playlist.name}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>

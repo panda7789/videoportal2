@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { Alert, Button, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import EditIcon from '@mui/icons-material/Edit';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
@@ -19,6 +19,7 @@ import {
 } from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
 import { MyChannelsDropdown } from 'components/DropDownMenu/MyChannelsDropdown';
+import { playlistParams, videoUrl } from 'model/Video';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
@@ -145,13 +146,28 @@ export function PlaylistDetail({ newPlaylist }: Props) {
               <FileUploadWithPreview
                 uploadedFile={imageToUpload}
                 setUploadedFile={setImageToUpload}
-                existingImageUrl={ApiPath(playlist?.thumbnailUrl)}
+                existingImageUrl={ApiPath(
+                  playlist?.thumbnailUrl
+                    ? playlist.thumbnailUrl
+                    : playlist?.videos?.length
+                    ? playlist?.videos[0].imageUrl
+                    : undefined,
+                )}
                 readOnly={!editMode}
               />
             </Box>
             {!editMode && (
               <Box display="flex" justifyContent="space-between" pt={1} pb={2}>
-                <Button startIcon={<PlayArrowIcon />} variant="contained">
+                <Button
+                  startIcon={<PlayArrowIcon />}
+                  variant="contained"
+                  component={Link}
+                  to={
+                    playlist?.videos?.length
+                      ? videoUrl(playlist?.videos[0]) + playlistParams(playlist, 0)
+                      : ''
+                  }
+                >
                   Přehrát vše
                 </Button>
                 {canEdit && (
@@ -225,6 +241,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
           onDragEnd={onListDragEnd}
           draggable={editMode}
           emptyText="Přidávat videa lze přímo z detailu videa, přes volbu Přidat do playlistu"
+          urlParamsGenerator={(_, index) => playlistParams(playlist, index)}
         />
       </Box>
     </Box>

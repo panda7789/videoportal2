@@ -27,16 +27,27 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
-            q = q.Length <= 10 ? q : q.Substring(0, 10);
-            IQueryable<Video> query = _context.Videos.FromSql($@"SELECT
-                      (MATCH(name) AGAINST({q}) +
-                       MATCH(description) AGAINST({q})) as Relevance,
-                      v.*
-                    FROM Videos as v
-                    WHERE (MATCH(name) AGAINST({q}) +
-                       MATCH(description) AGAINST({q})) != 0
-                    ORDER BY Relevance desc, UploadTimestamp desc")
-                .AsNoTracking();
+            var isTagSearch = q.StartsWith("tags:");
+            IQueryable<Video> query;
+            if (isTagSearch)
+            {
+                var tags = q.Replace("tags:", "").ToLower().Split(';');
+                var tagsOfInterest = _context.Tags.Where(x => tags.Contains(x.Name.ToLower()));
+                query = _context.Videos.Where(x => x.Tags.Any(y => tagsOfInterest.Contains(y)));
+            }
+            else
+            {
+                q = q.Length <= 10 ? q : q.Substring(0, 10);
+                query = _context.Videos.FromSql($@"SELECT
+                          (MATCH(name) AGAINST({q}) +
+                           MATCH(description) AGAINST({q})) as Relevance,
+                          v.*
+                        FROM Videos as v
+                        WHERE (MATCH(name) AGAINST({q}) +
+                           MATCH(description) AGAINST({q})) != 0
+                        ORDER BY Relevance desc, UploadTimestamp desc")
+                    .AsNoTracking();
+            }
 
             var totalCount = query.Count();
             if (offset.HasValue)

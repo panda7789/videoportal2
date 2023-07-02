@@ -107,6 +107,11 @@ export function AddToPlaylistDropDownFactory({
   parentObjectId,
 }: DropDownMenuCustomActionProps) {
   return (
-    <AddToPlaylistDropdown onClose={onClose} onClick={onClick} parentObjectId={parentObjectId} />
+    <AddToPlaylistDropdown
+      key={parentObjectId}
+      onClose={onClose}
+      onClick={onClick}
+      parentObjectId={parentObjectId}
+    />
   );
 }

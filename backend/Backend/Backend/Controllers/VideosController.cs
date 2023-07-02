@@ -13,6 +13,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections;
 using NuGet.Packaging;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Backend.Controllers
 {
@@ -254,7 +255,7 @@ namespace Backend.Controllers
 
             // upload video
             var videoGuid = $"{video.ChannelId}{Guid.NewGuid()}";
-            var videoName = $"{videoGuid}.{video.FileName.Split(".")[1]}";
+            var videoName = $"{videoGuid}.{video.FileName.Split(".").LastOrDefault()}";
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
 
@@ -297,7 +298,8 @@ namespace Backend.Controllers
                 return Problem("Entity set 'MyDbContext.Videos'  is null.");
             }
 
-            var videoName = $"{guid}.{file.FileName.Split(".")[1]}";
+            var videoName = $"{guid}.{file.FileName.Split(".").LastOrDefault()}";
+
             try
             {
                 await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, file, chunks: true);

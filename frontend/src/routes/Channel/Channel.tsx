@@ -54,7 +54,13 @@ export function Channel() {
       <Grid container justifyContent="center">
         <Grid item xs={12}>
           {channelBasicInfo?.posterUrl ? (
-            <img width="100%" src={ApiPath(channelBasicInfo.posterUrl)} alt="channel poster" />
+            <img
+              width="100%"
+              height="200px"
+              style={{ objectFit: 'cover' }}
+              src={ApiPath(channelBasicInfo.posterUrl)}
+              alt="channel poster"
+            />
           ) : (
             <Box height="50px" />
           )}

@@ -30,12 +30,7 @@ export const NavigationItems: NavigationItem[] = [
     title: 'Moje videa',
     icon: <AccountBoxIcon />, // todo gearbox
     signed: true,
-  },
-  {
-    route: `/${Route.playlist}/playLater`,
-    title: 'Přehrát později',
-    icon: <WatchLaterIcon />,
-    signed: true,
+    userRole: ['videoEditor'],
   },
   {
     route: `/${Route.upload}`,

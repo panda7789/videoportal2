@@ -159,7 +159,7 @@ const ChipEditLine = React.forwardRef<ChipLineFunctions, Props>(
           );
         })}
         <ListItem key="addButton">
-          <CustomChip icon={<AddIcon />} onClick={handleAddDialogOpen} />
+          <CustomChip icon={<AddIcon />} onClick={handleAddDialogOpen} link={false} />
         </ListItem>
         <Dialog
           open={addNewDialogOpen}

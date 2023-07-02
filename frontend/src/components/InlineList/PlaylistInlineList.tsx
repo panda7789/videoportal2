@@ -38,7 +38,7 @@ export function ExpandedPlaylistInlineList({
   editable,
   showPlayAllButton,
 }: ExtendedProps) {
-  return (playlist?.videos?.length ?? 0) > 0 ? (
+  return playlist?.videos?.length ? (
     <Box>
       <Typography variant="h6" display="inline-block" sx={{ verticalAlign: 'middle' }}>
         {playlist.name}

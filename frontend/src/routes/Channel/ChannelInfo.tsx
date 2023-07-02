@@ -42,12 +42,13 @@ export function ChannelInfo() {
         </Typography>
         <Box display="flex" flexDirection="column">
           {info.relatedChannels?.map((channel) => (
-            <AvatarButton
-              key={channel.id}
-              url={`/${Route.channel}/${channel.id}`}
-              text={channel.name}
-              image={ApiPath(channel.avatarUrl)}
-            />
+            <Box key={channel.id}>
+              <AvatarButton
+                url={`/${Route.channel}/${channel.id}`}
+                text={channel.name}
+                image={ApiPath(channel.avatarUrl)}
+              />
+            </Box>
           ))}
         </Box>
       </Grid>

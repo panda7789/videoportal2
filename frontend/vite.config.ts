@@ -6,4 +6,11 @@ import svgrPlugin from 'vite-plugin-svgr';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
+  server: {
+    host: true,
+    port: 8000,
+    watch: {
+      usePolling: true,
+    },
+  },
 });

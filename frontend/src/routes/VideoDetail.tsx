@@ -25,11 +25,7 @@ import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
-import {
-  CommentPostDTO,
-  PlaylistDTO,
-  VideoDTO as Video,
-} from 'api/axios-client';
+import { CommentPostDTO, PlaylistDTO, VideoDTO as Video } from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { AxiosQuery } from 'api';
@@ -67,7 +63,9 @@ function VideoDetail() {
   const commentMutation = useCommentsPOSTMutation({
     onSuccess: () => {
       commentsQuery.refetch();
-      commentInput.current.value = '';
+      if (commentInput?.current) {
+        commentInput.current.value = '';
+      }
       setCommentTimeout(true);
       setTimeout(() => {
         setCommentTimeout(false);
@@ -76,7 +74,6 @@ function VideoDetail() {
   });
 
   useEffect(() => {
-    console.log(searchParams.toString());
     const playlistId = searchParams.get('playlist');
     const index = searchParams.get('index') ?? '0';
     (async () => {
@@ -131,7 +128,7 @@ function VideoDetail() {
   }, [userContext]);
 
   return (
-    <Grid container xs={12}>
+    <Grid container>
       <Grid item xs={12}>
         {video?.dataUrl ? (
           <VideoPlayer
@@ -265,10 +262,9 @@ function VideoDetail() {
                 Odeslat
               </Button>
             </Box>
-            {commentsQuery?.data?.map((comment, i) => (
+            {commentsQuery?.data?.map((comment) => (
               <Comment
-                // eslint-disable-next-line react/no-array-index-key
-                key={comment.text + i + comment.user.id}
+                key={comment.created + comment.user.id}
                 comment={comment}
                 canEdit={userContext?.user?.roles.administrator}
                 invalidate={commentsQuery.refetch}

@@ -11,6 +11,26 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { AxiosQuery } from 'api';
 import { Alert, Typography } from '@mui/material';
 import { Grid } from 'react-loader-spinner';
+import { ApiPath } from 'components/Utils/APIUtils';
+import AspectRatio from 'components/Utils/AspectRatio';
+
+function MyPlaylistsThumbnail(row: PlaylistDTO) {
+  return (
+    <AspectRatio ratio={16 / 9}>
+      <img
+        alt="Náhled playlistu"
+        style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
+        src={ApiPath(
+          row?.thumbnailUrl
+            ? row.thumbnailUrl
+            : row?.videos?.length
+            ? row?.videos[0].imageUrl
+            : undefined,
+        )}
+      />
+    </AspectRatio>
+  );
+}
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyPlaylists() {
@@ -22,7 +42,7 @@ export function MyPlaylists() {
     {
       id: 'thumbnailUrl',
       label: 'Náhled',
-      image: true,
+      imageCustomElement: (row: PlaylistDTO) => MyPlaylistsThumbnail(row),
     },
     {
       id: 'name',

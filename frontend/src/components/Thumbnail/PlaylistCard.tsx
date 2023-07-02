@@ -26,7 +26,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
         container
         component={Link}
         to={
-          (playlist?.videos?.length ?? 0) > 0
+          playlist?.videos?.length
             ? videoUrl(playlist?.videos[0]) + playlistParams(playlist, 0)
             : `/${Route.playlist}/${playlist?.id}`
         }
@@ -61,7 +61,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 image={ApiPath(
                   playlist?.thumbnailUrl
                     ? playlist.thumbnailUrl
-                    : (playlist?.videos?.length ?? 0) > 0
+                    : playlist?.videos?.length
                     ? playlist?.videos[0].imageUrl
                     : undefined,
                 )}
@@ -151,7 +151,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                   borderRadius: '15px',
                 }}
               >
-                <Typography variant="caption">Zobrazit celý playlist</Typography>
+                <Typography variant="caption">Zobrazit playlist</Typography>
               </Box>
             </CardContent>
           </Grid>

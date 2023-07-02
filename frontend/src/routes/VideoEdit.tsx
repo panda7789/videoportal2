@@ -23,6 +23,7 @@ import ChunkedUploady, {
   useChunkStartListener,
   useItemErrorListener,
 } from '@rpldy/chunked-uploady';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { asUploadButton } from '@rpldy/upload-button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { AxiosQuery } from 'api';
@@ -41,6 +42,9 @@ import { SizeToWords } from 'components/Utils/NumberUtils';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import { UserContext } from './Root';
 import { MyChannelsDropdown } from 'components/DropDownMenu/MyChannelsDropdown';
+import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
+import { getFileFromBase64 } from 'components/Utils/FileUtils';
+import useCurrentColorScheme from '@mui/system/cssVars/useCurrentColorScheme';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -80,6 +84,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
     size: string;
     duration: number;
   }>();
+  const [generatedThumbnails, setGeneratedThumbnails] = useState<string[]>();
   const tagsRef = useRef<ChipLineFunctions>(null);
   const userContext = useContext(UserContext);
 
@@ -89,6 +94,18 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const uploady = useUploadyContext();
   const allTagsQuery = useTagsAllQuery({ refetchOnWindowFocus: false });
   const createTagMutation = useTagsPOSTMutation();
+
+  const selectRandomThumbnail = () => {
+    if (!generatedThumbnails) {
+      return;
+    }
+    setImageToUpload(
+      getFileFromBase64(
+        generatedThumbnails[Math.floor(Math.random() * generatedThumbnails.length)],
+        'generatedThumbnail.jpeg',
+      ),
+    );
+  };
 
   useChunkStartListener((data) => {
     setProgress((data.chunk.index / data.totalCount) * 100);
@@ -113,16 +130,34 @@ function VideoEditInner({ newVideo }: InnerProps) {
           size: SizeToWords(file.size),
           duration: dur,
         });
+        setImageToUpload(undefined);
+        generateVideoThumbnails(file as File, 5, 'file').then((thumbnailArray: string[]) => {
+          setGeneratedThumbnails(thumbnailArray);
+        });
       }
     })();
   });
+
+  useEffect(() => {
+    selectRandomThumbnail();
+  }, [generatedThumbnails]);
   const handleTagAdd = async (name: string) => {
     return createTagMutation.mutateAsync(name);
   };
 
-  const handleTagDelete = (id: string) => {
-    AxiosQuery.Client.tagsDELETE(id);
-  };
+  const thumbnailAdditionalButtons = [
+    <Button
+      key="regenerateButton"
+      component="label"
+      startIcon={<AutorenewIcon />}
+      variant="outlined"
+      onClick={() => {
+        selectRandomThumbnail();
+      }}
+    >
+      Přegenerovat náhled
+    </Button>,
+  ];
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -135,11 +170,11 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
     if (newVideo) {
       if (!imageToUpload) {
-        setStatusText('Nebyl vybrát náhledový obrázek.');
+        setStatusText('Nebyl vybrán náhledový obrázek.');
         return;
       }
       if (!fileUploadInfo) {
-        setStatusText('Nebyl vybrát soubor s videem.');
+        setStatusText('Nebyl vybrán soubor s videem.');
         return;
       }
       setUploading(true);
@@ -313,6 +348,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
             uploadedFile={imageToUpload}
             setUploadedFile={setImageToUpload}
             existingImageUrl={ApiPath(video?.imageUrl)}
+            additionalButtons={thumbnailAdditionalButtons}
           />
           <Grid item xs={12}>
             <Typography variant="caption" pl={2}>

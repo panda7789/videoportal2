@@ -1,6 +1,6 @@
-import { Button, IconButton } from '@mui/material';
+import { Button, ButtonTypeMap, ExtendButtonBase, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { ReactElement, cloneElement, useEffect, useState } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AspectRatio from 'components/Utils/AspectRatio';
@@ -10,6 +10,7 @@ export interface Props {
   setUploadedFile: React.Dispatch<React.SetStateAction<File | undefined>>;
   existingImageUrl?: string;
   readOnly?: boolean;
+  additionalButtons?: ReactElement<any>[];
 }
 
 export function FileUploadWithPreview({
@@ -17,6 +18,7 @@ export function FileUploadWithPreview({
   setUploadedFile,
   existingImageUrl,
   readOnly,
+  additionalButtons,
 }: Props) {
   const [imagePreview, setImagePreview] = useState<string>();
 
@@ -56,6 +58,10 @@ export function FileUploadWithPreview({
           <IconButton onClick={handleDelete} color="error">
             <DeleteIcon />
           </IconButton>
+          {additionalButtons?.length &&
+            additionalButtons.map((b) => {
+              return cloneElement(b);
+            })}
         </Box>
       )}
     </>
