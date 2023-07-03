@@ -43,6 +43,30 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
             }
         });
 
+        builder.Entity<User>(u =>
+        {
+            var admin = new User
+            {
+                Id = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D"),
+                Email = "admin@admin.cz",
+                UserName = "admin@admin.cz",
+                Name = "Administrátor",
+                Initials = "A",
+            };
+            var passHash = new PasswordHasher<User>();
+            admin.PasswordHash = passHash.HashPassword(admin, "1234");
+            u.HasData(admin);
+
+
+            u.OwnsOne(e => e.Roles)
+                .HasData(new
+                {
+                    UserId = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D"),
+                    User = true,
+                    Administrator = true,
+                    VideoEditor=false
+                });
+        });
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Video> Videos { get; set; }

@@ -5,7 +5,7 @@ namespace Backend.Utils
 {
     public static class SaveFile
     {
-        public static string PathBase = Path.Combine(@"C:\temp", "videoPortal");
+        public static string PathBase = Path.Combine(@"storage");
         public static string VideosPath = "videos";
         public static string ThumbnailsPath = "thumbnails";
         public static string ImagePath = "images";

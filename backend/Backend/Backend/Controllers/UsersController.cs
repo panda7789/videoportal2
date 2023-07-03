@@ -193,6 +193,31 @@ namespace Backend.Controllers
             }
             return IdentityResult.Success;
         }
+
+        public static async Task SeedUsers(UserManager<User> userManager)
+        {
+            //Check if it's already seeded
+            if (userManager.FindByEmailAsync("admin@admin.cz").Result != null)
+                return;
+
+
+            var roles = new UserRoles() { User = true, Administrator = true };
+            //Create User
+            var user = new User
+            {
+                Email = "admin@admin.cz",
+                UserName = "admin@admin.cz",
+                Name = "Administrátor",
+                Initials = "A",
+                Roles = roles
+            };
+
+            //Set password
+            await userManager.CreateAsync(user, "123");
+            await UpdateUserRoles(userManager, user, new UserRoles(), roles);
+
+
+        }
     }
 
 

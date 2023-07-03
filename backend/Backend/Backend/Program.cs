@@ -1,3 +1,4 @@
+using Backend.Controllers;
 using Backend.Models;
 using Backend.Services;
 using Backend.Utils;
@@ -97,9 +98,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactClient",
         b =>
         {
-            b
-                .WithOrigins("http://127.0.0.1:5173")
-                .WithOrigins("http://localhost:5173")
+            b.AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -118,11 +117,19 @@ dbContextOptions => dbContextOptions
 SaveFile.Init();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<MyDbContext>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+    await UsersController.SeedUsers(userManager);
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("AllowReactClient");
 app.UseHttpsRedirection();
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // claim not overwriten

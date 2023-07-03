@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  frontend:
+    build: 
+      context: ../frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "8000:8000" 
+
+  api:
+    build: 
+      context: ../backend/Backend
+      dockerfile: ./Backend/Dockerfile
+    depends_on:
+      wait-for-db:
+        condition: service_completed_successfully
+    ports:
+      - "5199:5199"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5199
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - './fileserver:/app/storage'
+  
+  wait-for-db:
+    image: atkrad/wait4x
+    depends_on:
+      - db
+    command: tcp db:3306 -t 300s -i 5s
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_HOST: '%'  # needs to be enclosed with quotes
+
+  file-server:
+    build: './fileserver'
+    ports:
+     - '3000:3000'
+    volumes:
+      - './fileserver:/app/storage'   
