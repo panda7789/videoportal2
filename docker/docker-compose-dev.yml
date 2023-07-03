@@ -1,17 +1,17 @@
 version: '3.4'
 
 services:
-  frontend:
+  frontend-dev:
     build: 
       context: ../frontend
       dockerfile: ./Dockerfile
     ports:
-      - "8000:80" 
+      - "8000:8000"
 
-  api:
+  api-dev:
     build: 
       context: ../backend/Backend
-      dockerfile: ./Backend/Dockerfile.dev
+      dockerfile: ./Backend/Dockerfile
     depends_on:
       wait-for-db:
         condition: service_completed_successfully
@@ -47,4 +47,4 @@ services:
     ports:
      - '3000:3000'
     volumes:
-      - './fileserver:/app/storage:ro'   
+      - './fileserver:/app/storage'   

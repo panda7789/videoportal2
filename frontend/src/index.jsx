@@ -11,7 +11,7 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 const queryClient = new QueryClient();
 onlineManager.setOnline(true);
-AxiosQuery.setBaseUrl(process.env.API_HOST);
+AxiosQuery.setBaseUrl(import.meta.env.VITE_API_HOST);
 AxiosQuery.setAxiosFactory(() => {
   const instance = axios.create();
   instance.interceptors.request.use(
