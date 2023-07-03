@@ -65,4 +65,4 @@ frontend/package-lock.json
 /backend/Backend/Backend/bin/Release/net6.0
 /docker/fileserver/thumbnails
 /docker/fileserver/videos
-/frontend/dist
+
