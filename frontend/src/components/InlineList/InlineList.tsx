@@ -46,7 +46,7 @@ export function InlineList({ children }: Props) {
   };
 
   return (
-    <Box display="flex" sx={{ maxWidth: '100%' }} alignItems="center" position="relative">
+    <Box display="flex" sx={{ maxWidth: '100%', minWidth: '100%' }} alignItems="center" position="relative">
       {showLeft && (
         <Button
           sx={{
