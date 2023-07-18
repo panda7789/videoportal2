@@ -59,9 +59,6 @@ frontend/package-lock.json
 # Visual Studio 2015
 /backend/Backend/.vs/
 
-
-/backend/Backend/Backend/appsettings.json
-/backend/Backend/Backend/appsettings.json
 /backend/Backend/Backend/bin/Release/net6.0
 /docker/fileserver/thumbnails
 /docker/fileserver/videos
