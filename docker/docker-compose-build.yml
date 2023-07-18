@@ -17,7 +17,8 @@ services:
       context: ../backend/Backend
       dockerfile: ./Backend/Dockerfile.build
     volumes:
-      - backend:/app/
+      - backend:/app
+      - backend-publish:/publish
 
 volumes:
   frontend:
@@ -32,3 +33,9 @@ volumes:
       type: none
       o: bind
       device: ../backend/Backend
+  backend-publish:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ../backend/Backend/Publish
