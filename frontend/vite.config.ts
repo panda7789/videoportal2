@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   server: {
     host: true,
-    port: 8000,
+    port: 80,
     watch: {
       usePolling: true,
     },

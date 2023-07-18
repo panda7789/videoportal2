@@ -99,7 +99,7 @@ namespace Backend.Services
         }
 
         private string GetErrorsText(IEnumerable<IdentityError> errors)
-        {
+        { 
             return string.Join(", ", errors.Select(error => error.Description).ToArray());
         }
     }

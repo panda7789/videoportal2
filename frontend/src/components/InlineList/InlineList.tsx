@@ -21,13 +21,13 @@ export function InlineList({ children }: Props) {
       }
       if (
         videosListRef.current.scrollLeft >
-        videosListRef.current.scrollWidth - videosListRef.current.clientWidth - 300
+        videosListRef.current.scrollWidth - videosListRef.current.clientWidth - 200
       ) {
         setShowRight(false);
       } else {
         setShowRight(true);
       }
-      if (videosListRef.current.scrollLeft < 300) {
+      if (videosListRef.current.scrollLeft < 200) {
         setShowLeft(false);
       } else {
         setShowLeft(true);

@@ -124,7 +124,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<User>>();
     if (context.Database.GetPendingMigrations().Any())
     {
-        context.Database.Migrate();
+         context.Database.Migrate();
     }
     await UsersController.SeedUsers(userManager);
 }

@@ -1,14 +1,8 @@
 version: '3.4'
 
 services:
-  frontend-dev:
-    build: 
-      context: ../frontend
-      dockerfile: ./Dockerfile
-    ports:
-      - "8000:8000"
-
   api-dev:
+    container_name: api-dev
     build: 
       context: ../backend/Backend
       dockerfile: ./Backend/Dockerfile
@@ -21,10 +15,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5199
     volumes:
+      #- ../backend:/app/storage'
       - ~/.aspnet/https:/https:ro
       - './fileserver:/app/storage'
   
   wait-for-db:
+    container_name: w4db
     image: atkrad/wait4x
     depends_on:
       - db
@@ -32,19 +28,23 @@ services:
 
   db:
     image: mysql
+    container_name: db
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
       - "3306:3306"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_ROOT_HOST: '%'  # needs to be enclosed with quotes
 
   file-server:
+    container_name: 'fs-dev'
     build: './fileserver'
     ports:
      - '3000:3000'
     volumes:
       - './fileserver:/app/storage'   
+

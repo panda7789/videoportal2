@@ -2,49 +2,69 @@ version: '3.4'
 
 services:
   frontend:
+    container_name: frontend
     build: 
       context: ../frontend
       dockerfile: ./Dockerfile
+    networks:
+      - vp-run
     ports:
-      - "8000:80" 
+      - "80:80"
 
   api:
+    container_name: api
     build: 
       context: ../backend/Backend
-      dockerfile: ./Backend/Dockerfile.dev
-    depends_on:
-      wait-for-db:
-        condition: service_completed_successfully
+      dockerfile: ./Backend/Dockerfile
+    networks:
+      - vp-run
     ports:
       - "5199:5199"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5199
     volumes:
       - ~/.aspnet/https:/https:ro
-      - './fileserver:/app/storage'
+      - ./fileserver:/app/storage
+      - ../backend/Backend/Backend/bin/release/net6.0/publish:/app/publish
+    depends_on:
+      wait-for-db:
+       condition: service_completed_successfully
   
   wait-for-db:
+    container_name: w4db
     image: atkrad/wait4x
+    networks:
+      - vp-run
     depends_on:
       - db
     command: tcp db:3306 -t 300s -i 5s
 
   db:
     image: mysql
+    container_name: db
     command: --default-authentication-plugin=mysql_native_password
     restart: always
+    networks:
+      - vp-run
     ports:
       - "3306:3306"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_ROOT_HOST: '%'  # needs to be enclosed with quotes
 
   file-server:
+    container_name: fs
     build: './fileserver'
+    networks:
+      - vp-run
     ports:
      - '3000:3000'
     volumes:
-      - './fileserver:/app/storage:ro'   
+      - 'C:/Temp/videoPortal:/app/storage:ro'
+
+networks:
+   vp-run:
+     name: vp-run

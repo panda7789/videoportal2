@@ -1,28 +1,23 @@
 version: '3.4'
 
 services:
-  frontend-build:
-    build: 
-      context: ../frontend
-      dockerfile: ./Dockerfile.build
-    volumes:
-      - frontend:/app
-
-    ports:
-      - "8000:8000"
+  # frontend-build:
+  #   container_name: frontend-build
+  #   build: 
+  #     context: ../frontend
+  #     dockerfile: ./Dockerfile.build
+  #   volumes:
+  #     - frontend:/app
+  #     - ./node_modules:/app/node_modules
+  #     - ./empty:/app/node_modules_build
 
   api-build:
+    container_name: api-build
     build: 
       context: ../backend/Backend
-      dockerfile: ./Backend/Dockerfile
-    ports:
-      - "5199:5199"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5199
+      dockerfile: ./Backend/Dockerfile.build
     volumes:
-      - ~/.aspnet/https:/https:ro
-      - './fileserver:/app/storage'
+      - backend:/app/
 
 volumes:
   frontend:
@@ -31,3 +26,9 @@ volumes:
       type: none
       o: bind
       device: ../frontend/
+  backend:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ../backend/Backend

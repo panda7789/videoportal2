@@ -325,7 +325,8 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-
+            SaveFile.DeleteFile(video.DataUrl);
+            SaveFile.DeleteFile(video.ImageUrl);
             _context.Videos.Remove(video);
             await _context.SaveChangesAsync();
 

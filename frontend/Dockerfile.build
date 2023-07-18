@@ -4,7 +4,9 @@ FROM node:lts-alpine3.14
 WORKDIR /app
 
 COPY ./package.json .
-RUN
+COPY ./tsconfig.json .
+COPY ./tsconfig.json ./node_modules
+
 
 # 6. Run the app
 CMD npm install --legacy-peer-deps && npm run buildIgnoreErrors

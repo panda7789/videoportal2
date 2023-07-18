@@ -60,7 +60,7 @@ export function VerticalList({
             ref={provided.innerRef}
             {...provided.droppableProps}
             sx={{ border: '1px solid #30BCED', borderRadius: '10px' }}
-            height="100%"
+            minHeight="100%"
             alignContent="flex-start"
           >
             {videos.length > 0 ? (

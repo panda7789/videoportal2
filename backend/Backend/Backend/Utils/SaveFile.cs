@@ -1,11 +1,12 @@
 ﻿using Backend.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.IO;
 
 namespace Backend.Utils
 {
     public static class SaveFile
     {
-        public static string PathBase = Path.Combine(@"storage");
+        public static string PathBase = Path.Combine(Directory.GetCurrentDirectory(), "storage");
         public static string VideosPath = "videos";
         public static string ThumbnailsPath = "thumbnails";
         public static string ImagePath = "images";
@@ -50,5 +51,19 @@ namespace Backend.Utils
             }
             return path;
         }
+
+        public static void DeleteFile(string filePath)
+        {
+            var path = Path.Combine(PathBase, filePath.Replace('\\','/'));
+            if (File.Exists(path))
+            { 
+                File.Delete(path);
+            }
+            else
+            {
+                Console.WriteLine("Cannot delete file on path: " + path);
+            }
+        }
+                                               
     }
 }
