@@ -8,10 +8,11 @@ WORKDIR /src
 COPY ["Backend.csproj", "."]
 RUN dotnet restore "Backend.csproj"
 COPY . .
-RUN dotnet build "Backend.csproj" -c Release -o /app/build
+RUN dotnet clean "Backend.csproj"
+RUN dotnet build "Backend.csproj" -c Release -o /app/build --force
 
 FROM build AS publish
-RUN dotnet publish "Backend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Backend.csproj" -c Release -o /app/publish /p:UseAppHost=false --force
 
 FROM base AS final
 WORKDIR /app

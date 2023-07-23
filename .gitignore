@@ -64,3 +64,4 @@ frontend/package-lock.json
 /docker/fileserver/videos
 
 docker/db/data/
+docker/db/data_demo
