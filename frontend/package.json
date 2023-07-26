@@ -53,7 +53,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "buildIgnoreErrors": "vite build",
+    "buildIgnoreErrors": "vite build --minify false --mode production",
     "serve": "vite preview",
     "fixAll": "eslint --fix .",
     "fileServer": "npx serve C:\\Temp\\videoPortal",

@@ -50,8 +50,8 @@ namespace Backend.Models
                 UploadTimestamp = UploadTimestamp,
                 Tags = Tags,
                 ChannelId = ChannelId,
-                ChannelName = Channel.Name,
-                ChannelAvatarUrl = Channel.AvatarUrl,
+                ChannelName = Channel != null ? Channel.Name : null,
+                ChannelAvatarUrl = Channel != null ? Channel.AvatarUrl : null,
             };
         }
     }

@@ -6,6 +6,8 @@ services:
     build: 
       context: ../frontend
       dockerfile: ./Dockerfile
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - vp-run
     ports:
@@ -24,7 +26,7 @@ services:
       - ASPNETCORE_URLS=http://+:5199
     volumes:
       - ~/.aspnet/https:/https:ro
-      - ./fileserver:/app/storage
+      - ./fileserver/demo:/app/storage
       - ../backend/Publish:/app
     depends_on:
       wait-for-db:

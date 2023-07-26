@@ -23,7 +23,7 @@ namespace Backend.Models
             return new PlaylistDTO()
             {
                 Channel = Channel,
-                Videos = Videos?.Any() ?? false ? Videos.Select(x => x.ToDTO()).ToList() : null,
+                Videos = Videos?.Any() ?? false ? Videos.Select(x => x.ToDTO()).ToList() : null,  
                 Id = Id,
                 CreatedTimestamp = CreatedTimestamp,
                 Description = Description,
