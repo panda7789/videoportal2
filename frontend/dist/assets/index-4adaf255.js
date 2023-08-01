@@ -42297,7 +42297,7 @@ function CustomChip({
     text
   ) });
 }
-const ApiUrl = `${"https://fs.panda7789.fun"}`;
+const ApiUrl = `${"http://localhost:3000"}`;
 const ApiPath = (input) => input ? `${ApiUrl}/${input}` : void 0;
 async function getVideoById(id2) {
   return videosGET(id2);
@@ -99998,7 +99998,7 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 const queryClient = new QueryClient();
 onlineManager.setOnline(true);
-setBaseUrl(`${"https://videoportal.panda7789.fun"}`);
+setBaseUrl(`${"http://localhost:5199"}`);
 setAxiosFactory(() => {
   const instance = axios$1.create();
   instance.interceptors.request.use(
