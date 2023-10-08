@@ -11,7 +11,7 @@ services:
     networks:
       - vp-run
     ports:
-      - "80:80"
+      - "10003:80"
 
   api:
     container_name: api
@@ -21,13 +21,12 @@ services:
     networks:
       - vp-run
     ports:
-      - "5199:5199"
+      - "10004:5199"
     environment:
       - ASPNETCORE_URLS=http://+:5199
     volumes:
       - ~/.aspnet/https:/https:ro
       - ./fileserver/demo:/app/storage
-      - ../backend/Publish:/app
     depends_on:
       wait-for-db:
        condition: service_completed_successfully
@@ -63,7 +62,7 @@ services:
     networks:
       - vp-run
     ports:
-     - '3000:3000'
+     - '10005:3000'
     volumes:
       - './fileserver/demo:/app/storage'
 
