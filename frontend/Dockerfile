@@ -3,10 +3,11 @@ WORKDIR /app
 
 COPY ./package.json .
 COPY ./tsconfig.json .
-COPY . /app
 
 RUN npm install -g pnpm
 RUN pnpm install
+
+COPY . /app
 RUN pnpm run buildIgnoreErrors
 
 FROM nginx

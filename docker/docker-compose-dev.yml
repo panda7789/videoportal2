@@ -1,23 +1,22 @@
 version: '3.4'
 
 services:
-  api-dev:
-    container_name: api-dev
-    build: 
-      context: ../backend/Backend
-      dockerfile: ./Dockerfile
-    depends_on:
-      wait-for-db:
-        condition: service_completed_successfully
-    ports:
-      - "5199:5199"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5199
-    volumes:
-      #- ../backend:/app/storage'
-      - ~/.aspnet/https:/https:ro
-      - './fileserver:/app/storage'
+  # api-dev:
+  #   container_name: api-dev
+  #   build: 
+  #     context: ../backend/Backend
+  #     dockerfile: ./Dockerfile
+  #   depends_on:
+  #     wait-for-db:
+  #       condition: service_completed_successfully
+  #   ports:
+  #     - "5199:5199"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:5199
+  #   volumes:
+  #     - ~/.aspnet/https:/https:ro
+  #     - './fileserver:/app/storage'
   
   wait-for-db:
     container_name: w4db

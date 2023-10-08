@@ -25,7 +25,7 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
       - ./fileserver:/app/storage
-      - ../backend/Publish:/app
+
     depends_on:
       wait-for-db:
        condition: service_completed_successfully

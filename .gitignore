@@ -59,6 +59,7 @@ frontend/package-lock.json
 
 # Visual Studio 2015
 /backend/Backend/.vs/
+/.vs/
 
 /backend/Backend/Backend/bin/Release/net6.0
 /docker/fileserver/thumbnails
