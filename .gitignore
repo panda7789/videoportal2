@@ -22,6 +22,7 @@ frontend/package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*/.vs/*
 frontend/package-lock.json
 /backend/Backend/.vs
 /backend/Backend/Backend/bin/Debug/net6.0
