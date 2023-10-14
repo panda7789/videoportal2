@@ -33,17 +33,17 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./db/data:/var/lib/mysql
+      - ./db/demo.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/data_demo:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_ROOT_HOST: '%'  # needs to be enclosed with quotes
 
   file-server:
-    container_name: 'fs-dev'
+    container_name: fs
     build: './fileserver'
     ports:
-     - '3000:3000'
+     - '10005:3000'
     volumes:
-      - './fileserver:/app/storage'   
+      - './fileserver/demo:/app/storage'
 

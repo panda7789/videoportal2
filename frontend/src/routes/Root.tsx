@@ -88,7 +88,7 @@ export default function Root() {
                 p: { xs: 0, md: '0 0 0 256px' },
                 ...(!navigationOpen && {
                   p: { xs: 0, md: `0 0 0 calc(${theme.spacing(7)} - 1px)` },
-                  width: `calc(100% - ${theme.spacing(7)} + 1px)`,
+                  width: { xs: '100%', md: `calc(100% - ${theme.spacing(7)} + 1px)` },
                   transition: theme.transitions.create(['width', 'margin'], {
                     easing: theme.transitions.easing.sharp,
                     duration: theme.transitions.duration.enteringScreen,

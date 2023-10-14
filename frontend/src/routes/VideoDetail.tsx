@@ -47,7 +47,7 @@ export async function loader({ params }: { params: any }) {
 }
 
 function VideoDetail() {
-  const [expanded, setExpanded] = React.useState(true);
+  const [expanded, setExpanded] = React.useState(false);
   const commentInput = React.createRef<HTMLInputElement>();
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
@@ -147,7 +147,7 @@ function VideoDetail() {
       <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" pb={8}>
         <Box width="95%" mt={2}>
           <Grid container spacing={2} minHeight={170}>
-            <Grid item xs={8}>
+            <Grid item xs={12} md={8}>
               <Box display="flex" onClick={handleExpandClick}>
                 <Typography variant="subtitle1" lineHeight="24px" width="100%">
                   {video.name}
@@ -156,22 +156,42 @@ function VideoDetail() {
                   <ExpandMoreIcon />
                 </ExpandMore>
               </Box>
-              <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <Typography variant="caption">Popis:</Typography>
-                <Typography variant="subtitle1" paddingBottom="16px">
-                  {video.description}
-                </Typography>
-                {(video?.tags?.length ?? 0) > 0 && (
-                  <>
-                    <Typography variant="caption">Tagy:</Typography>
-                    <Grid container gap={0.5} pt={1} sx={{ position: 'relative' }}>
-                      <ChipLine chipData={video.tags!} />
-                    </Grid>
-                  </>
-                )}
-              </Collapse>
+              <Typography variant="caption">Popis:</Typography>
+              <Typography
+                onClick={handleExpandClick}
+                variant="subtitle1"
+                sx={{
+                  '-webkit-line-clamp': '2',
+                  ...(expanded && {
+                    '-webkit-line-clamp': 'unset',
+                  }),
+                  display: '-webkit-box',
+                  '-webkit-box-orient': 'vertical',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  whiteSpace: 'break-spaces',
+                }}
+              >
+                {video.description}
+              </Typography>
+              {(video?.tags?.length ?? 0) > 0 && (
+                <>
+                  <Typography variant="caption">Tagy:</Typography>
+                  <Grid container gap={0.5} pt={1} sx={{ position: 'relative' }}>
+                    <ChipLine chipData={video.tags!} />
+                  </Grid>
+                </>
+              )}
             </Grid>
-            <Grid container item xs={4} direction="column" justifyContent="flex-start" height={170}>
+            <Grid
+              container
+              item
+              xs={12}
+              md={4}
+              direction="column"
+              justifyContent="flex-start"
+              height={170}
+            >
               <Grid item xs={6} height={65} width="100%">
                 <LikeDislikeMenu
                   videoId={video.id}
