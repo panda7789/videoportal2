@@ -17,8 +17,12 @@ namespace Backend.Utils
             Image
         }
 
-        public static void Init()
+        public static void Init(string pathBaseFolder = null)
         {
+            if (pathBaseFolder != null)
+            {
+                PathBase = pathBaseFolder;
+            }
             Directory.CreateDirectory(PathBase);
             Directory.CreateDirectory(Path.Combine(PathBase, VideosPath));
             Directory.CreateDirectory(Path.Combine(PathBase, ThumbnailsPath));

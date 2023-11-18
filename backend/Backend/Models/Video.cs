@@ -29,10 +29,8 @@ namespace Backend.Models
         public int Views { get; set; }
         public DateTime UploadTimestamp { get; set; }
         public ICollection<Tag>? Tags { get; set; }
-        public Guid ChannelId { get; set; }
-        public Channel Channel { get; set; }
-        [JsonIgnore]
         public ICollection<Playlist>? Playlists { get; set; }
+        public Playlist? MainPlaylist { get; set; }
 
         public VideoDTO ToDTO()
         {
@@ -49,16 +47,13 @@ namespace Backend.Models
                 Views = Views,
                 UploadTimestamp = UploadTimestamp,
                 Tags = Tags,
-                ChannelId = ChannelId,
-                ChannelName = Channel != null ? Channel.Name : null,
-                ChannelAvatarUrl = Channel != null ? Channel.AvatarUrl : null,
+                MainPlaylist = MainPlaylist
             };
         }
     }
 
     public class VideoDTO: Video
     {
-        public string ChannelName { get; set; }
-        public string? ChannelAvatarUrl { get; set; }
+
     }
 }

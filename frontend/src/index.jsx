@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
@@ -19,8 +20,13 @@ AxiosQuery.setAxiosFactory(() => {
       const token = localStorage.getItem('token');
 
       if (token) {
-        // eslint-disable-next-line no-param-reassign
         config.headers.Authorization = `Bearer ${token}`;
+        config.beforeRedirect = (opts) => {
+          console.log('redirect!!!');
+          opts.headers = {
+            Authorization: `Bearer ${token}`,
+          };
+        };
       }
 
       return config;

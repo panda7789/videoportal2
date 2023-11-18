@@ -18,91 +18,6 @@ namespace Backend.Migrations
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Backend.Models.Channel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("ChannelAdvancedInfoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("IdOwner")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("PinnedVideoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("PosterUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<long>("SubscribersCount")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChannelAdvancedInfoId");
-
-                    b.HasIndex("IdOwner");
-
-                    b.HasIndex("PinnedVideoId");
-
-                    b.ToTable("Channels");
-                });
-
-            modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ChannelId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("DateOfRegistration")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChannelId")
-                        .IsUnique();
-
-                    b.ToTable("ChannelAdvancedInfos");
-                });
-
-            modelBuilder.Entity("Backend.Models.ChannelUserSpecificInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ChannelId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Subscribed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChannelUserSpecificInfos");
-                });
-
             modelBuilder.Entity("Backend.Models.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -135,9 +50,6 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("ChannelId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime(6)");
 
@@ -155,8 +67,6 @@ namespace Backend.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChannelId");
 
                     b.HasIndex("IdOwner");
 
@@ -193,21 +103,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "2d305e33-62bc-4d7d-8478-5aa5ac874229",
+                            ConcurrencyStamp = "99af6223-e478-44a1-b217-e9b7d195db02",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "c8f7dd0b-9545-4746-b332-c042e8a94e45",
+                            ConcurrencyStamp = "510471df-d7de-443c-b21e-d55b86022714",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "f92a47a3-6a3a-405f-bec4-acfaafee4915",
+                            ConcurrencyStamp = "9474b19d-c0e0-4652-ad06-2e6199064a7f",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -310,13 +220,13 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3ab94a5a-f312-40c4-bb15-b7870ee18e67",
+                            ConcurrencyStamp = "dd6a743a-ea6b-41fb-8745-21822b534c0e",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
                             LockoutEnabled = false,
                             Name = "Administrátor",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJPsWudsO/iFj3FXMT6P3a8HWQIgbOu3hVOM2a16UWyqW+8End0/ExGGYBx81bWoOA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGgb77B+k5q/hCV2g0SIjkXy4cugnqAW5yM7qALrVxKm3SMbOGpeRdoaimh6DyOd5w==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"
@@ -369,9 +279,6 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ChannelId")
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("DataUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -392,6 +299,9 @@ namespace Backend.Migrations
                     b.Property<int>("LikeCount")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("MainPlaylistId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -404,7 +314,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelId");
+                    b.HasIndex("MainPlaylistId");
 
                     b.ToTable("Videos");
                 });
@@ -538,39 +448,6 @@ namespace Backend.Migrations
                     b.ToTable("TagVideo");
                 });
 
-            modelBuilder.Entity("Backend.Models.Channel", b =>
-                {
-                    b.HasOne("Backend.Models.ChannelAdvancedInfo", null)
-                        .WithMany("RelatedChannels")
-                        .HasForeignKey("ChannelAdvancedInfoId");
-
-                    b.HasOne("Backend.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("IdOwner")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.Video", "PinnedVideo")
-                        .WithMany()
-                        .HasForeignKey("PinnedVideoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("PinnedVideo");
-                });
-
-            modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>
-                {
-                    b.HasOne("Backend.Models.Channel", "Channel")
-                        .WithOne()
-                        .HasForeignKey("Backend.Models.ChannelAdvancedInfo", "ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Channel");
-                });
-
             modelBuilder.Entity("Backend.Models.Comment", b =>
                 {
                     b.HasOne("Backend.Models.User", "User")
@@ -584,17 +461,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Playlist", b =>
                 {
-                    b.HasOne("Backend.Models.Channel", "Channel")
-                        .WithMany()
-                        .HasForeignKey("ChannelId");
-
                     b.HasOne("Backend.Models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("IdOwner")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Channel");
 
                     b.Navigation("Owner");
                 });
@@ -642,13 +513,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Video", b =>
                 {
-                    b.HasOne("Backend.Models.Channel", "Channel")
+                    b.HasOne("Backend.Models.Playlist", "MainPlaylist")
                         .WithMany()
-                        .HasForeignKey("ChannelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("MainPlaylistId");
 
-                    b.Navigation("Channel");
+                    b.Navigation("MainPlaylist");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -730,11 +599,6 @@ namespace Backend.Migrations
                         .HasForeignKey("VideosId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Models.ChannelAdvancedInfo", b =>
-                {
-                    b.Navigation("RelatedChannels");
                 });
 
             modelBuilder.Entity("Backend.Models.UserGroup", b =>

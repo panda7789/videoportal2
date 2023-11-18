@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models;
 using Backend.Utils;
 using System.Threading.Channels;
+using System.Reflection;
 
 namespace Backend.Controllers
 {
@@ -38,12 +39,62 @@ namespace Backend.Controllers
             return await 
                 _context.Playlists
                     .Where(x => x.IdOwner == userId)
-                    .Include(x => x.Channel)
                     .Include(x => x.Owner)
                     .Include(x => x.Videos)
-                    .ThenInclude(y => y.Channel)
                     .Select(x => x.ToDTO())
                     .ToListAsync();
+        }
+
+        // GET: api/Playlists
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PlaylistDTO>>> GetPlaylists([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            IQueryable<Playlist> query = _context.Playlists;
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string[] orderByParts = orderBy?.Split(':') ?? Array.Empty<string>();
+                if (orderByParts.Length == 0)
+                {
+                    return BadRequest();
+                }
+                PropertyInfo propertyInfo = typeof(Video).GetProperty(orderByParts[0], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (propertyInfo != null)
+                {
+                    if (orderByParts.Length == 2 && orderByParts[1].ToLowerInvariant() == "desc")
+                    {
+                        query = query.OrderByDescending(x => propertyInfo.GetValue(x));
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => propertyInfo.GetValue(x));
+                    }
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.Id);
+            }
+
+            if (limit.HasValue)
+            {
+                query = query.Take(limit.Value);
+            }
+            else
+            {
+                query = query.Take(5);
+            }
+
+            if (offset.HasValue)
+            {
+                query = query.Skip(offset.Value);
+            }
+            return await query.Include(x => x.Owner).Select(x => x.ToDTO()).ToListAsync();
         }
 
         // GET: api/Playlists/5
@@ -57,10 +108,8 @@ namespace Backend.Controllers
             var playlist = await 
                 _context.Playlists
                     .Where(x => x.Id == id)
-                    .Include(x => x.Channel)
                     .Include(x => x.Owner)
                     .Include(x => x.Videos)
-                    .ThenInclude(y => y.Channel)
                     .FirstOrDefaultAsync();
 
             if (playlist == null)
@@ -88,10 +137,6 @@ namespace Backend.Controllers
 
             playlistDB.Description = playlist.Description;
             
-            if (playlist?.ChannelId.HasValue ?? false)
-            {
-                playlistDB.Channel = await _context.Channels.FindAsync(playlist.ChannelId);
-            }
             if (playlist?.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
@@ -157,10 +202,6 @@ namespace Backend.Controllers
                 Videos = playlist.Videos,
                 Name = playlist.Name
             };
-            if (playlist?.ChannelId.HasValue ?? false)
-            {
-                playlistDB.Channel = await _context.Channels.FindAsync(playlist.ChannelId);
-            }
             if (playlist?.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
@@ -196,6 +237,14 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        public void AddVideoToPlaylist(Guid playlistId, Video video)
+        {
+            var playlist = _context.Playlists.Single(x => x.Id == playlistId);
+            playlist.Videos ??= new List<Video>();
+            playlist.Videos.Add(video);
+            _context.SaveChanges();
         }
     }
 }

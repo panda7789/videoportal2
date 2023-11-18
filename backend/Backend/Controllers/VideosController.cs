@@ -76,7 +76,7 @@ namespace Backend.Controllers
             {
                 query = query.Skip(offset.Value);
             }
-            return await query.Include(x => x.Channel).Select(x => x.ToDTO()).ToListAsync();
+            return await query.Select(x => x.ToDTO()).ToListAsync();
         }
 
 
@@ -89,7 +89,6 @@ namespace Backend.Controllers
                 return NotFound();
             }
             var video = await _context.Videos
-                    .Include(x => x.Channel)
                     .Include(x => x.Tags)
                     .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
@@ -131,7 +130,7 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            return await _context.Videos.Where(x => x.Channel.IdOwner == userId).Include(x => x.Channel).Select(x => x.ToDTO()).ToListAsync();
+            return await _context.Videos.Select(x => x.ToDTO()).ToListAsync();
         }
 
         [HttpGet("{id}/related-videos")]
@@ -157,7 +156,6 @@ namespace Backend.Controllers
                     ORDER BY Relevance desc
                     LIMIT 10")
                 .AsNoTracking()
-                .Include(x => x.Channel)
                 .Select(x => x.ToDTO())
                 .ToListAsync();
             return await relatedVideos;
@@ -168,7 +166,7 @@ namespace Backend.Controllers
             public string Name { get; set; }
             public string? Description { get; set; }
             public IFormFile? Image { get; set; }
-            public Guid ChannelId { get; set; }
+            public Guid PlaylistId { get; set; }
             public ICollection<string>? Tags { get; set; }
 
         }
@@ -185,7 +183,8 @@ namespace Backend.Controllers
             _context.Entry(video).State = EntityState.Modified;
             video.Name = modifiedVideo.Name;
             video.Description = modifiedVideo.Description;
-            video.ChannelId = modifiedVideo.ChannelId;
+            video.MainPlaylist = _context.Playlists.Single(x => x.Id == modifiedVideo.PlaylistId);
+            
             if (video.Tags?.Any() ?? false)
             {
                 video.Tags.Clear();
@@ -200,7 +199,7 @@ namespace Backend.Controllers
             }
             if (modifiedVideo.Image != null)
             {
-                var thumbnailUrl = await SaveThumbnailAsync(modifiedVideo.ChannelId, modifiedVideo.Image);
+                var thumbnailUrl = await SaveThumbnailAsync(modifiedVideo.PlaylistId, modifiedVideo.Image);
                 video.ImageUrl = thumbnailUrl;
             }
 
@@ -230,7 +229,7 @@ namespace Backend.Controllers
             public string? Description { get; set; }
             public int DurationSec { get; set; }
             public IFormFile Image { get; set; }
-            public Guid ChannelId { get; set; }
+            public Guid PlaylistId { get; set; }
             public ICollection<string>? Tags { get; set; }
 
         }
@@ -254,18 +253,17 @@ namespace Backend.Controllers
             }
 
             // upload video
-            var videoGuid = $"{video.ChannelId}{Guid.NewGuid()}";
+            var videoGuid = $"{video.PlaylistId}{Guid.NewGuid()}";
             var videoName = $"{videoGuid}.{video.FileName.Split(".").LastOrDefault()}";
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
 
-            var thumbnailUrl = await SaveThumbnailAsync(video.ChannelId, video.Image);
+            var thumbnailUrl = await SaveThumbnailAsync(video.PlaylistId, video.Image);
 
             var videoDB = new Video()
             {
                 Name = video.Name,
                 Description = video.Description,
-                ChannelId = video.ChannelId,
                 Duration = new TimeSpan(0,0,0, video.DurationSec, 0),
                 Tags = new List<Tag>(),
                 DislikeCount = 0,
@@ -274,6 +272,7 @@ namespace Backend.Controllers
                 UploadTimestamp = DateTime.UtcNow,
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
+                MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId)
             };
             if (video.Tags?.Any() ?? false)
             {

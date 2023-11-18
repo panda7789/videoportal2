@@ -63,7 +63,6 @@ namespace Backend.Controllers
                 query = query.Take(10);
             }
             var videos = await query
-                .Include(x => x.Channel)
                 .Select(x => x.ToDTO())
                 .ToListAsync();
 

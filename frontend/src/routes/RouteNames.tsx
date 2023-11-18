@@ -1,6 +1,4 @@
 export enum Route {
-  channel = 'channel',
-  myChannels = 'my-channels',
   myPlaylists = 'my-playlists',
   myVideos = 'my-videos',
   playlist = 'playlist',

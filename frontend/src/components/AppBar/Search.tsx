@@ -5,6 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, Box, InputBase } from '@mui/material';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { Route } from 'routes/RouteNames';
+import { useTagsAllQuery } from 'api/axios-client/Query';
 
 export interface SearchQ {
   searchTerm?: string;
@@ -24,36 +25,38 @@ export async function loader({ request }: { request: any }): Promise<SearchQ> {
   return Promise.reject();
 }
 
+const searchQuery = (searchedParam: string) => `?q=${searchedParam}`;
+const searchTagsQuery = (searchedTags: string[]) => `?q=tags:${searchedTags.toString()}`;
+
 export const searchUrl = (searchedParam: string) => {
-  return `/${Route.search}?q=${searchedParam}`;
+  return `/${Route.search}${searchQuery(searchedParam)}`;
 };
 
 export const searchTagsUrl = (searchedTags: string[]) => {
-  return `/${Route.search}?q=tags:${searchedTags.toString()}`;
+  return `/${Route.search}${searchTagsQuery(searchedTags)}`;
 };
 
 function Search() {
   const [value, setValue] = React.useState<string | null>('');
   const [inputValue, setInputValue] = React.useState('');
-  const predmety = ['ISVZ', 'PDF', 'KKS', 'LOL'];
+  const tags = useTagsAllQuery();
   const navigate = useNavigate();
 
-  const searchButtonClickHandle = (
-    e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLDivElement>,
-  ) => {
-    e.preventDefault();
-    const params = { q: inputValue };
+  const searchButtonClickHandle = () => {
     if (inputValue?.length === 0 ?? true) {
       return;
     }
     navigate({
       pathname: `/${Route.search}`,
-      search: `?${createSearchParams(params)}`,
+      search: searchQuery(inputValue),
     });
   };
 
-  const selectedOption = (option: string | null) => {
-    console.log(`/api/search?q=${option}`);
+  const selectedTag = (tag: string) => {
+    navigate({
+      pathname: `/${Route.search}`,
+      search: searchTagsQuery([tag]),
+    });
   };
 
   return (
@@ -99,15 +102,18 @@ function Search() {
             id="free-solo-demo"
             freeSolo
             value={value}
-            onChange={(event: any, newValue: string | null) => {
+            onChange={(_: any, newValue: string | null) => {
               setValue(newValue);
-              selectedOption(newValue);
+              if (newValue) {
+                selectedTag(newValue);
+              }
             }}
             inputValue={inputValue}
-            onInputChange={(event, newInputValue) => {
+            onInputChange={(_, newInputValue) => {
               setInputValue(newInputValue);
+              searchButtonClickHandle();
             }}
-            options={predmety}
+            options={[...(tags?.data?.map((x) => `${x.name}`) ?? [])]}
             sx={{
               '& .MuiAutocomplete-endAdornment > button': {
                 color: 'white',
@@ -131,7 +137,10 @@ function Search() {
                   endAdornment={undefined}
                   placeholder="Vyhledávání…"
                   onKeyPress={(event) => {
-                    if (event.key === 'Enter') searchButtonClickHandle(event);
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      searchButtonClickHandle();
+                    }
                   }}
                 />
               );

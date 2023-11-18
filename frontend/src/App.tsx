@@ -10,16 +10,16 @@ import { loader as searchLoader } from 'components/AppBar/Search';
 import { MyVideos } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
-import { Channel, loader as channelLoader } from 'routes/Channel/Channel';
-import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/Channel/ChannelHomePage';
-import { ChannelVideos, loader as channelVideosLoader } from 'routes/Channel/ChannelVideos';
+import { Channel, loader as channelLoader } from 'routes/_Channel/Channel';
+import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/_Channel/ChannelHomePage';
+import { ChannelVideos, loader as channelVideosLoader } from 'routes/_Channel/ChannelVideos';
 import {
   ChannelPlaylists,
   loader as channelPlaylistsLoader,
-} from 'routes/Channel/ChannelPlaylists';
-import { ChannelInfo, loader as channelInfoLoader } from 'routes/Channel/ChannelInfo';
-import { MyChannels } from 'routes/MyChannels';
-import { ChannelEdit, loader as channelEditLoader } from 'routes/ChannelEdit';
+} from 'routes/_Channel/ChannelPlaylists';
+import { ChannelInfo, loader as channelInfoLoader } from 'routes/_Channel/ChannelInfo';
+import { MyChannels } from 'routes/_MyChannels';
+import { ChannelEdit, loader as channelEditLoader } from 'routes/_ChannelEdit';
 import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 import SearchResult from 'routes/SearchResult';
@@ -44,51 +44,6 @@ function App() {
             {
               path: Route.myVideos,
               element: <MyVideos />,
-            },
-            {
-              path: `${Route.channel}/:channelId`,
-              element: <Channel />,
-              loader: channelLoader,
-              children: [
-                {
-                  path: '',
-                  element: <ChannelHomePage />,
-                  loader: channelHomePageLoader,
-                },
-                {
-                  path: 'videos',
-                  element: <ChannelVideos />,
-                  loader: channelVideosLoader,
-                },
-                {
-                  path: 'playlists',
-                  element: <ChannelPlaylists />,
-                  loader: channelPlaylistsLoader,
-                },
-                {
-                  path: 'info',
-                  element: <ChannelInfo />,
-                  loader: channelInfoLoader,
-                },
-              ],
-            },
-            {
-              path: Route.myChannels,
-              children: [
-                {
-                  path: '',
-                  element: <MyChannels />,
-                },
-                {
-                  path: 'create',
-                  element: <ChannelEdit newChannel />,
-                },
-                {
-                  path: ':Id',
-                  element: <ChannelEdit />,
-                  loader: channelEditLoader,
-                },
-              ],
             },
             {
               path: `${Route.video}/:videoId`,

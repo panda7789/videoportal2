@@ -15,14 +15,11 @@ namespace Backend.Models
 
         [ForeignKey(nameof(Owner))]
         public Guid IdOwner { get; set; }
-        public Channel? Channel { get; set; }
-        public Guid? ChannelId { get; set; }
 
         public PlaylistDTO ToDTO()
         {
             return new PlaylistDTO()
             {
-                Channel = Channel,
                 Videos = Videos?.Any() ?? false ? Videos.Select(x => x.ToDTO()).ToList() : null,  
                 Id = Id,
                 CreatedTimestamp = CreatedTimestamp,
@@ -45,7 +42,6 @@ namespace Backend.Models
         public string? ThumbnailUrl { get; set; }
         public ICollection<VideoDTO>? Videos { get; set; }
         public Guid OwnerId{ get; set; }
-        public Channel? Channel { get; set; }
         public TimeSpan TotalDuration { get; set; }
     }
 
@@ -55,6 +51,5 @@ namespace Backend.Models
         public string? Description { get; set; }
         public IFormFile? Thumbnail { get; set; }
         public ICollection<Video>? Videos { get; set; }
-        public Guid? ChannelId { get; set; }
     }
 }

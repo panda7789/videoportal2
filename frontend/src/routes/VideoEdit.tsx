@@ -26,12 +26,10 @@ import ChunkedUploady, {
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { asUploadButton } from '@rpldy/upload-button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { AxiosQuery } from 'api';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
 import {
   uploadUrl,
-  useMyChannelsQuery,
   useTagsAllQuery,
   useTagsPOSTMutation,
   useVideosPOSTMutation,
@@ -40,11 +38,10 @@ import {
 import { PostVideoResponse } from 'api/axios-client';
 import { SizeToWords } from 'components/Utils/NumberUtils';
 import { GetRandomColor } from 'components/Utils/CoolColors';
-import { UserContext } from './Root';
-import { MyChannelsDropdown } from 'components/DropDownMenu/MyChannelsDropdown';
+import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown';
 import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
 import { getFileFromBase64 } from 'components/Utils/FileUtils';
-import useCurrentColorScheme from '@mui/system/cssVars/useCurrentColorScheme';
+import { UserContext } from './Root';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -90,7 +87,6 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
   const uploadVideoMutation = useVideosPOSTMutation();
   const updateVideoMutation = useVideosPUTMutation(video?.id ?? '');
-  const myChannels = useMyChannelsQuery();
   const uploady = useUploadyContext();
   const allTagsQuery = useTagsAllQuery({ refetchOnWindowFocus: false });
   const createTagMutation = useTagsPOSTMutation();
@@ -165,8 +161,8 @@ function VideoEditInner({ newVideo }: InnerProps) {
     const data = new FormData(event.currentTarget);
     const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
-    const channelId = data.get('channelSelect')?.toString()!;
     const tags = tagsRef?.current?.getActiveChips()?.map((x) => x.label) ?? [];
+    const playlistId = data.get('playlistSelect')?.toString()!;
 
     if (newVideo) {
       if (!imageToUpload) {
@@ -181,13 +177,13 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
       uploadVideoMutation.mutate(
         {
-          channelId,
           description,
           durationSec: Math.floor(fileUploadInfo.duration),
           name,
           tags,
           fileName: fileUploadInfo.name,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
+          playlistId,
         },
         {
           onSuccess: (res: PostVideoResponse) => {
@@ -212,11 +208,11 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
       updateVideoMutation.mutate(
         {
-          channelId,
           description,
           name,
           tags,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
+          playlistId,
         },
         {
           onSuccess: () => {
@@ -264,11 +260,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
-              <MyChannelsDropdown
-                channels={myChannels.data}
-                defaultValue={video?.channelId}
-                required
-              />
+              <MyPlaylistsDropdown defaultValue={video?.mainPlaylist?.id} required />
             </Grid>
             <Grid item xs={12}>
               <TextField

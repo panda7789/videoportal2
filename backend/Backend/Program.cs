@@ -114,7 +114,8 @@ dbContextOptions => dbContextOptions
             .EnableDetailedErrors()
     );
 
-SaveFile.Init();
+var fsBasePath = builder?.Configuration["FSBasePath"] ?? null;
+SaveFile.Init(fsBasePath);
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

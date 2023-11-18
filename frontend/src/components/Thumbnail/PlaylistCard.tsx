@@ -10,7 +10,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { videoUrl, playlistParams } from 'model/Video';
 import { Route } from 'routes/RouteNames';
 import { PlaylistDTO } from 'api/axios-client';
-import VideoCard from './VideoCard';
 import { ApiPath } from 'components/Utils/APIUtils';
 
 export interface Props {
@@ -160,4 +159,4 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
     );
 }
 
-export default VideoCard;
+export default PlaylistCard;

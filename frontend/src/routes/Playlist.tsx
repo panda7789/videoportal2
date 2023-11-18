@@ -12,13 +12,9 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { PlaylistDTO, VideoDTO } from 'api/axios-client';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
-import {
-  useMyChannelsQuery,
-  usePlaylistsPOSTMutation,
-  usePlaylistsPUTMutation,
-} from 'api/axios-client/Query';
+import { usePlaylistsPOSTMutation, usePlaylistsPUTMutation } from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
-import { MyChannelsDropdown } from 'components/DropDownMenu/MyChannelsDropdown';
+import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown';
 import { playlistParams, videoUrl } from 'model/Video';
 
 export const loader = ({ params }: { params: any }) => {
@@ -41,7 +37,6 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   const [imageToUpload, setImageToUpload] = useState<File>();
   const [statusText, setStatusText] = useState<string>();
 
-  const myChannelsQuery = useMyChannelsQuery();
   const createPlaylistMutation = usePlaylistsPOSTMutation();
   const updatePlaylistMutation = usePlaylistsPUTMutation(playlist.id);
   useLayoutEffect(() => ScrollToTop(), [playlist.id]);
@@ -63,13 +58,11 @@ export function PlaylistDetail({ newPlaylist }: Props) {
     const data = new FormData(event.currentTarget);
     const description = data.get('description')?.toString()!;
     const name = data.get('name')?.toString()!;
-    const channelId = data.get('channelSelect')?.toString();
 
     if (newPlaylist) {
       createPlaylistMutation.mutate(
         {
           name,
-          channelId,
           description,
           thumbnail: imageToUpload
             ? { data: imageToUpload, fileName: imageToUpload.name }
@@ -92,7 +85,6 @@ export function PlaylistDetail({ newPlaylist }: Props) {
       updatePlaylistMutation.mutate(
         {
           name,
-          channelId,
           description,
           thumbnail: imageToUpload
             ? { data: imageToUpload, fileName: imageToUpload.name }
@@ -204,12 +196,6 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                     multiline
                     minRows={2}
                     maxRows={3}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <MyChannelsDropdown
-                    channels={myChannelsQuery.data}
-                    defaultValue={playlist?.channel?.id}
                   />
                 </Grid>
               </Grid>

@@ -40,13 +40,6 @@ export const NavigationItems: NavigationItem[] = [
     userRole: ['videoEditor'],
   },
   {
-    route: `/${Route.myChannels}`,
-    title: 'Moje kanály',
-    icon: <DatasetIcon />,
-    signed: true,
-    userRole: ['videoEditor'],
-  },
-  {
     route: `/${Route.users}`,
     title: 'Správa uživatelů',
     icon: <ManageAccountsIcon />,
