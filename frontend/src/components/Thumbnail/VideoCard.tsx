@@ -79,7 +79,7 @@ function VideoCard({
       >
         <Grid
           item
-          xs={fullWidth ? (smallThumbnail ? 2.5 : 4) : 12}
+          xs={fullWidth ? (smallThumbnail ? 3.5 : 4) : 12}
           sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
         >
           {withPlayer ? (
