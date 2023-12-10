@@ -201,7 +201,6 @@ export class Playlist implements IPlaylist {
     thumbnailUrl?: string | undefined;
     videos?: Video[] | undefined;
     owner!: User;
-    idOwner!: string;
 
     constructor(data?: IPlaylist) {
         if (data) {
@@ -228,7 +227,6 @@ export class Playlist implements IPlaylist {
                     this.videos!.push(Video.fromJS(item));
             }
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
-            this.idOwner = _data["idOwner"];
         }
     }
 
@@ -252,7 +250,6 @@ export class Playlist implements IPlaylist {
                 data["videos"].push(item.toJSON());
         }
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
-        data["idOwner"] = this.idOwner;
         return data;
     }
 }
@@ -265,7 +262,6 @@ export interface IPlaylist {
     thumbnailUrl?: string | undefined;
     videos?: Video[] | undefined;
     owner: User;
-    idOwner: string;
 }
 
 export class PlaylistDTO implements IPlaylistDTO {
@@ -275,7 +271,7 @@ export class PlaylistDTO implements IPlaylistDTO {
     description?: string | undefined;
     thumbnailUrl?: string | undefined;
     videos?: VideoDTO[] | undefined;
-    ownerId!: string;
+    owner!: UserDTO;
     totalDuration!: string;
 
     constructor(data?: IPlaylistDTO) {
@@ -284,6 +280,9 @@ export class PlaylistDTO implements IPlaylistDTO {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.owner = new UserDTO();
         }
     }
 
@@ -299,7 +298,7 @@ export class PlaylistDTO implements IPlaylistDTO {
                 for (let item of _data["videos"])
                     this.videos!.push(VideoDTO.fromJS(item));
             }
-            this.ownerId = _data["ownerId"];
+            this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
             this.totalDuration = _data["totalDuration"];
         }
     }
@@ -323,7 +322,7 @@ export class PlaylistDTO implements IPlaylistDTO {
             for (let item of this.videos)
                 data["videos"].push(item.toJSON());
         }
-        data["ownerId"] = this.ownerId;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         data["totalDuration"] = this.totalDuration;
         return data;
     }
@@ -336,7 +335,7 @@ export interface IPlaylistDTO {
     description?: string | undefined;
     thumbnailUrl?: string | undefined;
     videos?: VideoDTO[] | undefined;
-    ownerId: string;
+    owner: UserDTO;
     totalDuration: string;
 }
 
@@ -790,7 +789,8 @@ export class Video implements IVideo {
     uploadTimestamp!: Date;
     tags?: Tag[] | undefined;
     playlists?: Playlist[] | undefined;
-    mainPlaylist?: Playlist | undefined;
+    mainPlaylist!: Playlist;
+    owner!: User;
 
     constructor(data?: IVideo) {
         if (data) {
@@ -798,6 +798,10 @@ export class Video implements IVideo {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.mainPlaylist = new Playlist();
+            this.owner = new User();
         }
     }
 
@@ -823,7 +827,8 @@ export class Video implements IVideo {
                 for (let item of _data["playlists"])
                     this.playlists!.push(Playlist.fromJS(item));
             }
-            this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : <any>undefined;
+            this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : new Playlist();
+            this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
         }
     }
 
@@ -857,6 +862,7 @@ export class Video implements IVideo {
                 data["playlists"].push(item.toJSON());
         }
         data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -874,7 +880,8 @@ export interface IVideo {
     uploadTimestamp: Date;
     tags?: Tag[] | undefined;
     playlists?: Playlist[] | undefined;
-    mainPlaylist?: Playlist | undefined;
+    mainPlaylist: Playlist;
+    owner: User;
 }
 
 export class VideoDTO implements IVideoDTO {
@@ -888,9 +895,10 @@ export class VideoDTO implements IVideoDTO {
     dislikeCount!: number;
     views!: number;
     uploadTimestamp!: Date;
-    tags?: Tag[] | undefined;
-    playlists?: Playlist[] | undefined;
-    mainPlaylist?: Playlist | undefined;
+    tags?: TagDTO[] | undefined;
+    playlists?: PlaylistDTO[] | undefined;
+    mainPlaylist!: PlaylistDTO;
+    owner!: UserDTO;
 
     constructor(data?: IVideoDTO) {
         if (data) {
@@ -898,6 +906,10 @@ export class VideoDTO implements IVideoDTO {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.mainPlaylist = new PlaylistDTO();
+            this.owner = new UserDTO();
         }
     }
 
@@ -916,14 +928,15 @@ export class VideoDTO implements IVideoDTO {
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
-                    this.tags!.push(Tag.fromJS(item));
+                    this.tags!.push(TagDTO.fromJS(item));
             }
             if (Array.isArray(_data["playlists"])) {
                 this.playlists = [] as any;
                 for (let item of _data["playlists"])
-                    this.playlists!.push(Playlist.fromJS(item));
+                    this.playlists!.push(PlaylistDTO.fromJS(item));
             }
-            this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : <any>undefined;
+            this.mainPlaylist = _data["mainPlaylist"] ? PlaylistDTO.fromJS(_data["mainPlaylist"]) : new PlaylistDTO();
+            this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
         }
     }
 
@@ -957,6 +970,7 @@ export class VideoDTO implements IVideoDTO {
                 data["playlists"].push(item.toJSON());
         }
         data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -972,9 +986,10 @@ export interface IVideoDTO {
     dislikeCount: number;
     views: number;
     uploadTimestamp: Date;
-    tags?: Tag[] | undefined;
-    playlists?: Playlist[] | undefined;
-    mainPlaylist?: Playlist | undefined;
+    tags?: TagDTO[] | undefined;
+    playlists?: PlaylistDTO[] | undefined;
+    mainPlaylist: PlaylistDTO;
+    owner: UserDTO;
 }
 
 export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {

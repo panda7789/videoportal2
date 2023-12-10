@@ -80,7 +80,7 @@ export default function Root() {
         <Box padding={{ xs: 0, md: 0 }} width="100%">
           <Toolbar />
           <Navigation />
-          <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Box component="main" sx={{ flexGrow: 1, overflow: 'hidden' }}>
             <Box
               id="detail"
               className={navigation.state === 'loading' ? 'loading' : ''}

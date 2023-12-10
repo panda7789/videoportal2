@@ -25,13 +25,14 @@ import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInlineList';
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
-import { CommentPostDTO, PlaylistDTO, VideoDTO as Video } from 'api/axios-client';
+import { CommentPostDTO, VideoDTO as Video } from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { AxiosQuery } from 'api';
 import {
   useCommentsAllQuery,
   useCommentsPOSTMutation,
+  usePlaylistsGETQuery,
   useUserVideoStatsGETQuery,
   useWatchedMutation,
 } from 'api/axios-client/Query';
@@ -52,7 +53,6 @@ function VideoDetail() {
   const video = useLoaderData() as Video;
   const context = useContext(NavigationContext);
   const [searchParams] = useSearchParams();
-  const [playlist, setPlaylist] = React.useState<PlaylistDTO | undefined>(undefined);
   const [playlistIndex, setPlaylistIndex] = React.useState<number | undefined>(undefined);
   const [commentTimeout, setCommentTimeout] = React.useState(false);
   const userContext = useContext(UserContext);
@@ -60,6 +60,9 @@ function VideoDetail() {
   const commentsQuery = useCommentsAllQuery({ videoId: video.id }, { refetchOnWindowFocus: false });
   const userVideoStatsMutation = useWatchedMutation(video.id);
   const userVideoStatsQuery = useUserVideoStatsGETQuery({ videoId: video.id });
+  const mainPlaylistDetailsQuery = usePlaylistsGETQuery({
+    id: searchParams.get('playlist') ?? video.mainPlaylist.id,
+  });
   const commentMutation = useCommentsPOSTMutation({
     onSuccess: () => {
       commentsQuery.refetch();
@@ -74,14 +77,10 @@ function VideoDetail() {
   });
 
   useEffect(() => {
-    const playlistId = searchParams.get('playlist');
-    const index = searchParams.get('index') ?? '0';
-    (async () => {
-      if (playlistId) {
-        setPlaylist(await AxiosQuery.Client.playlistsGET(playlistId));
-        setPlaylistIndex(parseInt(index, 10));
-      }
-    })();
+    const index = searchParams.get('index');
+    if (index) {
+      setPlaylistIndex(parseInt(index, 10));
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -205,29 +204,28 @@ function VideoDetail() {
                 <Box
                   display="flex"
                   component={Link}
-                  to={`/${Route.channel}/${video.channelId}`}
+                  to={`/${Route.playlist}/${video.mainPlaylist.id}`}
                   mt={2}
                   ml="10px"
                   mr={2}
                   alignItems="center"
                 >
-                  <ChannelAvatar
-                    imageSrc={ApiPath(video.channelAvatarUrl)}
-                    avatarInitials={video.channelName}
-                    large
-                  />
-                  <Typography paddingLeft={1}>{video.channelName}</Typography>
+                  <ChannelAvatar avatarInitials={video.mainPlaylist.owner.initials} large />
+                  <Typography paddingLeft={1}>{video.mainPlaylist.name}</Typography>
                 </Box>
               </Grid>
             </Grid>
           </Grid>
-          {playlist && (
+          {mainPlaylistDetailsQuery?.data && (
             <>
               <Divider sx={{ marginTop: 2 }} />
               <Box mt={2}>
                 <ExpandedPlaylistInlineList
-                  playlist={playlist}
-                  currentlyPlaying={playlistIndex}
+                  playlist={mainPlaylistDetailsQuery.data}
+                  currentlyPlaying={
+                    playlistIndex ??
+                    mainPlaylistDetailsQuery.data.videos?.findIndex((x) => x.id === video.id)
+                  }
                   showPlayAllButton={false}
                   editable
                 />
@@ -239,7 +237,7 @@ function VideoDetail() {
             <Box mt={2}>
               <Typography variant="body1">Podobná videa</Typography>
               <Box mt={2}>
-                <VideoInlineList videos={relatedVideosQuery.data} showChannel />
+                <VideoInlineList videos={relatedVideosQuery.data} />
               </Box>
             </Box>
           )}

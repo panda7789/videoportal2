@@ -19,7 +19,7 @@ export function PlaylistInlineList({ playlists }: Props) {
   return (
     <InlineList>
       {playlists.map((_playlist) => (
-        <PlaylistCard key={_playlist.id} playlist={{ ..._playlist }} smallThumbnail />
+        <PlaylistCard key={_playlist.id} playlist={_playlist} smallThumbnail />
       ))}
     </InlineList>
   );

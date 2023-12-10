@@ -103,7 +103,10 @@ export function VerticalList({
                           video={video}
                           fullWidth
                           smallThumbnail
+                          showTags
+                          showChannel
                           showDescription={false}
+                          showActions={false}
                           urlParams={urlParamsGenerator ? urlParamsGenerator(video, index) : ''}
                         />
                       </Grid>

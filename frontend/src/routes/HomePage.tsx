@@ -7,7 +7,7 @@ import { Route } from 'routes/RouteNames';
 import { PlaylistCard } from 'components/Thumbnail/PlaylistCard';
 
 function HomePage() {
-  const videos = useVideosAllQuery(undefined, 5);
+  const videos = useVideosAllQuery(undefined, 10);
   const playlists = usePlaylistsAllQuery(undefined, 20);
   const tags = useTagsAllQuery();
 
@@ -16,7 +16,7 @@ function HomePage() {
       <Grid item xs={12}>
         <Typography variant="h6">Nejnovější videa</Typography>
         <Grid container spacing={1} p={2} sx={{ overflow: 'hidden', gridRow: 1 }}>
-          <VideoInlineList videos={videos.data} showChannel />
+          <VideoInlineList videos={videos.data} />
         </Grid>
       </Grid>
       <Grid item xs={12} md={3}>

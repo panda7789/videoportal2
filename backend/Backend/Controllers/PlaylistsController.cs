@@ -38,9 +38,10 @@ namespace Backend.Controllers
             }
             return await 
                 _context.Playlists
-                    .Where(x => x.IdOwner == userId)
                     .Include(x => x.Owner)
+                    .Where(x => x.Owner.Id == userId)
                     .Include(x => x.Videos)
+                                           .AsNoTracking()
                     .Select(x => x.ToDTO())
                     .ToListAsync();
         }
@@ -108,8 +109,8 @@ namespace Backend.Controllers
             var playlist = await 
                 _context.Playlists
                     .Where(x => x.Id == id)
-                    .Include(x => x.Owner)
                     .Include(x => x.Videos)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync();
 
             if (playlist == null)
@@ -130,7 +131,7 @@ namespace Backend.Controllers
                 return Unauthorized();
             }
             var playlistDB = await _context.Playlists.FindAsync(id);
-            if (playlistDB == null || playlistDB.IdOwner != userId)
+            if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
                 return NotFound();
             }
@@ -160,7 +161,7 @@ namespace Backend.Controllers
                 return Unauthorized();
             }
             var playlistDB = await _context.Playlists.Where(x => x.Id == id).Include(x => x.Videos).FirstOrDefaultAsync();
-            if (playlistDB == null || playlistDB.IdOwner != userId)
+            if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
                 return NotFound();
             }
@@ -196,7 +197,7 @@ namespace Backend.Controllers
             }
             var playlistDB = new Playlist
             {
-                IdOwner = userId ?? Guid.Empty,
+                Owner = User.GetUser(_context),
                 CreatedTimestamp = DateTime.UtcNow,
                 Description = playlist.Description,
                 Videos = playlist.Videos,
@@ -228,7 +229,7 @@ namespace Backend.Controllers
                 return Unauthorized();
             }
             var playlistDB = await _context.Playlists.FindAsync(id);
-            if (playlistDB == null || playlistDB.IdOwner != userId)
+            if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
                 return NotFound();
             }
@@ -239,11 +240,18 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        public void AddVideoToPlaylist(Guid playlistId, Video video)
+        public static void AddVideoToPlaylist(MyDbContext _context, Guid playlistId, Video video)
         {
             var playlist = _context.Playlists.Single(x => x.Id == playlistId);
             playlist.Videos ??= new List<Video>();
             playlist.Videos.Add(video);
+            _context.SaveChanges();
+        }
+        public static void RemoveVideoFromPlaylist(MyDbContext _context, Guid playlistId, Video video)
+        {
+            var playlist = _context.Playlists.Single(x => x.Id == playlistId);
+            playlist.Videos ??= new List<Video>();
+            playlist.Videos.Remove(video);
             _context.SaveChanges();
         }
     }

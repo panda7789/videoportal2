@@ -32,6 +32,7 @@ interface Props {
   showAvatar?: boolean;
   showStats?: boolean;
   showTags?: boolean;
+  showActions?: boolean;
   withPlayer?: boolean;
   currentlyPlaying?: boolean;
   urlParams?: string;
@@ -46,6 +47,7 @@ function VideoCard({
   showChannel,
   showStats,
   showTags,
+  showActions,
   withPlayer,
   currentlyPlaying,
   urlParams,
@@ -177,17 +179,15 @@ function VideoCard({
                   variant="subtitle2"
                   component="div"
                   width="100%"
-                  height={fullWidth ? 24 : 'auto'}
                   textOverflow="ellipsis"
                   overflow="hidden"
                   display="-webkit-box"
-                  pb="4px"
                   pt={1}
                   sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
                 >
                   {name}
                 </Typography>
-                {userContext?.user && (
+                {(showActions ?? true) && userContext?.user && (
                   <DropDownMenu actions={dropdownActions} icon={<MoreVertIcon />} />
                 )}
               </Box>
@@ -213,36 +213,25 @@ function VideoCard({
                   </Typography>
                 </Box>
               )}
-              {(showTags ?? true) && video.tags?.length && <ChipLine chipData={video.tags} />}
+              {(showTags ?? true) && video.tags?.length && (
+                <ChipLine chipData={video.tags} smaller={showChannel ?? false} />
+              )}
             </Box>
-            {(showChannel ?? true) && (
+            {(showChannel ?? false) && (
               <Box
                 display="flex"
                 alignItems="center"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/${Route.channel}/${video.channelId}`);
-                }}
                 sx={{
                   textDecoration: 'none',
                   color: 'unset',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                  },
                   borderRadius: '15px',
                   zIndex: 999,
                   cursor: 'pointer',
                 }}
               >
-                {(showAvatar ?? true) && (
-                  <ChannelAvatar
-                    imageSrc={ApiPath(video?.channelAvatarUrl)}
-                    avatarInitials={video.channelName}
-                  />
-                )}
-
+                {(showAvatar ?? true) && <ChannelAvatar avatarInitials={video.owner.initials} />}
                 <Typography paddingLeft={1} variant={smallThumbnail ? 'caption' : 'body1'}>
-                  {video.channelName}
+                  {video.owner.name}
                 </Typography>
               </Box>
             )}

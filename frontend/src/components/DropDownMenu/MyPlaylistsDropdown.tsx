@@ -17,7 +17,7 @@ export function MyPlaylistsDropdown({ defaultValue, required = false }: Props) {
     <TextField
       fullWidth
       name="playlistSelect"
-      select={(playlists.data?.length ?? 0) > 0}
+      select
       required={required}
       label="Playlist"
       value={value}

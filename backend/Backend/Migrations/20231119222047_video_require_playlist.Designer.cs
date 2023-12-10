@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231119222047_video_require_playlist")]
+    partial class video_require_playlist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,19 +59,19 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<Guid>("IdOwner")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("ThumbnailUrl")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("IdOwner");
 
                     b.ToTable("Playlists");
                 });
@@ -103,21 +106,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "1458ebe3-8a6f-4f91-a7fc-edcbbc7fe30a",
+                            ConcurrencyStamp = "87c2a4a4-7652-41b6-b4a5-d16d9bbd8558",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "566f726f-d87a-4e28-abfb-3d1ae217e592",
+                            ConcurrencyStamp = "6e3cf34f-af70-45c3-9eeb-f8a616e8223f",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "8de899b3-b76f-4419-8eae-881a61c68c33",
+                            ConcurrencyStamp = "03a00c6c-55d3-40e7-ab6a-58d016dcd060",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -220,13 +223,13 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f748976e-aa73-4176-bb1d-11e94ba29aa1",
+                            ConcurrencyStamp = "c0515990-fb96-4c36-8070-39d9124c69f9",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
                             LockoutEnabled = false,
                             Name = "Administrátor",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDGKpqO3ynTN30NiLtVWu9A/PmPCyHFcCfehBlvhheI2ilyvo4s8vnpq1Ir9yMwtvA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIknGxKZZqs2k3PJq7iv8GUwDKqOkD3d3whpCcTi9hDeJwSrHf9rEV0l9kCuJ0liRQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"
@@ -306,9 +309,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("UploadTimestamp")
                         .HasColumnType("datetime(6)");
 
@@ -318,8 +318,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MainPlaylistId");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Videos");
                 });
@@ -468,7 +466,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
+                        .HasForeignKey("IdOwner")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -524,15 +522,7 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("MainPlaylist");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

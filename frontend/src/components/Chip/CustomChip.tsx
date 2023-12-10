@@ -14,6 +14,7 @@ export interface Props {
   active?: boolean;
   linkTo?: string;
   link?: boolean;
+  smaller?: boolean;
 }
 
 function CustomChip({
@@ -26,6 +27,7 @@ function CustomChip({
   linkTo,
   link = true,
   active = false,
+  smaller = false,
 }: Props) {
   // eslint-disable-next-line no-param-reassign
   bgColor = bgColor ?? GetRandomColor();
@@ -43,11 +45,12 @@ function CustomChip({
         onClick={onClick}
         onDelete={onDelete}
         clickable
+        size={smaller ? 'small' : 'medium'}
         sx={{
           color,
           borderColor: bgColor,
           '&:hover': {
-            backgroundColor: `${bgColor}55`,
+            backgroundColor: `${bgColor}22`,
           },
           ...(active && {
             color: '#FFF',

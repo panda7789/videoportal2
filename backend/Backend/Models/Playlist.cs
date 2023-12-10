@@ -11,10 +11,7 @@ namespace Backend.Models
         public string? Description { get; set; }
         public string? ThumbnailUrl { get; set; }
         public ICollection<Video>? Videos { get; set; }
-        public virtual User Owner { get; set; }
-
-        [ForeignKey(nameof(Owner))]
-        public Guid IdOwner { get; set; }
+        public User Owner { get; set; }
 
         public PlaylistDTO ToDTO()
         {
@@ -25,7 +22,7 @@ namespace Backend.Models
                 CreatedTimestamp = CreatedTimestamp,
                 Description = Description,
                 Name = Name,
-                OwnerId = Owner.Id,
+                Owner = Owner.ToDTO(),
                 ThumbnailUrl = ThumbnailUrl,
                 TotalDuration = Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero
             };
@@ -41,7 +38,7 @@ namespace Backend.Models
         public string? Description { get; set; }
         public string? ThumbnailUrl { get; set; }
         public ICollection<VideoDTO>? Videos { get; set; }
-        public Guid OwnerId{ get; set; }
+        public UserDTO Owner { get; set; }
         public TimeSpan TotalDuration { get; set; }
     }
 

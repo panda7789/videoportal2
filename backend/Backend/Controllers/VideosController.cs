@@ -36,7 +36,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            IQueryable<Video> query = _context.Videos;
+            IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist);
 
             if (!string.IsNullOrEmpty(orderBy))
             {
@@ -90,6 +90,8 @@ namespace Backend.Controllers
             }
             var video = await _context.Videos
                     .Include(x => x.Tags)
+                    .Include(x => x.MainPlaylist)
+                       .AsNoTracking() 
                     .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
@@ -183,8 +185,13 @@ namespace Backend.Controllers
             _context.Entry(video).State = EntityState.Modified;
             video.Name = modifiedVideo.Name;
             video.Description = modifiedVideo.Description;
-            video.MainPlaylist = _context.Playlists.Single(x => x.Id == modifiedVideo.PlaylistId);
-            
+            if (video.MainPlaylist != null && video.MainPlaylist.Id != modifiedVideo.PlaylistId)
+            {
+                PlaylistsController.RemoveVideoFromPlaylist(_context, video.MainPlaylist.Id, video);
+                video.MainPlaylist = _context.Playlists.Single(x => x.Id == modifiedVideo.PlaylistId);
+                PlaylistsController.AddVideoToPlaylist(_context, modifiedVideo.PlaylistId, video);
+            }
+
             if (video.Tags?.Any() ?? false)
             {
                 video.Tags.Clear();
@@ -262,6 +269,7 @@ namespace Backend.Controllers
 
             var videoDB = new Video()
             {
+                Owner = User.GetUser(_context),
                 Name = video.Name,
                 Description = video.Description,
                 Duration = new TimeSpan(0,0,0, video.DurationSec, 0),
@@ -279,6 +287,7 @@ namespace Backend.Controllers
                 _context.Tags.Where(x => video.Tags.Contains(x.Name)).ToList().ForEach(x => videoDB.Tags.Add(x));
             }
             _context.Videos.Add(videoDB);
+            PlaylistsController.AddVideoToPlaylist(_context, video.PlaylistId, videoDB);
             await _context.SaveChangesAsync();
 
             return Ok(new PostVideoResponse() { DataUrl= videoGuid });
@@ -340,7 +349,6 @@ namespace Backend.Controllers
 
         private static async Task<string> SaveThumbnailAsync(Guid channelId, IFormFile image)
         {
-            // upload image
             string imageName = $"{channelId}[GUID].{image.FileName.Split(".")[1]}";
             return await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, imageName, image);
         }

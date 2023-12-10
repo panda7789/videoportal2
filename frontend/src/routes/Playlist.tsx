@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { Alert, Button, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { Link, useLoaderData } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -14,7 +14,6 @@ import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
 import { usePlaylistsPOSTMutation, usePlaylistsPUTMutation } from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
-import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown';
 import { playlistParams, videoUrl } from 'model/Video';
 
 export const loader = ({ params }: { params: any }) => {
@@ -50,7 +49,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   };
 
   useEffect(() => {
-    setCanEdit(playlistProp?.ownerId === userContext?.user?.id ?? 0);
+    setCanEdit(playlistProp?.owner.id === userContext?.user?.id ?? 0);
   }, [playlistProp, userContext]);
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();

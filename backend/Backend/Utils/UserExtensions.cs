@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Backend.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Backend.Utils
@@ -13,6 +14,11 @@ namespace Backend.Utils
                 return null;
             }
             return new Guid(userId);
+        }
+        
+        public static User GetUser(this ClaimsPrincipal user, MyDbContext _context)
+        {
+            return _context.Users.Find(user.GetUserId());
         }
     }
 }

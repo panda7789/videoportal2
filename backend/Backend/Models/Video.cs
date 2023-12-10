@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 namespace Backend.Models
@@ -30,8 +31,9 @@ namespace Backend.Models
         public DateTime UploadTimestamp { get; set; }
         public ICollection<Tag>? Tags { get; set; }
         public ICollection<Playlist>? Playlists { get; set; }
-        public Playlist? MainPlaylist { get; set; }
-
+        public Playlist MainPlaylist { get; set; }
+        public User Owner { get; set; }
+        
         public VideoDTO ToDTO()
         {
             return new VideoDTO()
@@ -46,14 +48,28 @@ namespace Backend.Models
                 DislikeCount = DislikeCount,
                 Views = Views,
                 UploadTimestamp = UploadTimestamp,
-                Tags = Tags,
-                MainPlaylist = MainPlaylist
+                Tags = Tags?.Select(x => x.ToDTO()).ToList(),
+                MainPlaylist = MainPlaylist?.ToDTO(),
+                Owner = Owner.ToDTO(),
             };
         }
     }
 
-    public class VideoDTO: Video
+    public class VideoDTO
     {
-
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string ImageUrl { get; set; }
+        public TimeSpan Duration { get; set; }
+        public string? Description { get; set; }
+        public string DataUrl { get; set; }
+        public int LikeCount { get; set; }
+        public int DislikeCount { get; set; }
+        public int Views { get; set; }
+        public DateTime UploadTimestamp { get; set; }
+        public ICollection<TagDTO>? Tags { get; set; }
+        public ICollection<PlaylistDTO>? Playlists { get; set; }
+        public PlaylistDTO MainPlaylist { get; set; }
+        public UserDTO Owner { get; set; }
     }
 }
