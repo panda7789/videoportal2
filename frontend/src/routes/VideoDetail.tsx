@@ -2,7 +2,6 @@
 import {
   Avatar,
   Button,
-  Collapse,
   Divider,
   Grid,
   IconButton,
@@ -27,7 +26,6 @@ import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
 import { CommentPostDTO, VideoDTO as Video } from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';
-import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { AxiosQuery } from 'api';
 import {
   useCommentsAllQuery,
@@ -61,7 +59,7 @@ function VideoDetail() {
   const userVideoStatsMutation = useWatchedMutation(video.id);
   const userVideoStatsQuery = useUserVideoStatsGETQuery({ videoId: video.id });
   const mainPlaylistDetailsQuery = usePlaylistsGETQuery({
-    id: searchParams.get('playlist') ?? video.mainPlaylist.id,
+    id: searchParams.get('playlist') ?? video.mainPlaylistId,
   });
   const commentMutation = useCommentsPOSTMutation({
     onSuccess: () => {
@@ -204,14 +202,13 @@ function VideoDetail() {
                 <Box
                   display="flex"
                   component={Link}
-                  to={`/${Route.playlist}/${video.mainPlaylist.id}`}
+                  to={`/${Route.playlist}/${video.mainPlaylistId}`}
                   mt={2}
                   ml="10px"
                   mr={2}
                   alignItems="center"
                 >
-                  <ChannelAvatar avatarInitials={video.mainPlaylist.owner.initials} large />
-                  <Typography paddingLeft={1}>{video.mainPlaylist.name}</Typography>
+                  <Typography paddingLeft={1}>{video.mainPlaylistName}</Typography>
                 </Box>
               </Grid>
             </Grid>

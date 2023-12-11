@@ -5,7 +5,6 @@ import {
   TextField,
   Box,
   Button,
-  MenuItem,
   LinearProgress,
   FormLabel,
   Alert,
@@ -260,7 +259,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>
-              <MyPlaylistsDropdown defaultValue={video?.mainPlaylist?.id} required />
+              <MyPlaylistsDropdown defaultValue={video?.mainPlaylistId} required />
             </Grid>
             <Grid item xs={12}>
               <TextField

@@ -46,8 +46,12 @@ export async function searchTags(tags: string[]): Promise<VideoDTO[]> {
   return [];
 }
 
+export function videoUrlId(id: string) {
+  return `/${Route.video}/${id}`;
+}
+
 export function videoUrl(video: VideoDTO) {
-  return `/${Route.video}/${video.id}`;
+  return videoUrlId(video.id);
 }
 
 export function playlistParams(playlist: PlaylistModel, index: number) {

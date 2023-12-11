@@ -13,34 +13,58 @@ namespace Backend.Models
         public ICollection<Video>? Videos { get; set; }
         public User Owner { get; set; }
 
+        public PlaylistBasicInfoDTO ToBasicDTO()
+        {
+            return new PlaylistBasicInfoDTO(
+                Id: Id,
+                CreatedTimestamp: CreatedTimestamp,
+                Description: Description,
+                Name: Name,
+                Owner: Owner.ToDTO(),
+                ThumbnailUrl: ThumbnailUrl,
+                FirstVideoThumbnailUrl: Videos?.Any() ?? false ? Videos.First().ImageUrl : null,
+                FirstVideoId: Videos?.Any() ?? false ? Videos.First().Id : null,
+                VideoCount: Videos?.Count ?? 0,
+                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero);
+        }
+
         public PlaylistDTO ToDTO()
         {
-            return new PlaylistDTO()
-            {
-                Videos = Videos?.Any() ?? false ? Videos.Select(x => x.ToDTO()).ToList() : null,  
-                Id = Id,
-                CreatedTimestamp = CreatedTimestamp,
-                Description = Description,
-                Name = Name,
-                Owner = Owner.ToDTO(),
-                ThumbnailUrl = ThumbnailUrl,
-                TotalDuration = Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero
-            };
-            
+            return new PlaylistDTO(
+                Videos: (Videos?.Any() ?? false) ? Videos.Select(x => x.ToDTO()).ToList() : null,
+                Id: Id,
+                CreatedTimestamp: CreatedTimestamp,
+                Description: Description,
+                Name: Name,
+                Owner: Owner.ToDTO(),
+                ThumbnailUrl: ThumbnailUrl,
+                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero
+            );
         }
     }
 
-    public class PlaylistDTO
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedTimestamp { get; set; }
-        public string? Description { get; set; }
-        public string? ThumbnailUrl { get; set; }
-        public ICollection<VideoDTO>? Videos { get; set; }
-        public UserDTO Owner { get; set; }
-        public TimeSpan TotalDuration { get; set; }
-    }
+    public record PlaylistBasicInfoDTO(
+         Guid Id,
+        string Name,
+        DateTime CreatedTimestamp,
+        string? Description,
+        string? ThumbnailUrl,
+        string? FirstVideoThumbnailUrl,
+        Guid? FirstVideoId,
+        UserDTO Owner,
+        TimeSpan TotalDuration,
+        int VideoCount);
+
+    public record PlaylistDTO(
+        Guid Id,
+        string Name,
+        DateTime CreatedTimestamp,
+        string? Description,
+        string? ThumbnailUrl,
+        ICollection<VideoDTO>? Videos,
+        UserDTO Owner,
+        TimeSpan TotalDuration
+    );
 
     public class PlaylistPostPutDTO
     {

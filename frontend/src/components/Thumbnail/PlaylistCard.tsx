@@ -6,13 +6,13 @@ import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { videoUrl, playlistParams } from 'model/Video';
+import { videoUrl, playlistParams, videoUrlId } from 'model/Video';
 import { Route } from 'routes/RouteNames';
-import { PlaylistDTO } from 'api/axios-client';
+import { PlaylistBasicInfoDTO } from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';
 
 export interface Props {
-  playlist: PlaylistDTO;
+  playlist: PlaylistBasicInfoDTO;
   fullWidth?: boolean;
   smallThumbnail?: boolean;
 }
@@ -24,8 +24,8 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
         container
         component={Link}
         to={
-          playlist?.videos?.length
-            ? videoUrl(playlist?.videos[0]) + playlistParams(playlist, 0)
+          playlist?.firstVideoId
+            ? videoUrlId(playlist?.firstVideoId) + playlistParams(playlist, 0)
             : `/${Route.playlist}/${playlist?.id}`
         }
         style={{ textDecoration: 'none' }}
@@ -57,11 +57,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 draggable={false}
                 sx={{ maxHeight: '100%', width: '100%', objectFit: 'cover' }}
                 image={ApiPath(
-                  playlist?.thumbnailUrl
-                    ? playlist.thumbnailUrl
-                    : playlist?.videos?.length
-                    ? playlist?.videos[0].imageUrl
-                    : undefined,
+                  playlist?.thumbnailUrl ? playlist.thumbnailUrl : playlist.firstVideoThumbnailUrl,
                 )}
                 alt="Náhled playlistu"
               />
@@ -100,7 +96,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
               justifyContent="center"
               flexDirection="column"
             >
-              <Typography variant="body1">{playlist?.videos?.length ?? 0}</Typography>
+              <Typography variant="body1">{playlist.videoCount}</Typography>
               <PlaylistPlayIcon />
             </Box>
           </Grid>

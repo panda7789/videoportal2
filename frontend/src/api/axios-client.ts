@@ -264,6 +264,81 @@ export interface IPlaylist {
     owner: User;
 }
 
+export class PlaylistBasicInfoDTO implements IPlaylistBasicInfoDTO {
+    id!: string;
+    name!: string;
+    createdTimestamp!: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    firstVideoThumbnailUrl?: string | undefined;
+    firstVideoId?: string | undefined;
+    owner!: UserDTO;
+    totalDuration!: string;
+    videoCount!: number;
+
+    constructor(data?: IPlaylistBasicInfoDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.owner = new UserDTO();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.createdTimestamp = _data["createdTimestamp"] ? new Date(_data["createdTimestamp"].toString()) : <any>undefined;
+            this.description = _data["description"];
+            this.thumbnailUrl = _data["thumbnailUrl"];
+            this.firstVideoThumbnailUrl = _data["firstVideoThumbnailUrl"];
+            this.firstVideoId = _data["firstVideoId"];
+            this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
+            this.totalDuration = _data["totalDuration"];
+            this.videoCount = _data["videoCount"];
+        }
+    }
+
+    static fromJS(data: any): PlaylistBasicInfoDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlaylistBasicInfoDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["createdTimestamp"] = this.createdTimestamp ? this.createdTimestamp.toISOString() : <any>undefined;
+        data["description"] = this.description;
+        data["thumbnailUrl"] = this.thumbnailUrl;
+        data["firstVideoThumbnailUrl"] = this.firstVideoThumbnailUrl;
+        data["firstVideoId"] = this.firstVideoId;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["totalDuration"] = this.totalDuration;
+        data["videoCount"] = this.videoCount;
+        return data;
+    }
+}
+
+export interface IPlaylistBasicInfoDTO {
+    id: string;
+    name: string;
+    createdTimestamp: Date;
+    description?: string | undefined;
+    thumbnailUrl?: string | undefined;
+    firstVideoThumbnailUrl?: string | undefined;
+    firstVideoId?: string | undefined;
+    owner: UserDTO;
+    totalDuration: string;
+    videoCount: number;
+}
+
 export class PlaylistDTO implements IPlaylistDTO {
     id!: string;
     name!: string;
@@ -897,7 +972,8 @@ export class VideoDTO implements IVideoDTO {
     uploadTimestamp!: Date;
     tags?: TagDTO[] | undefined;
     playlists?: PlaylistDTO[] | undefined;
-    mainPlaylist!: PlaylistDTO;
+    mainPlaylistId!: string;
+    mainPlaylistName!: string;
     owner!: UserDTO;
 
     constructor(data?: IVideoDTO) {
@@ -908,7 +984,6 @@ export class VideoDTO implements IVideoDTO {
             }
         }
         if (!data) {
-            this.mainPlaylist = new PlaylistDTO();
             this.owner = new UserDTO();
         }
     }
@@ -935,7 +1010,8 @@ export class VideoDTO implements IVideoDTO {
                 for (let item of _data["playlists"])
                     this.playlists!.push(PlaylistDTO.fromJS(item));
             }
-            this.mainPlaylist = _data["mainPlaylist"] ? PlaylistDTO.fromJS(_data["mainPlaylist"]) : new PlaylistDTO();
+            this.mainPlaylistId = _data["mainPlaylistId"];
+            this.mainPlaylistName = _data["mainPlaylistName"];
             this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
         }
     }
@@ -969,7 +1045,8 @@ export class VideoDTO implements IVideoDTO {
             for (let item of this.playlists)
                 data["playlists"].push(item.toJSON());
         }
-        data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
+        data["mainPlaylistId"] = this.mainPlaylistId;
+        data["mainPlaylistName"] = this.mainPlaylistName;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         return data;
     }
@@ -988,7 +1065,8 @@ export interface IVideoDTO {
     uploadTimestamp: Date;
     tags?: TagDTO[] | undefined;
     playlists?: PlaylistDTO[] | undefined;
-    mainPlaylist: PlaylistDTO;
+    mainPlaylistId: string;
+    mainPlaylistName: string;
     owner: UserDTO;
 }
 
@@ -1177,7 +1255,7 @@ export function initPersister() {
   
   addResultTypeFactory('Client___commentsAll', (data: any) => { const result = new CommentDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___myPlaylists', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___playlistsAll', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___playlistsAll', (data: any) => { const result = new PlaylistBasicInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___playlistsGET', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsWithVideos', (data: any) => { const result = new Tag(); result.init(data); return result; });

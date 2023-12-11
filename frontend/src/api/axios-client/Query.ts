@@ -458,13 +458,13 @@ else if (offset !== undefined)
   return url_;
 }
 
-let playlistsAllDefaultOptions: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> = {
+let playlistsAllDefaultOptions: UseQueryOptions<Types.PlaylistBasicInfoDTO[], unknown, Types.PlaylistBasicInfoDTO[]> = {
   queryFn: __playlistsAll,
 };
-export function getPlaylistsAllDefaultOptions(): UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> {
+export function getPlaylistsAllDefaultOptions(): UseQueryOptions<Types.PlaylistBasicInfoDTO[], unknown, Types.PlaylistBasicInfoDTO[]> {
   return playlistsAllDefaultOptions;
 };
-export function setPlaylistsAllDefaultOptions(options: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]>) {
+export function setPlaylistsAllDefaultOptions(options: UseQueryOptions<Types.PlaylistBasicInfoDTO[], unknown, Types.PlaylistBasicInfoDTO[]>) {
   playlistsAllDefaultOptions = options;
 }
 
@@ -494,16 +494,16 @@ function __playlistsAll(context: QueryFunctionContext) {
       context.queryKey[2] as string | undefined,       context.queryKey[3] as number | undefined,       context.queryKey[4] as number | undefined    );
 }
 
-export function usePlaylistsAllQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(dto: PlaylistsAllQueryParameters, options?: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function usePlaylistsAllQuery<TSelectData = Types.PlaylistBasicInfoDTO[], TError = unknown>(dto: PlaylistsAllQueryParameters, options?: UseQueryOptions<Types.PlaylistBasicInfoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
  * @return Success
  */
-export function usePlaylistsAllQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function usePlaylistsAllQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData> | undefined = undefined;
+export function usePlaylistsAllQuery<TSelectData = Types.PlaylistBasicInfoDTO[], TError = unknown>(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: UseQueryOptions<Types.PlaylistBasicInfoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function usePlaylistsAllQuery<TSelectData = Types.PlaylistBasicInfoDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.PlaylistBasicInfoDTO[], TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
   let orderBy: any = undefined;
   let limit: any = undefined;
@@ -526,10 +526,10 @@ export function usePlaylistsAllQuery<TSelectData = Types.PlaylistDTO[], TError =
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.PlaylistDTO[], TError, TSelectData>({
+  return useQuery<Types.PlaylistBasicInfoDTO[], TError, TSelectData>({
     queryFn: __playlistsAll,
     queryKey: playlistsAllQueryKey(orderBy, limit, offset),
-    ...playlistsAllDefaultOptions as unknown as UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>,
+    ...playlistsAllDefaultOptions as unknown as UseQueryOptions<Types.PlaylistBasicInfoDTO[], TError, TSelectData>,
     ...options,
   });
 }
@@ -539,7 +539,7 @@ export function usePlaylistsAllQuery<TSelectData = Types.PlaylistDTO[], TError =
  * @param offset (optional) 
  * @return Success
  */
-export function setPlaylistsAllData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[], orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined) {
+export function setPlaylistsAllData(queryClient: QueryClient, updater: (data: Types.PlaylistBasicInfoDTO[] | undefined) => Types.PlaylistBasicInfoDTO[], orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined) {
   queryClient.setQueryData(playlistsAllQueryKey(orderBy, limit, offset),
     updater
   );
@@ -551,7 +551,7 @@ export function setPlaylistsAllData(queryClient: QueryClient, updater: (data: Ty
  * @param offset (optional) 
  * @return Success
  */
-export function setPlaylistsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[]) {
+export function setPlaylistsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistBasicInfoDTO[] | undefined) => Types.PlaylistBasicInfoDTO[]) {
   queryClient.setQueryData(queryKey, updater);
 }
     

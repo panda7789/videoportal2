@@ -36,40 +36,39 @@ namespace Backend.Models
         
         public VideoDTO ToDTO()
         {
-            return new VideoDTO()
-            {
-                Id = Id,
-                Name = Name,
-                ImageUrl = ImageUrl,
-                Duration = Duration,
-                Description = Description,
-                DataUrl = DataUrl,
-                LikeCount = LikeCount,
-                DislikeCount = DislikeCount,
-                Views = Views,
-                UploadTimestamp = UploadTimestamp,
-                Tags = Tags?.Select(x => x.ToDTO()).ToList(),
-                MainPlaylist = MainPlaylist?.ToDTO(),
-                Owner = Owner.ToDTO(),
-            };
+            return new VideoDTO(
+                Id: Id,
+                Name: Name,
+                ImageUrl: ImageUrl,
+                Duration: Duration,
+                Description: Description,
+                DataUrl: DataUrl,
+                LikeCount: LikeCount,
+                DislikeCount: DislikeCount,
+                Views: Views,
+                UploadTimestamp: UploadTimestamp,
+                Tags: Tags?.Select(x => x.ToDTO()).ToList(),
+                Playlists: null,
+                MainPlaylistId: MainPlaylist.Id,
+                MainPlaylistName: MainPlaylist.Name,
+                Owner: Owner.ToDTO());
         }
     }
 
-    public class VideoDTO
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string ImageUrl { get; set; }
-        public TimeSpan Duration { get; set; }
-        public string? Description { get; set; }
-        public string DataUrl { get; set; }
-        public int LikeCount { get; set; }
-        public int DislikeCount { get; set; }
-        public int Views { get; set; }
-        public DateTime UploadTimestamp { get; set; }
-        public ICollection<TagDTO>? Tags { get; set; }
-        public ICollection<PlaylistDTO>? Playlists { get; set; }
-        public PlaylistDTO MainPlaylist { get; set; }
-        public UserDTO Owner { get; set; }
-    }
+    public record VideoDTO(
+        Guid Id,
+        string Name,
+        string ImageUrl,
+        TimeSpan Duration,
+        string? Description,
+        string DataUrl,
+        int LikeCount,
+        int DislikeCount,
+        int Views,
+        DateTime UploadTimestamp,
+        ICollection<TagDTO>? Tags,
+        ICollection<PlaylistDTO>? Playlists,
+        Guid MainPlaylistId,
+        string MainPlaylistName,
+        UserDTO Owner);
 }

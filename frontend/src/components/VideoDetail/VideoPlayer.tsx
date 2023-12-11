@@ -18,6 +18,10 @@ export function VideoPlayer({ videoSrc, autoplay, muted, triggerWatched, watched
   const usercontext = useContext(UserContext);
 
   useEffect(() => {
+    playerRef.current?.src(videoSrc);
+  }, [videoSrc]);
+
+  useEffect(() => {
     if (!playerRef.current) {
       const videoElement = document.createElement('video-js');
       videoElement.className = 'video-js vjs-16-9 vjs-big-play-centered';

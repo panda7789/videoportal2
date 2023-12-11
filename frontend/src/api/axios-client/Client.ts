@@ -300,7 +300,7 @@ function processMyPlaylists(response: AxiosResponse): Promise<Types.PlaylistDTO[
  * @param offset (optional) 
  * @return Success
  */
-export function playlistsAll(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO[]> {
+export function playlistsAll(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistBasicInfoDTO[]> {
     let url_ = getBaseUrl() + "/api/Playlists?";
     if (orderBy === null)
         throw new Error("The parameter 'orderBy' cannot be null.");
@@ -337,7 +337,7 @@ export function playlistsAll(orderBy?: string | undefined, limit?: number | unde
     });
 }
 
-function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistDTO[]> {
+function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistBasicInfoDTO[]> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -354,18 +354,18 @@ function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistDTO
         if (Array.isArray(resultData200)) {
             result200 = [] as any;
             for (let item of resultData200)
-                result200!.push(Types.PlaylistDTO.fromJS(item));
+                result200!.push(Types.PlaylistBasicInfoDTO.fromJS(item));
         }
         else {
             result200 = <any>null;
         }
-        return Promise.resolve<Types.PlaylistDTO[]>(result200);
+        return Promise.resolve<Types.PlaylistBasicInfoDTO[]>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PlaylistDTO[]>(null as any);
+    return Promise.resolve<Types.PlaylistBasicInfoDTO[]>(null as any);
 }
 
 /**

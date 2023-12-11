@@ -48,7 +48,7 @@ namespace Backend.Controllers
 
         // GET: api/Playlists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlaylistDTO>>> GetPlaylists([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
+        public async Task<ActionResult<IEnumerable<PlaylistBasicInfoDTO>>> GetPlaylists([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
         {
             if (_context.Playlists == null)
             {
@@ -95,7 +95,7 @@ namespace Backend.Controllers
             {
                 query = query.Skip(offset.Value);
             }
-            return await query.Include(x => x.Owner).Select(x => x.ToDTO()).ToListAsync();
+            return await query.Include(x => x.Videos).Include(x => x.Owner).Select(x => x.ToBasicDTO()).ToListAsync();
         }
 
         // GET: api/Playlists/5

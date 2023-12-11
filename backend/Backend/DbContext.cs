@@ -67,6 +67,7 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
             .WithMany(e => e.Videos);
         builder.Entity<Video>()
             .HasOne(e => e.MainPlaylist);
+        builder.Entity<Video>().Navigation(e => e.MainPlaylist).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Tags).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Owner).AutoInclude();
         builder.Entity<Playlist>().Navigation(e => e.Owner).AutoInclude();

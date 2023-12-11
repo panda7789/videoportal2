@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { Card, CardMedia, CardContent, Typography, Grid, Button } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
 import React, { useContext } from 'react';
 import { Video, videoUrl } from 'model/Video';
 import DropDownMenu, {
@@ -8,11 +8,9 @@ import DropDownMenu, {
 } from 'components/DropDownMenu/DropDownMenu';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
@@ -54,7 +52,6 @@ function VideoCard({
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
   const userContext = useContext(UserContext);
-  const navigate = useNavigate();
 
   const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
