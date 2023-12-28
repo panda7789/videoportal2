@@ -80,6 +80,7 @@ export function MyVideos() {
     },
     {
       label: 'Smazat',
+      color: 'error',
       icon: <DeleteIcon />,
       onClick: (selectedIDs: readonly string[]) => {
         setStatusText(undefined);

@@ -61,7 +61,7 @@ function VideoCard({
   ];
 
   return (
-    <Grid container style={{ textDecoration: 'none' }}>
+    <Grid container style={{ textDecoration: 'none', height: '100%' }}>
       <Card
         variant="outlined"
         sx={{
@@ -76,8 +76,16 @@ function VideoCard({
       >
         <Grid
           item
-          xs={fullWidth ? (smallThumbnail ? 3.5 : 4) : 12}
-          sx={{ position: 'relative', ...(fullWidth && { display: 'flex' }) }}
+          //xs={fullWidth ? (smallThumbnail ? 3.5 : 4) : 12}
+          sx={{
+            aspectRatio: '16 / 9',
+            ...(smallThumbnail &&
+              {
+                //width: '50%',
+              }),
+            position: 'relative',
+            ...(fullWidth && { display: 'flex' }),
+          }}
         >
           {withPlayer ? (
             <VideoPlayer videoSrc="/sampleVideo.mp4" autoplay muted />
@@ -143,8 +151,8 @@ function VideoCard({
         </Grid>
         <Grid
           item
-          xs={fullWidth ? (smallThumbnail ? 9.5 : 8) : 12}
           display="flex"
+          flex={1}
           component={Link}
           to={`/${Route.video}/${id}`}
           style={{ textDecoration: 'none' }}

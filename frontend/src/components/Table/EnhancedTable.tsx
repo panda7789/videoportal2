@@ -22,6 +22,7 @@ import { ApiPath } from 'components/Utils/APIUtils';
 export interface ToolbarButton {
   label: string;
   icon: any;
+  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   onClick(selectedIDs?: readonly string[]): boolean | void;
 }
 interface TableDataBase {
@@ -161,6 +162,7 @@ function EnhancedTableToolbar({ selected, buttons, staticButtons }: EnhancedTabl
           key={button.label}
           startIcon={button.icon}
           variant="contained"
+          color={button?.color ?? 'primary'}
           onClick={() => button.onClick()}
         >
           {button.label}
@@ -175,6 +177,7 @@ function EnhancedTableToolbar({ selected, buttons, staticButtons }: EnhancedTabl
             sx={{ ml: '4px', mr: '4px' }}
             key={button.label}
             startIcon={button.icon}
+            color={button?.color ?? 'primary'}
             onClick={() => {
               button.onClick(selected);
             }}

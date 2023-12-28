@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
@@ -8,10 +8,12 @@ import { UserDTO } from 'api/axios-client';
 import { useUsersAllQuery } from 'api/axios-client/Query';
 import { AxiosQuery } from 'api';
 import { Route } from 'routes/RouteNames';
+import { Alert } from '@mui/material';
 
 // eslint-disable-next-line import/prefer-default-export
 export function UsersEdit() {
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState<string>();
   const usersQuery = useUsersAllQuery();
 
   const attributes: Attribute<UserDTO>[] = [
@@ -29,11 +31,17 @@ export function UsersEdit() {
   buttons.push({
     label: 'Smazat',
     icon: <DeleteIcon />,
+    color: 'error',
     onClick: (selectedIDs: readonly string[]) => {
       const promises = selectedIDs.map((x) => AxiosQuery.Client.usersDELETE(x));
-      Promise.all(promises).then(() => {
-        usersQuery.refetch();
-      });
+      Promise.all(promises)
+        .then(() => {
+          setStatusText('Uživatelé byli úspěšně smazáni.');
+          usersQuery.refetch();
+        })
+        .catch(() => {
+          setStatusText('Uživatele se nepodařilo smazat.');
+        });
     },
   });
 
@@ -56,6 +64,11 @@ export function UsersEdit() {
 
   return (
     <Box margin={4}>
+      {statusText && (
+        <Box mb={1}>
+          <Alert severity="info">{statusText}</Alert>
+        </Box>
+      )}
       {usersQuery?.data && (
         <EnhancedTable
           attributes={attributes}

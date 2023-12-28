@@ -90,9 +90,10 @@ export function InlineList({ children }: Props) {
           gridAutoColumns: 'minmax(280px, 1fr)',
           gap: '8px !important',
           width: '100%',
-          overflowX: 'scroll',
+          overflowX: 'auto',
           overflowY: 'hidden',
           scrollbarWidth: 'thin',
+          paddingBottom: '2px',
           '&::-webkit-scrollbar': {
             width: '10px',
             height: '0.3em',

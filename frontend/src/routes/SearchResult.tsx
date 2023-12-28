@@ -37,8 +37,16 @@ function SearchResult() {
               <React.Fragment key={i}>
                 {group?.items.map((video) => {
                   return (
-                    <Grid key={video.id} item xs={8}>
-                      <VideoCard key={video.id} video={video} fullWidth />
+                    <Grid key={video.id} item xs={8} alignItems="stretch" height="200px">
+                      <VideoCard
+                        key={video.id}
+                        video={video}
+                        fullWidth
+                        smallThumbnail
+                        showTags
+                        showChannel
+                        showDescription={false}
+                      />
                     </Grid>
                   );
                 })}

@@ -135,6 +135,8 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 display="flex"
                 alignItems="center"
                 component={Link}
+                ml={-0.5}
+                mr={-0.5}
                 to={`/${Route.playlist}/${playlist.id}`}
                 sx={{
                   textDecoration: 'none',
@@ -145,7 +147,9 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                   borderRadius: '15px',
                 }}
               >
-                <Typography variant="caption">Zobrazit playlist</Typography>
+                <Typography pl={0.5} pr={0.5} variant="caption">
+                  Zobrazit playlist
+                </Typography>
               </Box>
             </CardContent>
           </Grid>

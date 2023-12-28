@@ -4,8 +4,8 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import 'react-aspect-ratio/aspect-ratio.css';
 import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react-query';
-import { AxiosQuery } from 'api';
 import axios from 'axios';
+import { AxiosQuery } from './api';
 import App from './App';
 
 const container = document.getElementById('root');
@@ -22,7 +22,6 @@ AxiosQuery.setAxiosFactory(() => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
         config.beforeRedirect = (opts) => {
-          console.log('redirect!!!');
           opts.headers = {
             Authorization: `Bearer ${token}`,
           };

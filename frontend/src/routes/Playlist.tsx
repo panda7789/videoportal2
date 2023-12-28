@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { Alert, Button, Grid, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData, useNavigate } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
 import { VerticalList } from 'components/VerticalList/VerticalList';
@@ -12,9 +13,14 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { PlaylistDTO, VideoDTO } from 'api/axios-client';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
-import { usePlaylistsPOSTMutation, usePlaylistsPUTMutation } from 'api/axios-client/Query';
+import {
+  usePlaylistsDELETEMutation,
+  usePlaylistsPOSTMutation,
+  usePlaylistsPUTMutation,
+} from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
 import { playlistParams, videoUrl } from 'model/Video';
+import { Route } from 'routes/RouteNames';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
@@ -35,9 +41,19 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   const [canEdit, setCanEdit] = useState(false);
   const [imageToUpload, setImageToUpload] = useState<File>();
   const [statusText, setStatusText] = useState<string>();
+  const navigate = useNavigate();
 
   const createPlaylistMutation = usePlaylistsPOSTMutation();
   const updatePlaylistMutation = usePlaylistsPUTMutation(playlist.id);
+  const deletePlaylistMutation = usePlaylistsDELETEMutation(playlist.id, {
+    onSuccess: () => {
+      setStatusText('Playlist úspěšně smazán.');
+      setTimeout(() => navigate({ pathname: `/${Route.myPlaylists}` }), 2000);
+    },
+    onError: () => {
+      setStatusText(`Playlist se nepodařilo smazat.`);
+    },
+  });
   useLayoutEffect(() => ScrollToTop(), [playlist.id]);
 
   const onListDragEnd = (videos: VideoDTO[]) => {
@@ -108,7 +124,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
           position={{ xs: 'initial', md: 'fixed' }}
           width={{ xs: '100%', md: editMode ? 'calc(100%/2.5)' : 'calc(100%/4.4)' }}
         >
-          {statusText && editMode && <Alert severity="info">{statusText}</Alert>}
+          {statusText && <Alert severity="info">{statusText}</Alert>}
           <Box component="form" onSubmit={submitHandler}>
             {editMode && (
               <Box
@@ -162,13 +178,21 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                   Přehrát vše
                 </Button>
                 {canEdit && (
-                  <Button
-                    startIcon={<EditIcon />}
-                    variant="contained"
-                    onClick={() => toggleEditMode(true)}
-                  >
-                    Upravit
-                  </Button>
+                  <>
+                    <Button
+                      startIcon={<EditIcon />}
+                      variant="contained"
+                      onClick={() => toggleEditMode(true)}
+                    >
+                      Upravit
+                    </Button>
+                    <Button
+                      startIcon={<DeleteForeverIcon />}
+                      variant="contained"
+                      color="error"
+                      onClick={() => deletePlaylistMutation.mutate()}
+                    />
+                  </>
                 )}
               </Box>
             )}

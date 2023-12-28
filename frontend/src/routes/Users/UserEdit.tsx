@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   TextField,
   Checkbox,
@@ -8,6 +8,7 @@ import {
   Box,
   Grid,
   Typography,
+  Alert,
 } from '@mui/material';
 import { AxiosQuery } from 'api';
 import { User, UserRoles } from 'model/User';
@@ -29,6 +30,7 @@ export function UserEditor({ newUser = false }: Props) {
   let updateUserMutation: ReturnType<typeof useUsersPUTMutation> | undefined;
   let registerMutation: ReturnType<typeof useRegisterMutation> | undefined;
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState<string>();
   const user = useLoaderData() as User;
   if (newUser) {
     registerMutation = useRegisterMutation();
@@ -51,6 +53,7 @@ export function UserEditor({ newUser = false }: Props) {
       return;
     }
     event.preventDefault();
+    setStatusText(undefined);
     if (newUser) {
       registerMutation?.mutateAsync(
         new RegisterDTO({
@@ -59,8 +62,12 @@ export function UserEditor({ newUser = false }: Props) {
           password: passwordRef.current!.value,
         }),
         {
-          onSuccess: (result) => {},
-          onError: (error: any) => {},
+          onSuccess: () => {
+            setStatusText('Uživatel byl úspěšně vytvořen');
+          },
+          onError: () => {
+            setStatusText('Nepodařilo se vytvořit uživatele');
+          },
         },
       );
     } else {
@@ -75,7 +82,14 @@ export function UserEditor({ newUser = false }: Props) {
           user: viewerRef.current!.checked,
         }),
       });
-      updateUserMutation?.mutate(updatedUser);
+      updateUserMutation?.mutateAsync(updatedUser, {
+        onSuccess: () => {
+          setStatusText('Uživatel byl úspěšně upraven');
+        },
+        onError: () => {
+          setStatusText('Nepodařilo se upravit uživatele');
+        },
+      });
     }
   };
 
@@ -110,6 +124,9 @@ export function UserEditor({ newUser = false }: Props) {
         </Box>
       </Box>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          {statusText && <Alert severity="info">{statusText}</Alert>}
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Grid container spacing={3} paddingTop={3}>
             <Grid item xs={12}>

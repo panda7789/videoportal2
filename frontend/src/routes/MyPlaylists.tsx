@@ -59,12 +59,17 @@ export function MyPlaylists() {
         return value?.length.toString() ?? 0;
       },
     },
+    {
+      id: 'totalDuration',
+      label: 'Celková délka',
+    },
   ];
 
   const buttons: ToolbarButton[] = [];
   buttons.push({
     label: 'Smazat',
     icon: <DeleteIcon />,
+    color: 'error',
     onClick: (selectedIDs: readonly string[]) => {
       setStatusText(undefined);
       const promises = Promise.all(selectedIDs.map((id) => AxiosQuery.Client.playlistsDELETE(id)));
