@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Models
@@ -8,6 +10,13 @@ namespace Backend.Models
         public const string User = "USER";
         public const string Admin = "ADMIN";
         public const string Editor = "EDITOR";
+    }
+    public class RolesAttribute : AuthorizeAttribute
+    {
+        public RolesAttribute(params string[] roles)
+        {
+            Roles = string.Join(",", roles);
+        }
     }
 
     public class Role : IdentityRole<Guid> 
@@ -26,6 +35,7 @@ namespace Backend.Models
         public string Name { get; set; }
         public string Initials { get; set; }
         public UserRoles Roles { get; set; }
+        public virtual ICollection<UserGroup> UserGroups { get; set; }
 
         public UserDTO ToDTO() => new UserDTO
         {

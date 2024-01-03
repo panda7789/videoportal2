@@ -952,6 +952,343 @@ function processTagsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * @return Success
+ */
+export function userGroupsAll(config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO[]> {
+    let url_ = getBaseUrl() + "/api/UserGroups";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsAll,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsAll(_response);
+    });
+}
+
+function processUserGroupsAll(response: AxiosResponse): Promise<Types.UserGroupDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.UserGroupDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.UserGroupDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserGroupDTO[]>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function userGroupsPOST(body?: Types.UserGroupPostPutDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserGroup> {
+    let url_ = getBaseUrl() + "/api/UserGroups";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsPOST(_response);
+    });
+}
+
+function processUserGroupsPOST(response: AxiosResponse): Promise<Types.UserGroup> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.UserGroup.fromJS(resultData200);
+        return Promise.resolve<Types.UserGroup>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserGroup>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function myUsergroups(config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO[]> {
+    let url_ = getBaseUrl() + "/api/UserGroups/my-usergroups";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigMyUsergroups,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processMyUsergroups(_response);
+    });
+}
+
+function processMyUsergroups(response: AxiosResponse): Promise<Types.UserGroupDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.UserGroupDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.UserGroupDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserGroupDTO[]>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function userGroupsGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO> {
+    let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsGET,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsGET(_response);
+    });
+}
+
+function processUserGroupsGET(response: AxiosResponse): Promise<Types.UserGroupDTO> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.UserGroupDTO.fromJS(resultData200);
+        return Promise.resolve<Types.UserGroupDTO>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserGroupDTO>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function userGroupsPUT(id: string, body?: Types.UserGroupPostPutDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsPUT,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsPUT(_response);
+    });
+}
+
+function processUserGroupsPUT(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function userGroupsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsDELETE,
+        ...config,
+        method: "DELETE",
+        url: url_,
+        headers: {
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsDELETE(_response);
+    });
+}
+
+function processUserGroupsDELETE(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
  * @param body (optional) 
  * @return Success
  */
@@ -2248,6 +2585,72 @@ export function setTagsDELETERequestConfig(value: Partial<AxiosRequestConfig>) {
 }
 export function patchTagsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigTagsDELETE = patch(_requestConfigTagsDELETE ?? {});
+}
+
+let _requestConfigUserGroupsAll: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsAllRequestConfig() {
+  return _requestConfigUserGroupsAll;
+}
+export function setUserGroupsAllRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsAll = value;
+}
+export function patchUserGroupsAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsAll = patch(_requestConfigUserGroupsAll ?? {});
+}
+
+let _requestConfigUserGroupsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsPOSTRequestConfig() {
+  return _requestConfigUserGroupsPOST;
+}
+export function setUserGroupsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPOST = value;
+}
+export function patchUserGroupsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPOST = patch(_requestConfigUserGroupsPOST ?? {});
+}
+
+let _requestConfigMyUsergroups: Partial<AxiosRequestConfig> | undefined;
+export function getMyUsergroupsRequestConfig() {
+  return _requestConfigMyUsergroups;
+}
+export function setMyUsergroupsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigMyUsergroups = value;
+}
+export function patchMyUsergroupsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigMyUsergroups = patch(_requestConfigMyUsergroups ?? {});
+}
+
+let _requestConfigUserGroupsGET: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsGETRequestConfig() {
+  return _requestConfigUserGroupsGET;
+}
+export function setUserGroupsGETRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsGET = value;
+}
+export function patchUserGroupsGETRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsGET = patch(_requestConfigUserGroupsGET ?? {});
+}
+
+let _requestConfigUserGroupsPUT: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsPUTRequestConfig() {
+  return _requestConfigUserGroupsPUT;
+}
+export function setUserGroupsPUTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPUT = value;
+}
+export function patchUserGroupsPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPUT = patch(_requestConfigUserGroupsPUT ?? {});
+}
+
+let _requestConfigUserGroupsDELETE: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsDELETERequestConfig() {
+  return _requestConfigUserGroupsDELETE;
+}
+export function setUserGroupsDELETERequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsDELETE = value;
+}
+export function patchUserGroupsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsDELETE = patch(_requestConfigUserGroupsDELETE ?? {});
 }
 
 let _requestConfigLogin: Partial<AxiosRequestConfig> | undefined;

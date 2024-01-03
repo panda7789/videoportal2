@@ -608,6 +608,7 @@ export class User implements IUser {
     name!: string;
     initials!: string;
     roles!: UserRoles;
+    userGroups!: UserGroup[];
 
     constructor(data?: IUser) {
         if (data) {
@@ -618,6 +619,7 @@ export class User implements IUser {
         }
         if (!data) {
             this.roles = new UserRoles();
+            this.userGroups = [];
         }
     }
 
@@ -641,6 +643,11 @@ export class User implements IUser {
             this.name = _data["name"];
             this.initials = _data["initials"];
             this.roles = _data["roles"] ? UserRoles.fromJS(_data["roles"]) : new UserRoles();
+            if (Array.isArray(_data["userGroups"])) {
+                this.userGroups = [] as any;
+                for (let item of _data["userGroups"])
+                    this.userGroups!.push(UserGroup.fromJS(item));
+            }
         }
     }
 
@@ -671,6 +678,11 @@ export class User implements IUser {
         data["name"] = this.name;
         data["initials"] = this.initials;
         data["roles"] = this.roles ? this.roles.toJSON() : <any>undefined;
+        if (Array.isArray(this.userGroups)) {
+            data["userGroups"] = [];
+            for (let item of this.userGroups)
+                data["userGroups"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -694,6 +706,7 @@ export interface IUser {
     name: string;
     initials: string;
     roles: UserRoles;
+    userGroups: UserGroup[];
 }
 
 export class UserDTO implements IUserDTO {
@@ -749,6 +762,179 @@ export interface IUserDTO {
     email: string;
     initials: string;
     roles: UserRoles;
+}
+
+export class UserGroup implements IUserGroup {
+    id!: string;
+    name!: string;
+    users!: User[];
+    ownerGroupId?: string | undefined;
+
+    constructor(data?: IUserGroup) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.users = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(User.fromJS(item));
+            }
+            this.ownerGroupId = _data["ownerGroupId"];
+        }
+    }
+
+    static fromJS(data: any): UserGroup {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserGroup();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item.toJSON());
+        }
+        data["ownerGroupId"] = this.ownerGroupId;
+        return data;
+    }
+}
+
+export interface IUserGroup {
+    id: string;
+    name: string;
+    users: User[];
+    ownerGroupId?: string | undefined;
+}
+
+export class UserGroupDTO implements IUserGroupDTO {
+    id!: string;
+    name!: string;
+    users!: UserDTO[];
+    ownerGroupId?: string | undefined;
+
+    constructor(data?: IUserGroupDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.users = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserDTO.fromJS(item));
+            }
+            this.ownerGroupId = _data["ownerGroupId"];
+        }
+    }
+
+    static fromJS(data: any): UserGroupDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserGroupDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item.toJSON());
+        }
+        data["ownerGroupId"] = this.ownerGroupId;
+        return data;
+    }
+}
+
+export interface IUserGroupDTO {
+    id: string;
+    name: string;
+    users: UserDTO[];
+    ownerGroupId?: string | undefined;
+}
+
+export class UserGroupPostPutDTO implements IUserGroupPostPutDTO {
+    name!: string;
+    userIds!: string[];
+    ownerGroupId?: string | undefined;
+
+    constructor(data?: IUserGroupPostPutDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.userIds = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            if (Array.isArray(_data["userIds"])) {
+                this.userIds = [] as any;
+                for (let item of _data["userIds"])
+                    this.userIds!.push(item);
+            }
+            this.ownerGroupId = _data["ownerGroupId"];
+        }
+    }
+
+    static fromJS(data: any): UserGroupPostPutDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserGroupPostPutDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        if (Array.isArray(this.userIds)) {
+            data["userIds"] = [];
+            for (let item of this.userIds)
+                data["userIds"].push(item);
+        }
+        data["ownerGroupId"] = this.ownerGroupId;
+        return data;
+    }
+}
+
+export interface IUserGroupPostPutDTO {
+    name: string;
+    userIds: string[];
+    ownerGroupId?: string | undefined;
 }
 
 export class UserRoles implements IUserRoles {
@@ -1259,6 +1445,9 @@ export function initPersister() {
   addResultTypeFactory('Client___playlistsGET', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsWithVideos', (data: any) => { const result = new Tag(); result.init(data); return result; });
+  addResultTypeFactory('Client___userGroupsAll', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___myUsergroups', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___userGroupsGET', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersAll', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersGET', (data: any) => { const result = new UserDTO(); result.init(data); return result; });

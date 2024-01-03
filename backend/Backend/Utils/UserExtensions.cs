@@ -1,4 +1,5 @@
 ﻿using Backend.Models;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -15,10 +16,7 @@ namespace Backend.Utils
             }
             return new Guid(userId);
         }
-        
-        public static User GetUser(this ClaimsPrincipal user, MyDbContext _context)
-        {
-            return _context.Users.Find(user.GetUserId());
-        }
+
+        public static User GetUser(this ClaimsPrincipal user, MyDbContext context) => context.Users.Include(x => x.UserGroups).FirstOrDefault(x => x.Id == user.GetUserId());
     }
 }

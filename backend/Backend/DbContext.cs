@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Controllers;
+using Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -37,12 +38,24 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
             }
         });
 
+        builder.Entity<UserGroup>().HasData(new[]
+        {
+            new UserGroup()
+            {
+                Id = new Guid("1C1CA62B-EAF1-4E7A-9F19-CDD4CF52615A"),
+                Name = "Administrátoři",
+                OwnerGroupId = new Guid("1C1CA62B-EAF1-4E7A-9F19-CDD4CF52615A")
+            }
+        });
+
         builder.Entity<User>(u =>
         {
             var admin = new User
             {
                 Id = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D"),
                 Email = "admin@admin.cz",
+                NormalizedEmail = "admin@admin.cz",
+                NormalizedUserName = "admin@admin.cz",
                 UserName = "admin@admin.cz",
                 Name = "Administrátor",
                 Initials = "A",
@@ -58,9 +71,23 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
                     UserId = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D"),
                     User = true,
                     Administrator = true,
-                    VideoEditor=false
+                    VideoEditor = false
                 });
+            u.HasMany(e => e.UserGroups)
+            .WithMany(e => e.Users)
+            .UsingEntity(e => e.HasData(new
+            {
+                UserGroupsId = new Guid("1C1CA62B-EAF1-4E7A-9F19-CDD4CF52615A"),
+                UsersId = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D")
+            }));
         });
+
+        builder.Entity<IdentityUserRole<Guid>>().HasData(
+            new IdentityUserRole<Guid>()
+            {
+                RoleId = new Guid("EF1279C9-4E92-447F-8617-924E536BE6F1"),
+                UserId = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D")
+            });
 
         builder.Entity<Video>()
             .HasMany(e => e.Playlists)

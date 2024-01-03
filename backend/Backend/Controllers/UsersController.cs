@@ -87,7 +87,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleNames.Admin)]
+        [Roles(new[] { RoleNames.Admin, RoleNames.Editor })]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -95,9 +95,6 @@ namespace Backend.Controllers
 
             return Ok(userDtos);
         }
-
-        
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDTO userDto)
@@ -196,6 +193,7 @@ namespace Backend.Controllers
 
         public static async Task SeedUsers(UserManager<User> userManager)
         {
+            //TODO REMOVE
             //Check if it's already seeded
             if (userManager.FindByEmailAsync("admin@admin.cz").Result != null)
                 return;

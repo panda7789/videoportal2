@@ -26,6 +26,9 @@ import SearchResult from 'routes/SearchResult';
 import { TagEdit } from 'routes/TagEdit';
 import { MyPlaylists } from 'routes/MyPlaylists';
 import { Route } from 'routes/RouteNames';
+import { UserGroup } from 'api/axios-client';
+import { UserGroups } from 'routes/Users/UserGroups';
+import { UserGroupEdit, loader as groupsLoader } from 'routes/Users/UserGroupEdit';
 
 function App() {
   const router = createBrowserRouter([
@@ -101,6 +104,24 @@ function App() {
                   path: ':Id',
                   element: <PlaylistDetail />,
                   loader: playlistLoader,
+                },
+              ],
+            },
+            {
+              path: Route.groups,
+              children: [
+                {
+                  path: '',
+                  element: <UserGroups />,
+                },
+                {
+                  path: 'create',
+                  element: <UserGroupEdit newGroup />,
+                },
+                {
+                  path: ':Id',
+                  element: <UserGroupEdit />,
+                  loader: groupsLoader,
                 },
               ],
             },

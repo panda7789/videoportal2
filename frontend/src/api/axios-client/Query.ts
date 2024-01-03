@@ -84,6 +84,19 @@ export type TagsDELETEQueryParameters = {
 }
 
 
+export type UserGroupsGETQueryParameters = {
+  id: string ;
+}
+
+export type UserGroupsPUTQueryParameters = {
+  id: string ;
+}
+
+export type UserGroupsDELETEQueryParameters = {
+  id: string ;
+}
+
+
 
 export type UsersPUTQueryParameters = {
   id: string ;
@@ -1093,6 +1106,354 @@ export function useTagsDELETEMutationWithParameters<TContext>(options?: Omit<Use
   options = addMetaToOptions(options, metaContext);
   
 return useMutation((data: TagsDELETE__MutationParameters) => Client.tagsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
+}
+  
+export function userGroupsAllUrl(): string {
+  let url_ = getBaseUrl() + "/api/UserGroups";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let userGroupsAllDefaultOptions: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> = {
+  queryFn: __userGroupsAll,
+};
+export function getUserGroupsAllDefaultOptions(): UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> {
+  return userGroupsAllDefaultOptions;
+};
+export function setUserGroupsAllDefaultOptions(options: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]>) {
+  userGroupsAllDefaultOptions = options;
+}
+
+export function userGroupsAllQueryKey(): QueryKey;
+export function userGroupsAllQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'userGroupsAll',
+    ]);
+}
+function __userGroupsAll() {
+  return Client.userGroupsAll(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useUserGroupsAllQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useUserGroupsAllQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.UserGroupDTO[], TError, TSelectData>({
+    queryFn: __userGroupsAll,
+    queryKey: userGroupsAllQueryKey(),
+    ...userGroupsAllDefaultOptions as unknown as UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setUserGroupsAllData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[], ) {
+  queryClient.setQueryData(userGroupsAllQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setUserGroupsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+export function userGroupsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/UserGroups";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function userGroupsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'userGroupsPOST',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUserGroupsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext> {
+  const key = userGroupsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation((body: Types.UserGroupPostPutDTO) => Client.userGroupsPOST(body), {...options, mutationKey: key});
+}
+  
+export function myUsergroupsUrl(): string {
+  let url_ = getBaseUrl() + "/api/UserGroups/my-usergroups";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let myUsergroupsDefaultOptions: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> = {
+  queryFn: __myUsergroups,
+};
+export function getMyUsergroupsDefaultOptions(): UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> {
+  return myUsergroupsDefaultOptions;
+};
+export function setMyUsergroupsDefaultOptions(options: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]>) {
+  myUsergroupsDefaultOptions = options;
+}
+
+export function myUsergroupsQueryKey(): QueryKey;
+export function myUsergroupsQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'myUsergroups',
+    ]);
+}
+function __myUsergroups() {
+  return Client.myUsergroups(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useMyUsergroupsQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useMyUsergroupsQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.UserGroupDTO[], TError, TSelectData>({
+    queryFn: __myUsergroups,
+    queryKey: myUsergroupsQueryKey(),
+    ...myUsergroupsDefaultOptions as unknown as UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setMyUsergroupsData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[], ) {
+  queryClient.setQueryData(myUsergroupsQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setMyUsergroupsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+export function userGroupsGETUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let userGroupsGETDefaultOptions: UseQueryOptions<Types.UserGroupDTO, unknown, Types.UserGroupDTO> = {
+  queryFn: __userGroupsGET,
+};
+export function getUserGroupsGETDefaultOptions(): UseQueryOptions<Types.UserGroupDTO, unknown, Types.UserGroupDTO> {
+  return userGroupsGETDefaultOptions;
+};
+export function setUserGroupsGETDefaultOptions(options: UseQueryOptions<Types.UserGroupDTO, unknown, Types.UserGroupDTO>) {
+  userGroupsGETDefaultOptions = options;
+}
+
+export function userGroupsGETQueryKey(id: string): QueryKey;
+export function userGroupsGETQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as UserGroupsGETQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'userGroupsGET',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'userGroupsGET',
+        ...params
+      ]);
+  }
+}
+function __userGroupsGET(context: QueryFunctionContext) {
+  return Client.userGroupsGET(
+      context.queryKey[2] as string    );
+}
+
+export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError = unknown>(dto: UserGroupsGETQueryParameters, options?: UseQueryOptions<Types.UserGroupDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.UserGroupDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.UserGroupDTO, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as UserGroupsGETQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.UserGroupDTO, TError, TSelectData>({
+    queryFn: __userGroupsGET,
+    queryKey: userGroupsGETQueryKey(id),
+    ...userGroupsGETDefaultOptions as unknown as UseQueryOptions<Types.UserGroupDTO, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setUserGroupsGETData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO | undefined) => Types.UserGroupDTO, id: string) {
+  queryClient.setQueryData(userGroupsGETQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setUserGroupsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO | undefined) => Types.UserGroupDTO) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+export function userGroupsPUTUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function userGroupsPUTMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'userGroupsPUT',
+      id as any,
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUserGroupsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, Types.UserGroupPostPutDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.UserGroupPostPutDTO, TContext> {
+  const key = userGroupsPUTMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation((body: Types.UserGroupPostPutDTO) => Client.userGroupsPUT(id, body), {...options, mutationKey: key});
+}
+  
+type UserGroupsPUT__MutationParameters = UserGroupsPUTQueryParameters & {
+  body: Types.UserGroupPostPutDTO;
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUserGroupsPUTMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, UserGroupsPUT__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: UserGroupsPUTQueryParameters}): UseMutationResult<void, unknown, UserGroupsPUT__MutationParameters, TContext> {
+  const key = userGroupsPUTMutationKey(options?.parameters?.id!);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+return useMutation((data: UserGroupsPUT__MutationParameters) => Client.userGroupsPUT(data.id ?? options?.parameters?.id!, data.body), {...options, mutationKey: key});
+}
+  
+export function userGroupsDELETEUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/UserGroups/{id}";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function userGroupsDELETEMutationKey(id: string): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'userGroupsDELETE',
+      id as any,
+    ]);
+}
+
+/**
+ * @return Success
+ */
+export function useUserGroupsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = userGroupsDELETEMutationKey(id);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation(() => Client.userGroupsDELETE(id), {...options, mutationKey: key});
+}
+  
+type UserGroupsDELETE__MutationParameters = UserGroupsDELETEQueryParameters
+
+/**
+ * @return Success
+ */
+export function useUserGroupsDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, UserGroupsDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: UserGroupsDELETEQueryParameters}): UseMutationResult<void, unknown, UserGroupsDELETE__MutationParameters, TContext> {
+  const key = userGroupsDELETEMutationKey(options?.parameters?.id!);
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+return useMutation((data: UserGroupsDELETE__MutationParameters) => Client.userGroupsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
 export function loginUrl(): string {

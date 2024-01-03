@@ -9,4 +9,5 @@ export enum Route {
   users = 'users',
   video = 'video',
   videoEdit = 'video-edit',
+  groups = 'groups',
 }

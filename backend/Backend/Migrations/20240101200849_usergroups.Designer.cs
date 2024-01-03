@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240101200849_usergroups")]
+    partial class usergroups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,21 +106,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "d6feb9c8-fe40-41dc-af55-2af95abd711b",
+                            ConcurrencyStamp = "85e62747-1792-4036-b9ce-686f16050cad",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "33cc9402-6181-405e-9e2e-03cb37660e95",
+                            ConcurrencyStamp = "9e911cf1-da27-42b9-a12c-adf198f45cf7",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "eecab245-9084-42dd-bab8-eaea67fce79c",
+                            ConcurrencyStamp = "f2e32e50-5705-49fe-8632-898c8cf80ad4",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -215,7 +218,7 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7095f7b0-341e-4c6c-9084-6d2798e00319",
+                            ConcurrencyStamp = "9e3d336b-505e-4d15-8a94-c70773b5e6d8",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
@@ -223,7 +226,7 @@ namespace Backend.Migrations
                             Name = "Administrátor",
                             NormalizedEmail = "admin@admin.cz",
                             NormalizedUserName = "admin@admin.cz",
-                            PasswordHash = "AQAAAAEAACcQAAAAECpuFf8fFdok1jftFski76sRK4adLV83+ew5Ptv/B3b7XMByi9x7kZyKID6T3jOB5w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEM6kVIV6Wfl4b/aUpzo6zqfyu+RW1PuWA6xBOF41e0iESIMy1+dye5m70JKsGCHhMw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"
@@ -410,13 +413,6 @@ namespace Backend.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
-                            RoleId = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

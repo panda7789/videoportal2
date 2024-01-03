@@ -3,9 +3,8 @@ import React, { useContext } from 'react';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import theme from 'Theme';
 import HomeIcon from '@mui/icons-material/Home';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DatasetIcon from '@mui/icons-material/Dataset';
+import GroupIcon from '@mui/icons-material/Group';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { UserContext } from 'routes/Root';
 import { UserRoles } from 'api/axios-client';
@@ -26,6 +25,13 @@ export interface NavigationItem {
 export const NavigationItems: NavigationItem[] = [
   { route: '/', title: 'Domů', icon: <HomeIcon /> },
   {
+    route: `/${Route.upload}`,
+    title: 'Nahrát video',
+    icon: <CloudUploadIcon />,
+    signed: true,
+    userRole: ['videoEditor'],
+  },
+  {
     route: `/${Route.myVideos}`,
     title: 'Moje videa',
     icon: <AccountBoxIcon />, // todo gearbox
@@ -33,12 +39,13 @@ export const NavigationItems: NavigationItem[] = [
     userRole: ['videoEditor'],
   },
   {
-    route: `/${Route.upload}`,
-    title: 'Nahrát video',
-    icon: <CloudUploadIcon />,
+    route: `/${Route.myPlaylists}`,
+    title: 'Správa playlistů',
+    icon: <PlaylistPlayIcon />,
     signed: true,
-    userRole: ['videoEditor'],
+    userRole: ['user', 'administrator'],
   },
+
   {
     route: `/${Route.users}`,
     title: 'Správa uživatelů',
@@ -47,18 +54,18 @@ export const NavigationItems: NavigationItem[] = [
     userRole: ['administrator'],
   },
   {
+    route: `/${Route.groups}`,
+    title: 'Správa skupin',
+    icon: <GroupIcon />,
+    signed: true,
+    userRole: ['videoEditor', 'administrator'],
+  },
+  {
     route: `/${Route.tagEdit}`,
     title: 'Správa tagů',
     icon: <LocalOfferIcon />,
     signed: true,
     userRole: ['administrator'],
-  },
-  {
-    route: `/${Route.myPlaylists}`,
-    title: 'Správa playlistů',
-    icon: <PlaylistPlayIcon />,
-    signed: true,
-    userRole: ['user', 'administrator'],
   },
 ];
 
