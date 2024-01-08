@@ -8,6 +8,13 @@ import {
   LinearProgress,
   FormLabel,
   Alert,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Paper,
+  FormControl,
+  useMediaQuery,
+  Switch,
 } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
@@ -29,8 +36,11 @@ import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
 import {
   uploadUrl,
+  useMyUsergroupsQuery,
   useTagsAllQuery,
   useTagsPOSTMutation,
+  useUsersAllQuery,
+  useVideoPermissionsQuery,
   useVideosPOSTMutation,
   useVideosPUTMutation,
 } from 'api/axios-client/Query';
@@ -41,6 +51,8 @@ import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown
 import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
 import { getFileFromBase64 } from 'components/Utils/FileUtils';
 import { UserContext } from './Root';
+import { Transfer } from 'antd';
+import theme from 'Theme';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -75,6 +87,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const [statusText, setStatusText] = useState<string>();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [publicCheckbox, setPublicCheckbox] = useState(video?.isPublic ?? true);
   const [fileUploadInfo, setFileUploadInfo] = useState<{
     name: string;
     size: string;
@@ -89,6 +102,16 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const uploady = useUploadyContext();
   const allTagsQuery = useTagsAllQuery({ refetchOnWindowFocus: false });
   const createTagMutation = useTagsPOSTMutation();
+  const permissionsQuery = !newVideo ? useVideoPermissionsQuery(video?.id ?? '') : undefined;
+  const usersQuery = useUsersAllQuery();
+  const groupsQuery = useMyUsergroupsQuery();
+  const [permissionsUserIds, setPermissionsUserIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.userIds ?? [],
+  );
+  const [permissionsGroupIds, setPermissionsGroupIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.groupIds ?? [],
+  );
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const selectRandomThumbnail = () => {
     if (!generatedThumbnails) {
@@ -101,6 +124,13 @@ function VideoEditInner({ newVideo }: InnerProps) {
       ),
     );
   };
+
+  useEffect(() => {
+    if (permissionsQuery?.data) {
+      setPermissionsUserIds(permissionsQuery.data.userIds);
+      setPermissionsGroupIds(permissionsQuery.data.groupIds);
+    }
+  }, [permissionsQuery?.data]);
 
   useChunkStartListener((data) => {
     setProgress((data.chunk.index / data.totalCount) * 100);
@@ -136,6 +166,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   useEffect(() => {
     selectRandomThumbnail();
   }, [generatedThumbnails]);
+
   const handleTagAdd = async (name: string) => {
     return createTagMutation.mutateAsync(name);
   };
@@ -162,6 +193,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
     const name = data.get('name')?.toString()!;
     const tags = tagsRef?.current?.getActiveChips()?.map((x) => x.label) ?? [];
     const playlistId = data.get('playlistSelect')?.toString()!;
+    const isPublic = data.get('isPublic')?.toString()!;
 
     if (newVideo) {
       if (!imageToUpload) {
@@ -183,6 +215,9 @@ function VideoEditInner({ newVideo }: InnerProps) {
           fileName: fileUploadInfo.name,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
           playlistId,
+          isPublic: isPublic === 'on',
+          permissions_GroupIds: permissionsGroupIds,
+          permissions_UserIds: permissionsUserIds,
         },
         {
           onSuccess: (res: PostVideoResponse) => {
@@ -212,6 +247,9 @@ function VideoEditInner({ newVideo }: InnerProps) {
           tags,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
           playlistId,
+          isPublic: isPublic === 'on',
+          permissions_GroupIds: permissionsGroupIds,
+          permissions_UserIds: permissionsUserIds,
         },
         {
           onSuccess: () => {
@@ -233,7 +271,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   }, [userContext?.user, userContext?.isLoading]);
 
   return (
-    <Box margin={4} component="form" onSubmit={submitHandler}>
+    <Box margin={{ xs: 1, md: 4 }} component="form" onSubmit={submitHandler}>
       {uploading && (
         <Box sx={{ width: '100%' }} pt={2} pb={2}>
           <LinearProgress variant="determinate" value={progress} />
@@ -331,6 +369,75 @@ function VideoEditInner({ newVideo }: InnerProps) {
                 </fieldset>
               </Grid>
             )}
+            <Grid item xs={12}>
+              <Paper>
+                <FormControlLabel
+                  sx={{ pl: 1 }}
+                  control={
+                    <Switch
+                      id="isPublic"
+                      name="isPublic"
+                      checked={publicCheckbox}
+                      onChange={(_, checked) => setPublicCheckbox(checked)}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                  }
+                  label="Veřejné video"
+                />
+                {!publicCheckbox && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} minHeight="200px">
+                      <Transfer
+                        dataSource={groupsQuery.data}
+                        showSearch
+                        filterOption={(inputValue, option) => option.name.indexOf(inputValue) > -1}
+                        onChange={(newTargetKeys) => setPermissionsGroupIds(newTargetKeys)}
+                        targetKeys={permissionsGroupIds}
+                        rowKey={(item) => item.id}
+                        style={{ width: '100%' }}
+                        listStyle={{ width: '100%' }}
+                        render={(item) => `${item.name}`}
+                        locale={{
+                          itemsUnit: 'skupin',
+                          itemUnit: 'skupin',
+                          notFoundContent: 'Kde nic tu nic',
+                          searchPlaceholder: 'Hledat',
+                          remove: 'Odebrat',
+                          selectAll: 'Vybrat vše',
+                          selectCurrent: 'Vybrat aktuální',
+                          selectInvert: 'Otočit výběr',
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} minHeight="200px">
+                      <Transfer
+                        dataSource={usersQuery.data}
+                        showSearch
+                        filterOption={(inputValue, option) =>
+                          option.name.indexOf(inputValue) > -1 ||
+                          option.email.indexOf(inputValue) > -1
+                        }
+                        onChange={(newTargetKeys) => setPermissionsUserIds(newTargetKeys)}
+                        targetKeys={permissionsUserIds}
+                        rowKey={(item) => item.id}
+                        style={{ width: '100%' }}
+                        listStyle={{ ...(isDesktop && { width: '100%' }) }}
+                        render={(item) => `${item.name}(${item.email})`}
+                        locale={{
+                          itemsUnit: 'uživatelé',
+                          itemUnit: 'uživatelé',
+                          notFoundContent: 'Kde nic tu nic',
+                          searchPlaceholder: 'Hledat',
+                          remove: 'Odebrat',
+                          selectAll: 'Vybrat vše',
+                          selectCurrent: 'Vybrat aktuální',
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                )}
+              </Paper>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6}>

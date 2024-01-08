@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections;
 using NuGet.Packaging;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Backend.Migrations;
 
 namespace Backend.Controllers
 {
@@ -41,7 +42,8 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(orderBy))
             {
                 string[] orderByParts = orderBy?.Split(':') ?? Array.Empty<string>();
-                if (orderByParts.Length == 0 ) {
+                if (orderByParts.Length == 0)
+                {
                     return BadRequest();
                 }
                 PropertyInfo propertyInfo = typeof(Video).GetProperty(orderByParts[0], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
@@ -91,7 +93,7 @@ namespace Backend.Controllers
             var video = await _context.Videos
                     .Include(x => x.Tags)
                     .Include(x => x.MainPlaylist)
-                       .AsNoTracking() 
+                       .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
@@ -119,6 +121,26 @@ namespace Backend.Controllers
             return playlists;
         }
 
+        [HttpGet("{id}/video-permissions")]
+        public async Task<ActionResult<ObjectPermissions>> GetVideoPermissions(Guid id)
+        {
+            if (_context.Videos == null)
+            {
+                return NotFound();
+            }
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+            var permissions = await _context.Permissions.Where(x => x.VideoId == id).ToListAsync();
+            var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
+            var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
+            return new ObjectPermissions(
+                UserIds: userPermissions,
+                GroupIds: groupPermissions
+                );
+        }
         // GET: api/videos/my
         [HttpGet("my-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()
@@ -163,15 +185,6 @@ namespace Backend.Controllers
             return await relatedVideos;
         }
 
-        public class ModifyVideoDTO
-        {
-            public string Name { get; set; }
-            public string? Description { get; set; }
-            public IFormFile? Image { get; set; }
-            public Guid PlaylistId { get; set; }
-            public ICollection<string>? Tags { get; set; }
-
-        }
         // PUT: api/Videos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -182,9 +195,11 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            var originalPublic = video.Public;
             _context.Entry(video).State = EntityState.Modified;
             video.Name = modifiedVideo.Name;
             video.Description = modifiedVideo.Description;
+            video.Public = modifiedVideo.IsPublic;
             if (video.MainPlaylist != null && video.MainPlaylist.Id != modifiedVideo.PlaylistId)
             {
                 PlaylistsController.RemoveVideoFromPlaylist(_context, video.MainPlaylist.Id, video);
@@ -203,6 +218,14 @@ namespace Backend.Controllers
             if (modifiedVideo.Tags?.Any() ?? false)
             {
                 _context.Tags.Where(x => modifiedVideo.Tags.Contains(x.Name)).ToList().ForEach(x => video.Tags.Add(x));
+            }
+            if (!modifiedVideo.IsPublic || !originalPublic)
+            {
+                PermissionsController.ClearExistingPermissions(_context, video);
+                if (!modifiedVideo.IsPublic && ((modifiedVideo.Permissions?.UserIds?.Any() ?? false) || (modifiedVideo.Permissions?.GroupIds?.Any() ?? false)))
+                {
+                    PermissionsController.SavePermissions(_context, video: video, permissions: modifiedVideo.Permissions);
+                }
             }
             if (modifiedVideo.Image != null)
             {
@@ -228,24 +251,6 @@ namespace Backend.Controllers
 
             return NoContent();
         }
-        public class PostVideoRequest
-        {
-            //public IFormFile File { get; set; }
-            public string FileName { get; set; }
-            public string Name { get; set; }
-            public string? Description { get; set; }
-            public int DurationSec { get; set; }
-            public IFormFile Image { get; set; }
-            public Guid PlaylistId { get; set; }
-            public ICollection<string>? Tags { get; set; }
-
-        }
-
-        public class PostVideoResponse
-        {
-            public string DataUrl { get; set; }
-
-        }
 
         // POST: api/Videos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -264,7 +269,6 @@ namespace Backend.Controllers
             var videoName = $"{videoGuid}.{video.FileName.Split(".").LastOrDefault()}";
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
-
             var thumbnailUrl = await SaveThumbnailAsync(video.PlaylistId, video.Image);
 
             var videoDB = new Video()
@@ -272,7 +276,7 @@ namespace Backend.Controllers
                 Owner = User.GetUser(_context),
                 Name = video.Name,
                 Description = video.Description,
-                Duration = new TimeSpan(0,0,0, video.DurationSec, 0),
+                Duration = new TimeSpan(0, 0, 0, video.DurationSec, 0),
                 Tags = new List<Tag>(),
                 DislikeCount = 0,
                 LikeCount = 0,
@@ -280,7 +284,8 @@ namespace Backend.Controllers
                 UploadTimestamp = DateTime.UtcNow,
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
-                MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId)
+                MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId),
+                Public = video.IsPublic
             };
             if (video.Tags?.Any() ?? false)
             {
@@ -288,9 +293,13 @@ namespace Backend.Controllers
             }
             _context.Videos.Add(videoDB);
             PlaylistsController.AddVideoToPlaylist(_context, video.PlaylistId, videoDB);
+            if (!video.IsPublic && (video.Permissions?.UserIds?.Any() ?? false) || (video.Permissions?.GroupIds?.Any() ?? false))
+            {
+                PermissionsController.SavePermissions(_context, video: videoDB, permissions: video.Permissions);
+            }
             await _context.SaveChangesAsync();
 
-            return Ok(new PostVideoResponse() { DataUrl= videoGuid });
+            return Ok(new PostVideoResponse() { DataUrl = videoGuid });
         }
         [HttpPost("upload")]
         [Authorize(Roles = RoleNames.Editor)]
@@ -352,5 +361,7 @@ namespace Backend.Controllers
             string imageName = $"{channelId}[GUID].{image.FileName.Split(".")[1]}";
             return await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, imageName, image);
         }
+
+
     }
 }

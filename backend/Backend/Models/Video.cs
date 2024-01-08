@@ -33,6 +33,7 @@ namespace Backend.Models
         public ICollection<Playlist>? Playlists { get; set; }
         public Playlist MainPlaylist { get; set; }
         public User Owner { get; set; }
+        public bool Public { get; set; }
         
         public VideoDTO ToDTO()
         {
@@ -51,10 +52,41 @@ namespace Backend.Models
                 Playlists: null,
                 MainPlaylistId: MainPlaylist.Id,
                 MainPlaylistName: MainPlaylist.Name,
-                Owner: Owner.ToDTO());
+                Owner: Owner.ToDTO(),
+                IsPublic: Public
+                );
         }
     }
+    public class ModifyVideoDTO
+    {
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public IFormFile? Image { get; set; }
+        public Guid PlaylistId { get; set; }
+        public ICollection<string>? Tags { get; set; }
+        public bool IsPublic { get; set; }
+        public ObjectPermissions? Permissions { get; set; }
 
+    }
+    public class PostVideoRequest
+    {
+        public string FileName { get; set; }
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public int DurationSec { get; set; }
+        public IFormFile Image { get; set; }
+        public Guid PlaylistId { get; set; }
+        public ICollection<string>? Tags { get; set; }
+
+        public bool IsPublic { get; set; }
+        public ObjectPermissions? Permissions { get; set; }
+    }
+
+    public class PostVideoResponse
+    {
+        public string DataUrl { get; set; }
+
+    }
     public record VideoDTO(
         Guid Id,
         string Name,
@@ -70,5 +102,11 @@ namespace Backend.Models
         ICollection<PlaylistDTO>? Playlists,
         Guid MainPlaylistId,
         string MainPlaylistName,
-        UserDTO Owner);
+        UserDTO Owner,
+        bool IsPublic
+        );
+
+    public record ObjectPermissions(
+        ICollection<Guid>? UserIds,
+        ICollection<Guid>? GroupIds);
 }

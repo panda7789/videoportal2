@@ -193,6 +193,62 @@ export interface ILoginDTO {
     password: string;
 }
 
+export class ObjectPermissions implements IObjectPermissions {
+    userIds?: string[] | undefined;
+    groupIds?: string[] | undefined;
+
+    constructor(data?: IObjectPermissions) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["userIds"])) {
+                this.userIds = [] as any;
+                for (let item of _data["userIds"])
+                    this.userIds!.push(item);
+            }
+            if (Array.isArray(_data["groupIds"])) {
+                this.groupIds = [] as any;
+                for (let item of _data["groupIds"])
+                    this.groupIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectPermissions {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectPermissions();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.userIds)) {
+            data["userIds"] = [];
+            for (let item of this.userIds)
+                data["userIds"].push(item);
+        }
+        if (Array.isArray(this.groupIds)) {
+            data["groupIds"] = [];
+            for (let item of this.groupIds)
+                data["groupIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IObjectPermissions {
+    userIds?: string[] | undefined;
+    groupIds?: string[] | undefined;
+}
+
 export class Playlist implements IPlaylist {
     id!: string;
     name!: string;
@@ -201,6 +257,7 @@ export class Playlist implements IPlaylist {
     thumbnailUrl?: string | undefined;
     videos?: Video[] | undefined;
     owner!: User;
+    public!: boolean;
 
     constructor(data?: IPlaylist) {
         if (data) {
@@ -227,6 +284,7 @@ export class Playlist implements IPlaylist {
                     this.videos!.push(Video.fromJS(item));
             }
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
+            this.public = _data["public"];
         }
     }
 
@@ -250,6 +308,7 @@ export class Playlist implements IPlaylist {
                 data["videos"].push(item.toJSON());
         }
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["public"] = this.public;
         return data;
     }
 }
@@ -262,6 +321,7 @@ export interface IPlaylist {
     thumbnailUrl?: string | undefined;
     videos?: Video[] | undefined;
     owner: User;
+    public: boolean;
 }
 
 export class PlaylistBasicInfoDTO implements IPlaylistBasicInfoDTO {
@@ -348,6 +408,7 @@ export class PlaylistDTO implements IPlaylistDTO {
     videos?: VideoDTO[] | undefined;
     owner!: UserDTO;
     totalDuration!: string;
+    isPublic!: boolean;
 
     constructor(data?: IPlaylistDTO) {
         if (data) {
@@ -375,6 +436,7 @@ export class PlaylistDTO implements IPlaylistDTO {
             }
             this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
             this.totalDuration = _data["totalDuration"];
+            this.isPublic = _data["isPublic"];
         }
     }
 
@@ -399,6 +461,7 @@ export class PlaylistDTO implements IPlaylistDTO {
         }
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         data["totalDuration"] = this.totalDuration;
+        data["isPublic"] = this.isPublic;
         return data;
     }
 }
@@ -412,6 +475,7 @@ export interface IPlaylistDTO {
     videos?: VideoDTO[] | undefined;
     owner: UserDTO;
     totalDuration: string;
+    isPublic: boolean;
 }
 
 export class PostVideoResponse implements IPostVideoResponse {
@@ -1052,6 +1116,7 @@ export class Video implements IVideo {
     playlists?: Playlist[] | undefined;
     mainPlaylist!: Playlist;
     owner!: User;
+    public!: boolean;
 
     constructor(data?: IVideo) {
         if (data) {
@@ -1090,6 +1155,7 @@ export class Video implements IVideo {
             }
             this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : new Playlist();
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
+            this.public = _data["public"];
         }
     }
 
@@ -1124,6 +1190,7 @@ export class Video implements IVideo {
         }
         data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["public"] = this.public;
         return data;
     }
 }
@@ -1143,6 +1210,7 @@ export interface IVideo {
     playlists?: Playlist[] | undefined;
     mainPlaylist: Playlist;
     owner: User;
+    public: boolean;
 }
 
 export class VideoDTO implements IVideoDTO {
@@ -1161,6 +1229,7 @@ export class VideoDTO implements IVideoDTO {
     mainPlaylistId!: string;
     mainPlaylistName!: string;
     owner!: UserDTO;
+    isPublic!: boolean;
 
     constructor(data?: IVideoDTO) {
         if (data) {
@@ -1199,6 +1268,7 @@ export class VideoDTO implements IVideoDTO {
             this.mainPlaylistId = _data["mainPlaylistId"];
             this.mainPlaylistName = _data["mainPlaylistName"];
             this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
+            this.isPublic = _data["isPublic"];
         }
     }
 
@@ -1234,6 +1304,7 @@ export class VideoDTO implements IVideoDTO {
         data["mainPlaylistId"] = this.mainPlaylistId;
         data["mainPlaylistName"] = this.mainPlaylistName;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["isPublic"] = this.isPublic;
         return data;
     }
 }
@@ -1254,6 +1325,7 @@ export interface IVideoDTO {
     mainPlaylistId: string;
     mainPlaylistName: string;
     owner: UserDTO;
+    isPublic: boolean;
 }
 
 export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {
@@ -1441,6 +1513,7 @@ export function initPersister() {
   
   addResultTypeFactory('Client___commentsAll', (data: any) => { const result = new CommentDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___myPlaylists', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___playlistPermissions', (data: any) => { const result = new ObjectPermissions(); result.init(data); return result; });
   addResultTypeFactory('Client___playlistsAll', (data: any) => { const result = new PlaylistBasicInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___playlistsGET', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
@@ -1454,6 +1527,7 @@ export function initPersister() {
   addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
   addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___videoPermissions', (data: any) => { const result = new ObjectPermissions(); result.init(data); return result; });
   addResultTypeFactory('Client___myVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___relatedVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
 

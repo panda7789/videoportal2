@@ -104,7 +104,9 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
     public DbSet<UserVideoStats> UserVideoStats { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Playlist> Playlists { get; set; }
-    public DbSet<Backend.Models.Comment>? Comment { get; set; }
+    public DbSet<Comment>? Comment { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+
 
 }

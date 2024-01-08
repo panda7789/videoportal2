@@ -12,6 +12,7 @@ namespace Backend.Models
         public string? ThumbnailUrl { get; set; }
         public ICollection<Video>? Videos { get; set; }
         public User Owner { get; set; }
+        public bool Public { get; set; }
 
         public PlaylistBasicInfoDTO ToBasicDTO()
         {
@@ -38,7 +39,8 @@ namespace Backend.Models
                 Name: Name,
                 Owner: Owner.ToDTO(),
                 ThumbnailUrl: ThumbnailUrl,
-                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero
+                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero,
+                IsPublic: Public
             );
         }
     }
@@ -63,7 +65,8 @@ namespace Backend.Models
         string? ThumbnailUrl,
         ICollection<VideoDTO>? Videos,
         UserDTO Owner,
-        TimeSpan TotalDuration
+        TimeSpan TotalDuration,
+        bool IsPublic
     );
 
     public class PlaylistPostPutDTO
@@ -72,5 +75,7 @@ namespace Backend.Models
         public string? Description { get; set; }
         public IFormFile? Thumbnail { get; set; }
         public ICollection<Video>? Videos { get; set; }
+        public bool IsPublic { get; set; }
+        public ObjectPermissions? Permissions { get; set; }
     }
 }

@@ -1,5 +1,15 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { Alert, Button, Grid, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Button,
+  FormControlLabel,
+  Grid,
+  Paper,
+  Switch,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import { Link, useLoaderData, useNavigate } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -14,13 +24,18 @@ import { PlaylistDTO, VideoDTO } from 'api/axios-client';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
 import {
+  useMyUsergroupsQuery,
+  usePlaylistPermissionsQuery,
   usePlaylistsDELETEMutation,
   usePlaylistsPOSTMutation,
   usePlaylistsPUTMutation,
+  useUsersAllQuery,
 } from 'api/axios-client/Query';
 import { UserContext } from 'routes/Root';
 import { playlistParams, videoUrl } from 'model/Video';
 import { Route } from 'routes/RouteNames';
+import { Transfer } from 'antd';
+import theme from 'Theme';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
@@ -41,8 +56,21 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   const [canEdit, setCanEdit] = useState(false);
   const [imageToUpload, setImageToUpload] = useState<File>();
   const [statusText, setStatusText] = useState<string>();
+  const [publicCheckbox, setPublicCheckbox] = useState(playlist?.isPublic ?? true);
   const navigate = useNavigate();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
+  const permissionsQuery = !newPlaylist
+    ? usePlaylistPermissionsQuery(playlist?.id ?? '', { enabled: editMode })
+    : undefined;
+  const usersQuery = useUsersAllQuery({ enabled: editMode });
+  const groupsQuery = useMyUsergroupsQuery({ enabled: editMode });
+  const [permissionsUserIds, setPermissionsUserIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.userIds ?? [],
+  );
+  const [permissionsGroupIds, setPermissionsGroupIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.groupIds ?? [],
+  );
   const createPlaylistMutation = usePlaylistsPOSTMutation();
   const updatePlaylistMutation = usePlaylistsPUTMutation(playlist.id);
   const deletePlaylistMutation = usePlaylistsDELETEMutation(playlist.id, {
@@ -65,6 +93,12 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   };
 
   useEffect(() => {
+    if (permissionsQuery?.data) {
+      setPermissionsUserIds(permissionsQuery.data.userIds);
+      setPermissionsGroupIds(permissionsQuery.data.groupIds);
+    }
+  }, [permissionsQuery?.data]);
+  useEffect(() => {
     setCanEdit(playlistProp?.owner.id === userContext?.user?.id ?? 0);
   }, [playlistProp, userContext]);
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
@@ -82,6 +116,9 @@ export function PlaylistDetail({ newPlaylist }: Props) {
           thumbnail: imageToUpload
             ? { data: imageToUpload, fileName: imageToUpload.name }
             : undefined,
+          isPublic: publicCheckbox,
+          permissions_UserIds: permissionsUserIds,
+          permissions_GroupIds: permissionsGroupIds,
         },
         {
           onSuccess: () => {
@@ -104,6 +141,9 @@ export function PlaylistDetail({ newPlaylist }: Props) {
           thumbnail: imageToUpload
             ? { data: imageToUpload, fileName: imageToUpload.name }
             : undefined,
+          isPublic: publicCheckbox,
+          permissions_UserIds: permissionsUserIds,
+          permissions_GroupIds: permissionsGroupIds,
         },
         {
           onSuccess: () => {
@@ -121,7 +161,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
       <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
         <Grid
           item
-          position={{ xs: 'initial', md: 'fixed' }}
+          position={{ xs: 'initial', md: editMode ? 'absolute' : 'fixed' }}
           width={{ xs: '100%', md: editMode ? 'calc(100%/2.5)' : 'calc(100%/4.4)' }}
         >
           {statusText && <Alert severity="info">{statusText}</Alert>}
@@ -220,6 +260,77 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                     minRows={2}
                     maxRows={3}
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper>
+                    <FormControlLabel
+                      sx={{ pl: 1 }}
+                      control={
+                        <Switch
+                          id="isPublic"
+                          name="isPublic"
+                          checked={publicCheckbox}
+                          onChange={(_, checked) => setPublicCheckbox(checked)}
+                          inputProps={{ 'aria-label': 'controlled' }}
+                        />
+                      }
+                      label="Veřejné video"
+                    />
+                    {!publicCheckbox && (
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} minHeight="200px">
+                          <Transfer
+                            dataSource={groupsQuery.data}
+                            showSearch
+                            filterOption={(inputValue, option) =>
+                              option.name.indexOf(inputValue) > -1
+                            }
+                            onChange={(newTargetKeys) => setPermissionsGroupIds(newTargetKeys)}
+                            targetKeys={permissionsGroupIds}
+                            rowKey={(item) => item.id}
+                            style={{ width: '100%' }}
+                            listStyle={{ width: '100%' }}
+                            render={(item) => `${item.name}`}
+                            locale={{
+                              itemsUnit: 'skupin',
+                              itemUnit: 'skupin',
+                              notFoundContent: 'Kde nic tu nic',
+                              searchPlaceholder: 'Hledat',
+                              remove: 'Odebrat',
+                              selectAll: 'Vybrat vše',
+                              selectCurrent: 'Vybrat aktuální',
+                              selectInvert: 'Otočit výběr',
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={12} minHeight="200px">
+                          <Transfer
+                            dataSource={usersQuery.data}
+                            showSearch
+                            filterOption={(inputValue, option) =>
+                              option.name.indexOf(inputValue) > -1 ||
+                              option.email.indexOf(inputValue) > -1
+                            }
+                            onChange={(newTargetKeys) => setPermissionsUserIds(newTargetKeys)}
+                            targetKeys={permissionsUserIds}
+                            rowKey={(item) => item.id}
+                            style={{ width: '100%' }}
+                            listStyle={{ ...(isDesktop && { width: '100%' }) }}
+                            render={(item) => `${item.name}(${item.email})`}
+                            locale={{
+                              itemsUnit: 'uživatelé',
+                              itemUnit: 'uživatelé',
+                              notFoundContent: 'Kde nic tu nic',
+                              searchPlaceholder: 'Hledat',
+                              remove: 'Odebrat',
+                              selectAll: 'Vybrat vše',
+                              selectCurrent: 'Vybrat aktuální',
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Paper>
                 </Grid>
               </Grid>
             ) : (

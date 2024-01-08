@@ -30,6 +30,10 @@ export type CommentsDELETEQueryParameters = {
   id: string ;
 }
 
+export type PlaylistPermissionsQueryParameters = {
+  id: string ;
+}
+
 export type PlaylistsAllQueryParameters = {
   orderBy?: string | undefined ;
   limit?: number | undefined ;
@@ -41,6 +45,9 @@ export type PlaylistsPOSTMutationParameters = {
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
   videos?: Types.Video[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type PlaylistsGETQueryParameters = {
@@ -53,6 +60,9 @@ export type PlaylistsPUTQueryParameters = {
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
   videos?: Types.Video[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type PlaylistsPUTMutationParameters = {
@@ -60,6 +70,9 @@ export type PlaylistsPUTMutationParameters = {
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
   videos?: Types.Video[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type PlaylistsDELETEQueryParameters = {
@@ -136,6 +149,9 @@ export type VideosPOSTMutationParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosGETQueryParameters = {
@@ -149,6 +165,9 @@ export type VideosPUTQueryParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosPUTMutationParameters = {
@@ -157,6 +176,9 @@ export type VideosPUTMutationParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
+  isPublic?: boolean | undefined ;
+  permissions_UserIds?: string[] | null | undefined ;
+  permissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosDELETEQueryParameters = {
@@ -164,6 +186,10 @@ export type VideosDELETEQueryParameters = {
 }
 
 export type VideoPlaylistsQueryParameters = {
+  id: string ;
+}
+
+export type VideoPermissionsQueryParameters = {
   id: string ;
 }
 
@@ -453,6 +479,98 @@ export function setMyPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: 
   queryClient.setQueryData(queryKey, updater);
 }
     
+export function playlistPermissionsUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}/playlist-permissions";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let playlistPermissionsDefaultOptions: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> = {
+  queryFn: __playlistPermissions,
+};
+export function getPlaylistPermissionsDefaultOptions(): UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> {
+  return playlistPermissionsDefaultOptions;
+};
+export function setPlaylistPermissionsDefaultOptions(options: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions>) {
+  playlistPermissionsDefaultOptions = options;
+}
+
+export function playlistPermissionsQueryKey(id: string): QueryKey;
+export function playlistPermissionsQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as PlaylistPermissionsQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'playlistPermissions',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'playlistPermissions',
+        ...params
+      ]);
+  }
+}
+function __playlistPermissions(context: QueryFunctionContext) {
+  return Client.playlistPermissions(
+      context.queryKey[2] as string    );
+}
+
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(dto: PlaylistPermissionsQueryParameters, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as PlaylistPermissionsQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ObjectPermissions, TError, TSelectData>({
+    queryFn: __playlistPermissions,
+    queryKey: playlistPermissionsQueryKey(id),
+    ...playlistPermissionsDefaultOptions as unknown as UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setPlaylistPermissionsData(queryClient: QueryClient, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions, id: string) {
+  queryClient.setQueryData(playlistPermissionsQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setPlaylistPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
 export function playlistsAllUrl(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined): string {
   let url_ = getBaseUrl() + "/api/Playlists?";
 if (orderBy === null)
@@ -586,6 +704,9 @@ export function playlistsPOSTMutationKey(): MutationKey {
  * @param description (optional) 
  * @param thumbnail (optional) 
  * @param videos (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function usePlaylistsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, PlaylistsPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, PlaylistsPOSTMutationParameters, TContext> {
@@ -594,7 +715,7 @@ export function usePlaylistsPOSTMutation<TContext>(options?: Omit<UseMutationOpt
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((playlistsPOSTMutationParameters: PlaylistsPOSTMutationParameters) => Client.playlistsPOST(playlistsPOSTMutationParameters.name, playlistsPOSTMutationParameters.description, playlistsPOSTMutationParameters.thumbnail, playlistsPOSTMutationParameters.videos), {...options, mutationKey: key});
+  return useMutation((playlistsPOSTMutationParameters: PlaylistsPOSTMutationParameters) => Client.playlistsPOST(playlistsPOSTMutationParameters.name, playlistsPOSTMutationParameters.description, playlistsPOSTMutationParameters.thumbnail, playlistsPOSTMutationParameters.videos, playlistsPOSTMutationParameters.isPublic, playlistsPOSTMutationParameters.permissions_UserIds, playlistsPOSTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function playlistsGETUrl(id: string): string {
@@ -711,6 +832,9 @@ export function playlistsPUTMutationKey(id: string): MutationKey {
  * @param description (optional) 
  * @param thumbnail (optional) 
  * @param videos (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function usePlaylistsPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, PlaylistsPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, PlaylistsPUTMutationParameters, TContext> {
@@ -719,7 +843,7 @@ export function usePlaylistsPUTMutation<TContext>(id: string, options?: Omit<Use
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((playlistsPUTMutationParameters: PlaylistsPUTMutationParameters) => Client.playlistsPUT(id, playlistsPUTMutationParameters.name, playlistsPUTMutationParameters.description, playlistsPUTMutationParameters.thumbnail, playlistsPUTMutationParameters.videos), {...options, mutationKey: key});
+  return useMutation((playlistsPUTMutationParameters: PlaylistsPUTMutationParameters) => Client.playlistsPUT(id, playlistsPUTMutationParameters.name, playlistsPUTMutationParameters.description, playlistsPUTMutationParameters.thumbnail, playlistsPUTMutationParameters.videos, playlistsPUTMutationParameters.isPublic, playlistsPUTMutationParameters.permissions_UserIds, playlistsPUTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 type PlaylistsPUT__MutationParameters = PlaylistsPUTQueryParameters & {
@@ -731,6 +855,9 @@ type PlaylistsPUT__MutationParameters = PlaylistsPUTQueryParameters & {
  * @param description (optional) 
  * @param thumbnail (optional) 
  * @param videos (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function usePlaylistsPUTMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, PlaylistsPUT__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PlaylistsPUTQueryParameters}): UseMutationResult<void, unknown, PlaylistsPUT__MutationParameters, TContext> {
@@ -739,7 +866,7 @@ export function usePlaylistsPUTMutationWithParameters<TContext>(options?: Omit<U
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((data: PlaylistsPUT__MutationParameters) => Client.playlistsPUT(data.id, data.name, data.description, data.thumbnail, data.videos), {...options, mutationKey: key});
+  return useMutation((data: PlaylistsPUT__MutationParameters) => Client.playlistsPUT(data.id, data.name, data.description, data.thumbnail, data.videos, data.isPublic, data.permissions_UserIds, data.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function playlistsDELETEUrl(id: string): string {
@@ -2152,6 +2279,9 @@ export function videosPOSTMutationKey(): MutationKey {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext> {
@@ -2160,7 +2290,7 @@ export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOption
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.fileName, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.playlistId, videosPOSTMutationParameters.tags), {...options, mutationKey: key});
+  return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.fileName, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.playlistId, videosPOSTMutationParameters.tags, videosPOSTMutationParameters.isPublic, videosPOSTMutationParameters.permissions_UserIds, videosPOSTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function videosGETUrl(id: string): string {
@@ -2278,6 +2408,9 @@ export function videosPUTMutationKey(id: string): MutationKey {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, VideosPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, VideosPUTMutationParameters, TContext> {
@@ -2286,7 +2419,7 @@ export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMut
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((videosPUTMutationParameters: VideosPUTMutationParameters) => Client.videosPUT(id, videosPUTMutationParameters.name, videosPUTMutationParameters.description, videosPUTMutationParameters.image, videosPUTMutationParameters.playlistId, videosPUTMutationParameters.tags), {...options, mutationKey: key});
+  return useMutation((videosPUTMutationParameters: VideosPUTMutationParameters) => Client.videosPUT(id, videosPUTMutationParameters.name, videosPUTMutationParameters.description, videosPUTMutationParameters.image, videosPUTMutationParameters.playlistId, videosPUTMutationParameters.tags, videosPUTMutationParameters.isPublic, videosPUTMutationParameters.permissions_UserIds, videosPUTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 type VideosPUT__MutationParameters = VideosPUTQueryParameters & {
@@ -2299,6 +2432,9 @@ type VideosPUT__MutationParameters = VideosPUTQueryParameters & {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
+ * @param isPublic (optional) 
+ * @param permissions_UserIds (optional) 
+ * @param permissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPUTMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, VideosPUT__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: VideosPUTQueryParameters}): UseMutationResult<void, unknown, VideosPUT__MutationParameters, TContext> {
@@ -2307,7 +2443,7 @@ export function useVideosPUTMutationWithParameters<TContext>(options?: Omit<UseM
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((data: VideosPUT__MutationParameters) => Client.videosPUT(data.id, data.name, data.description, data.image, data.playlistId, data.tags), {...options, mutationKey: key});
+  return useMutation((data: VideosPUT__MutationParameters) => Client.videosPUT(data.id, data.name, data.description, data.image, data.playlistId, data.tags, data.isPublic, data.permissions_UserIds, data.permissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function videosDELETEUrl(id: string): string {
@@ -2442,6 +2578,98 @@ export function setVideoPlaylistsData(queryClient: QueryClient, updater: (data: 
  * @return Success
  */
 export function setVideoPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: string[] | undefined) => string[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+export function videoPermissionsUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Videos/{id}/video-permissions";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let videoPermissionsDefaultOptions: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> = {
+  queryFn: __videoPermissions,
+};
+export function getVideoPermissionsDefaultOptions(): UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> {
+  return videoPermissionsDefaultOptions;
+};
+export function setVideoPermissionsDefaultOptions(options: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions>) {
+  videoPermissionsDefaultOptions = options;
+}
+
+export function videoPermissionsQueryKey(id: string): QueryKey;
+export function videoPermissionsQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as VideoPermissionsQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'videoPermissions',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'videoPermissions',
+        ...params
+      ]);
+  }
+}
+function __videoPermissions(context: QueryFunctionContext) {
+  return Client.videoPermissions(
+      context.queryKey[2] as string    );
+}
+
+export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(dto: VideoPermissionsQueryParameters, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * @return Success
+ */
+export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as VideoPermissionsQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ObjectPermissions, TError, TSelectData>({
+    queryFn: __videoPermissions,
+    queryKey: videoPermissionsQueryKey(id),
+    ...videoPermissionsDefaultOptions as unknown as UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setVideoPermissionsData(queryClient: QueryClient, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions, id: string) {
+  queryClient.setQueryData(videoPermissionsQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setVideoPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions) {
   queryClient.setQueryData(queryKey, updater);
 }
     

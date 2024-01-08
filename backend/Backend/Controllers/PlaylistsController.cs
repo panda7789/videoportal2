@@ -46,6 +46,27 @@ namespace Backend.Controllers
                     .ToListAsync();
         }
 
+        [HttpGet("{id}/playlist-permissions")]
+        public async Task<ActionResult<ObjectPermissions>> GetPlaylistPermissions(Guid id)
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            var playlist = await _context.Playlists.FindAsync(id);
+            if (playlist == null)
+            {
+                return NotFound();
+            }
+            var permissions = await _context.Permissions.Where(x => x.PlaylistId == id).ToListAsync();
+            var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
+            var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
+            return new ObjectPermissions(
+                UserIds: userPermissions,
+                GroupIds: groupPermissions
+                );
+        }
+
         // GET: api/Playlists
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlaylistBasicInfoDTO>>> GetPlaylists([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
@@ -130,6 +151,10 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
+            if (playlist == null)
+            {
+                return BadRequest();
+            }
             var playlistDB = await _context.Playlists.FindAsync(id);
             if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
@@ -138,13 +163,23 @@ namespace Backend.Controllers
 
             playlistDB.Description = playlist.Description;
             
-            if (playlist?.Thumbnail != null)
+            if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
                 playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, playlist.Thumbnail);
             }
+            var originalPublic = playlist.IsPublic;
             playlistDB.Videos = playlist.Videos;
             playlistDB.Name = playlist.Name;
+            playlistDB.Public = playlist.IsPublic;
+            if (!playlist.IsPublic || !originalPublic)
+            {
+                PermissionsController.ClearExistingPermissions(_context, playlist: playlistDB);
+                if (!playlist.IsPublic && ((playlist.Permissions?.UserIds?.Any() ?? false) || (playlist.Permissions?.GroupIds?.Any() ?? false)))
+                {
+                    PermissionsController.SavePermissions(_context, playlist: playlistDB, permissions: playlist.Permissions);
+                }
+            }
             _context.Entry(playlistDB).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -195,21 +230,30 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
+            if (playlist == null)
+            {
+                return BadRequest();
+            }
             var playlistDB = new Playlist
             {
                 Owner = User.GetUser(_context),
                 CreatedTimestamp = DateTime.UtcNow,
                 Description = playlist.Description,
                 Videos = playlist.Videos,
-                Name = playlist.Name
+                Name = playlist.Name,
+                Public = playlist.IsPublic
             };
-            if (playlist?.Thumbnail != null)
+            if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
                 playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, playlist.Thumbnail);
             }
 
             _context.Playlists.Add(playlistDB);
+            if (!playlist.IsPublic && (playlist.Permissions?.UserIds?.Any() ?? false) || (playlist.Permissions?.GroupIds?.Any() ?? false))
+            {
+                PermissionsController.SavePermissions(_context, playlist: playlistDB, permissions: playlist.Permissions);
+            }
             await _context.SaveChangesAsync();
 
             return NoContent();

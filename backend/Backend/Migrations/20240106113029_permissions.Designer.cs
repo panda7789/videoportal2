@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240106113029_permissions")]
+    partial class permissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,16 +53,16 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("PlaylistId")
+                    b.Property<Guid>("PlaylistId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("UserGroupId")
+                    b.Property<Guid>("UserGroupId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("VideoId")
+                    b.Property<Guid>("VideoId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -93,9 +96,6 @@ namespace Backend.Migrations
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("char(36)");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ThumbnailUrl")
                         .HasColumnType("longtext");
@@ -137,21 +137,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "0ca941a0-aed5-43b1-ae64-6dfae7beb0f6",
+                            ConcurrencyStamp = "7a4d37ce-4aa2-4c9d-bd7a-0b8ee74379fd",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "c4e2110e-bcb0-4cac-93c7-8e9d8a53d4c1",
+                            ConcurrencyStamp = "044bf2fa-58da-40a0-8823-f2dc0333022a",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "6e3c766d-41ef-4f69-9664-6c0a98723ffb",
+                            ConcurrencyStamp = "b906f4e0-d09e-4905-b59f-fea3440d8744",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -249,7 +249,7 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7b9a80f2-3263-4d38-9af8-ac3460d90377",
+                            ConcurrencyStamp = "781732fd-8e23-4760-9b48-13cfbd4cb4f7",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
@@ -257,7 +257,7 @@ namespace Backend.Migrations
                             Name = "Administrátor",
                             NormalizedEmail = "admin@admin.cz",
                             NormalizedUserName = "admin@admin.cz",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJfdeRXUhE2QGrtJ7jdXgfz60IPOy9XFXYry3DQllhK2aDu5kUzd/1rRRXpdXJ+dZA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECp6zNUKlr6qFhL+yIUOaqbM6FGxtfWlytIGqKVVjuyyqL+InCn3++y8tHKjCU90xQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"
@@ -350,9 +350,6 @@ namespace Backend.Migrations
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("char(36)");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("UploadTimestamp")
                         .HasColumnType("datetime(6)");
@@ -542,19 +539,27 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.Playlist", "Playlist")
                         .WithMany()
-                        .HasForeignKey("PlaylistId");
+                        .HasForeignKey("PlaylistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.UserGroup", "UserGroup")
                         .WithMany()
-                        .HasForeignKey("UserGroupId");
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend.Models.Video", "Video")
                         .WithMany()
-                        .HasForeignKey("VideoId");
+                        .HasForeignKey("VideoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Playlist");
 
