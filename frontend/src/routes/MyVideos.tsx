@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box } from '@mui/system';
 import { Video } from 'model/Video';
 import { useNavigate } from 'react-router-dom';
@@ -21,10 +21,14 @@ import {
   Select,
 } from '@mui/material';
 import { AxiosQuery } from 'api';
+import { UserContext } from 'routes/Root';
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyVideos() {
-  const myVideosQuery = useMyVideosQuery();
+  const userContext = useContext(UserContext);
+  const myVideosQuery = useMyVideosQuery({
+    queryKey: ['Client', 'myVideos', userContext?.user?.id],
+  });
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
   const [addToPlaylistDialogOpen, setAddToPlaylistDialogOpen] = useState(false);

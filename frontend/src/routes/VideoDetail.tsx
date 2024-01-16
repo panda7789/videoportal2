@@ -17,7 +17,7 @@ import { getVideoById } from 'model/Video';
 import theme from 'Theme';
 import Comment from 'components/Comment/Comment';
 import LikeDislikeMenu from 'components/VideoDetail/LikeDislikeMenu';
-import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router-dom';
 import { VideoInlineList } from 'components/InlineList/VideoInlineList';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import ScrollToTop from 'components/Utils/ScrollOnTop';
@@ -34,7 +34,6 @@ import {
   useUserVideoStatsGETQuery,
   useWatchedMutation,
 } from 'api/axios-client/Query';
-import { Route } from 'routes/RouteNames';
 import { NavigationContext, UserContext } from './Root';
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -146,7 +145,7 @@ function VideoDetail() {
           <Grid container spacing={2} minHeight={170}>
             <Grid item xs={12} md={8}>
               <Box display="flex" onClick={handleExpandClick}>
-                <Typography variant="subtitle1" lineHeight="24px" width="100%">
+                <Typography variant="h6" lineHeight="24px" width="100%">
                   {video.name}
                 </Typography>
                 <ExpandMore expand={expanded} aria-expanded={expanded} aria-label="show more">
@@ -171,14 +170,6 @@ function VideoDetail() {
               >
                 {video.description}
               </Typography>
-              {(video?.tags?.length ?? 0) > 0 && (
-                <>
-                  <Typography variant="caption">Tagy:</Typography>
-                  <Grid container gap={0.5} pt={1} sx={{ position: 'relative' }}>
-                    <ChipLine chipData={video.tags!} />
-                  </Grid>
-                </>
-              )}
             </Grid>
             <Grid
               container
@@ -198,7 +189,15 @@ function VideoDetail() {
                   userStatsQuery={userVideoStatsQuery}
                 />
               </Grid>
-              <Grid item xs={6} height={65} width="100%">
+              {(video?.tags?.length ?? 0) > 0 && (
+                <>
+                  <Typography variant="caption">Tagy:</Typography>
+                  <Grid container gap={0.5} pt={1} sx={{ position: 'relative' }}>
+                    <ChipLine chipData={video.tags!} />
+                  </Grid>
+                </>
+              )}
+              {/* <Grid item xs={6} height={65} width="100%">
                 <Box
                   display="flex"
                   component={Link}
@@ -208,9 +207,9 @@ function VideoDetail() {
                   mr={2}
                   alignItems="center"
                 >
-                  <Typography paddingLeft={1}>{video.mainPlaylistName}</Typography>
+                  <Typography paddingLeft={1}>Hlavní playlist: {video.mainPlaylistName}</Typography>
                 </Box>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
           {mainPlaylistDetailsQuery?.data && (

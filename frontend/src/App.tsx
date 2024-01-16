@@ -10,25 +10,15 @@ import { loader as searchLoader } from 'components/AppBar/Search';
 import { MyVideos } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
 import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
-import { Channel, loader as channelLoader } from 'routes/_Channel/Channel';
-import { ChannelHomePage, loader as channelHomePageLoader } from 'routes/_Channel/ChannelHomePage';
-import { ChannelVideos, loader as channelVideosLoader } from 'routes/_Channel/ChannelVideos';
-import {
-  ChannelPlaylists,
-  loader as channelPlaylistsLoader,
-} from 'routes/_Channel/ChannelPlaylists';
-import { ChannelInfo, loader as channelInfoLoader } from 'routes/_Channel/ChannelInfo';
-import { MyChannels } from 'routes/_MyChannels';
-import { ChannelEdit, loader as channelEditLoader } from 'routes/_ChannelEdit';
 import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 import SearchResult from 'routes/SearchResult';
 import { TagEdit } from 'routes/TagEdit';
 import { MyPlaylists } from 'routes/MyPlaylists';
 import { Route } from 'routes/RouteNames';
-import { UserGroup } from 'api/axios-client';
 import { UserGroups } from 'routes/Users/UserGroups';
 import { UserGroupEdit, loader as groupsLoader } from 'routes/Users/UserGroupEdit';
+import VideoDetailError from 'routes/VideoDetailError';
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +42,7 @@ function App() {
               path: `${Route.video}/:videoId`,
               element: <VideoDetail />,
               loader: videoLoader,
+              errorElement: <VideoDetailError />,
             },
             {
               path: `${Route.videoEdit}/:videoId`,

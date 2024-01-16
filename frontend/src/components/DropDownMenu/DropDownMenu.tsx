@@ -25,7 +25,8 @@ export interface Props {
 export type DropDownMenuAction = {
   name: string;
   icon?: JSX.Element;
-  onClick(): void;
+  onClick?(): void;
+  onClickWithId?(id: string): void;
 };
 
 export interface DropDownMenuCustomActionProps {
@@ -135,7 +136,7 @@ function DropDownMenu({ actions, sx, icon, text, enabled = true }: Props) {
                         key={normalAction.name}
                         onClick={(event) => {
                           handleClose(event);
-                          normalAction.onClick();
+                          normalAction.onClick?.();
                         }}
                       >
                         {normalAction.icon && <ListItemIcon>{normalAction.icon}</ListItemIcon>}

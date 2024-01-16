@@ -13,6 +13,7 @@ namespace Backend.Models
         public ICollection<Video>? Videos { get; set; }
         public User Owner { get; set; }
         public bool Public { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
 
         public PlaylistBasicInfoDTO ToBasicDTO()
         {

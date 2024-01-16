@@ -8,11 +8,8 @@ import {
   LinearProgress,
   FormLabel,
   Alert,
-  Checkbox,
   FormControlLabel,
-  FormGroup,
   Paper,
-  FormControl,
   useMediaQuery,
   Switch,
 } from '@mui/material';

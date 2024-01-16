@@ -3,8 +3,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
-  TextField,
   DialogActions,
   MenuItem,
   ListItemIcon,
@@ -12,7 +10,6 @@ import {
   Checkbox,
   FormControlLabel,
   Box,
-  ClickAwayListener,
 } from '@mui/material';
 import { useState } from 'react';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';

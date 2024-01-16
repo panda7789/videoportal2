@@ -1,12 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import { Card, CardMedia, CardContent, Typography, Grid } from '@mui/material';
-import React from 'react';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { videoUrl, playlistParams, videoUrlId } from 'model/Video';
+import { playlistParams, videoUrlId } from 'model/Video';
 import { Route } from 'routes/RouteNames';
 import { PlaylistBasicInfoDTO } from 'api/axios-client';
 import { ApiPath } from 'components/Utils/APIUtils';

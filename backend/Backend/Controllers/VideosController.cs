@@ -15,6 +15,7 @@ using System.Collections;
 using NuGet.Packaging;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Backend.Migrations;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Backend.Controllers
 {
@@ -22,7 +23,7 @@ namespace Backend.Controllers
     [ApiController]
     public class VideosController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        public readonly MyDbContext _context;
 
         public VideosController(MyDbContext context)
         {
@@ -37,7 +38,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist);
+            IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist).AsQueryable().ApplyPermissions(this);
 
             if (!string.IsNullOrEmpty(orderBy))
             {
@@ -99,6 +100,10 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            if (!HasPermissions(video))
+            {
+                return Forbid();
+            }
             var userStats = await _context.UserVideoStats.Where(x => x.VideoId == id).ToListAsync();
             video.LikeCount = userStats.Where(x => x.Like).Count();
             video.DislikeCount = userStats.Where(x => x.Dislike).Count();
@@ -117,6 +122,10 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            if (!HasPermissions(video))
+            {
+                return Forbid();
+            }
             var playlists = await _context.Playlists.Where(x => x.Videos.Contains(video)).Select(x => x.Id).ToListAsync();
             return playlists;
         }
@@ -133,6 +142,10 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            if (!HasPermissions(video))
+            {
+                return Forbid();
+            }
             var permissions = await _context.Permissions.Where(x => x.VideoId == id).ToListAsync();
             var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
             var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
@@ -145,6 +158,7 @@ namespace Backend.Controllers
         [HttpGet("my-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()
         {
+            // todo tady chybí práva :)
             if (_context.Videos == null)
             {
                 return NotFound();
@@ -169,6 +183,10 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            if (!HasPermissions(video))
+            {
+                return Forbid();
+            }
 
             var shortedVideoDescription = video?.Description == null ? null : String.Join(' ', video.Description.Split().Take(5));
             var relatedVideos = _context.Videos.FromSql($@"SELECT
@@ -178,7 +196,9 @@ namespace Backend.Controllers
                     FROM Videos as v
                     WHERE v.id <> {video.Id}
                     ORDER BY Relevance desc
-                    LIMIT 10")
+")
+                .AsQueryable().ApplyPermissions(this)
+                .Take(10)
                 .AsNoTracking()
                 .Select(x => x.ToDTO())
                 .ToListAsync();
@@ -190,6 +210,7 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
+            // todo tady chybí práva
             var video = await _context.Videos.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
@@ -259,6 +280,7 @@ namespace Backend.Controllers
 
         public async Task<ActionResult<PostVideoResponse>> PostVideo([FromForm] PostVideoRequest video)
         {
+            // tady chybí práva?:O
             if (_context.Videos == null)
             {
                 return Problem("Entity set 'MyDbContext.Videos'  is null.");
@@ -333,6 +355,7 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(Guid id)
         {
+            // tady chybí práva
             if (_context.Videos == null)
             {
                 return NotFound();
@@ -350,18 +373,71 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-
+        [NonAction]
         private bool VideoExists(Guid id)
         {
             return (_context.Videos?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+
+        [NonAction]
         private static async Task<string> SaveThumbnailAsync(Guid channelId, IFormFile image)
         {
             string imageName = $"{channelId}[GUID].{image.FileName.Split(".")[1]}";
             return await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, imageName, image);
         }
 
+        [NonAction]
+        public static bool HasPermissions(Video video, User user)
+        {
+            if (user == null)
+            {
+                return video.Public;
+            }
+            var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
+            return video.Public || video.Owner.Id == user.Id || (video?.Permissions.Any(y => y.VideoId == video.Id && (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)))) ?? false);
+        }
 
+        [NonAction]
+        public bool HasPermissions(Video video)
+        {
+            var user = User.GetUser(_context);
+            return HasPermissions(video, user);
+        }
+
+        [NonAction]
+        public static Video NotPermitedVideo() => new Video()
+        {
+            Id = Guid.Empty,
+            Owner = new User()
+            {
+                Id = Guid.Empty,
+            },
+            MainPlaylist = new Playlist()
+            {
+                Id = Guid.Empty
+            },
+        };
+    }
+
+    public static class VideoExtensions
+    {
+        public static IQueryable<Video> ApplyPermissions(this IQueryable<Video> query, VideosController controller)
+        {
+            var user = controller.User.GetUser(controller._context);
+            if (user == null)
+            {
+                return query.Where(x => x.Public);
+            }
+            var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
+            return query.Where(x =>
+                x.Public ||
+                x.Owner.Id == user.Id ||
+                (x.Permissions.Any(y =>
+                    y.VideoId == x.Id &&
+                    (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId))))
+                )
+            );
+        }
     }
 }

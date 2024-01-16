@@ -16,7 +16,7 @@ namespace Backend.Controllers
     [ApiController]
     public class PlaylistsController : ControllerBase
     {
-        private readonly MyDbContext _context;
+        public readonly MyDbContext _context;
 
         public PlaylistsController(MyDbContext context)
         {
@@ -36,7 +36,7 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            return await 
+            return await
                 _context.Playlists
                     .Include(x => x.Owner)
                     .Where(x => x.Owner.Id == userId)
@@ -75,7 +75,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            IQueryable<Playlist> query = _context.Playlists;
+            IQueryable<Playlist> query = _context.Playlists.ApplyPermissions(this);
 
             if (!string.IsNullOrEmpty(orderBy))
             {
@@ -123,11 +123,11 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PlaylistDTO>> GetPlaylist(Guid id)
         {
-          if (_context.Playlists == null)
-          {
-              return NotFound();
-          }
-            var playlist = await 
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            var playlist = await
                 _context.Playlists
                     .Where(x => x.Id == id)
                     .Include(x => x.Videos)
@@ -138,6 +138,12 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            if (!HasPermissions(playlist))
+            {
+                return Forbid();
+            }
+            var user = User.GetUser(_context);
+            playlist.Videos = playlist.Videos.Select(x => !VideosController.HasPermissions(x, user) ? VideosController.NotPermitedVideo() : x).ToList();
 
             return playlist.ToDTO();
         }
@@ -146,6 +152,7 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlaylist(Guid id, [FromForm] PlaylistPostPutDTO playlist)
         {
+            // todo tady chybí oprávnění
             var userId = User.GetUserId();
             if (userId == null)
             {
@@ -162,7 +169,6 @@ namespace Backend.Controllers
             }
 
             playlistDB.Description = playlist.Description;
-            
             if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
@@ -190,6 +196,7 @@ namespace Backend.Controllers
         [HttpPut("{id}/video/{videoId}")]
         public async Task<IActionResult> PutVideoInPlaylist(Guid id, Guid videoId, [FromQuery] bool add)
         {
+            // todo tady chybí oprávnění
             var userId = User.GetUserId();
             if (userId == null)
             {
@@ -225,6 +232,7 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> PostPlaylist([FromForm] PlaylistPostPutDTO playlist)
         {
+            // todo tady chybí oprávnění
             var userId = User.GetUserId();
             if (userId == null)
             {
@@ -263,6 +271,7 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlaylist(Guid id)
         {
+            // todo oprávnění
             if (_context.Playlists == null)
             {
                 return NotFound();
@@ -297,6 +306,31 @@ namespace Backend.Controllers
             playlist.Videos ??= new List<Video>();
             playlist.Videos.Remove(video);
             _context.SaveChanges();
+        }
+        private bool HasPermissions(Playlist playlist)
+        {
+            var user = User.GetUser(_context);
+            if (user == null)
+            {
+                return playlist.Public;
+            }
+            var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
+            return playlist.Public || playlist.Owner.Id == user.Id || _context.Permissions.Any(x => x.PlaylistId == playlist.Id && (x.UserId == user.Id || (x.UserGroupId != null && userGroupsIds.Contains((Guid)x.UserGroupId))));
+        }
+    }
+    public static class PlaylistExtensions
+    {
+        public static IQueryable<Playlist> ApplyPermissions(this IQueryable<Playlist> query, PlaylistsController controller)
+        {
+            var user = controller.User.GetUser(controller._context);
+            if (user == null)
+            {
+                return query.Where(x => x.Public);
+            }
+            var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
+            return query.Where(x => x.Public
+                                     || x.Owner.Id == user.Id
+                                     || x.Permissions.Any(y => y.PlaylistId == x.Id && (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)))));
         }
     }
 }

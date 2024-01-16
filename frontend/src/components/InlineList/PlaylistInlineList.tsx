@@ -6,13 +6,13 @@ import { Box } from '@mui/system';
 import EditIcon from '@mui/icons-material/Edit';
 import { LinkButton } from 'components/Buttons/LinkButton';
 import { playlistParams, videoUrl } from 'model/Video';
-import { PlaylistDTO } from 'api/axios-client';
+import { PlaylistBasicInfoDTO, PlaylistDTO } from 'api/axios-client';
 import { Route } from 'routes/RouteNames';
 import { InlineList } from './InlineList';
 import { VideoInlineList } from './VideoInlineList';
 
 export interface Props {
-  playlists: PlaylistDTO[];
+  playlists: PlaylistBasicInfoDTO[];
 }
 
 export function PlaylistInlineList({ playlists }: Props) {

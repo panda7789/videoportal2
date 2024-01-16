@@ -36,6 +36,7 @@ import { playlistParams, videoUrl } from 'model/Video';
 import { Route } from 'routes/RouteNames';
 import { Transfer } from 'antd';
 import theme from 'Theme';
+import { DropDownMenuAction, DropDownMenuCustomAction } from 'components/DropDownMenu/DropDownMenu';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
@@ -61,7 +62,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const permissionsQuery = !newPlaylist
-    ? usePlaylistPermissionsQuery(playlist?.id ?? '', { enabled: editMode })
+    ? usePlaylistPermissionsQuery(playlist?.id ?? '')
     : undefined;
   const usersQuery = useUsersAllQuery({ enabled: editMode });
   const groupsQuery = useMyUsergroupsQuery({ enabled: editMode });
@@ -101,6 +102,14 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   useEffect(() => {
     setCanEdit(playlistProp?.owner.id === userContext?.user?.id ?? 0);
   }, [playlistProp, userContext]);
+  const dropDownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
+    {
+      name: 'Upravit video',
+      onClickWithId: (id) => {
+        navigate({ pathname: `/${Route.videoEdit}/${id}` });
+      },
+    },
+  ];
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
@@ -158,7 +167,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   };
   return (
     <Box margin={4}>
-      <Grid container xs={12} sx={{ alignItems: 'flex-start' }}>
+      <Grid container sx={{ alignItems: 'flex-start' }}>
         <Grid
           item
           position={{ xs: 'initial', md: editMode ? 'absolute' : 'fixed' }}
@@ -362,6 +371,8 @@ export function PlaylistDetail({ newPlaylist }: Props) {
           draggable={editMode}
           emptyText="Přidávat videa lze přímo z detailu videa, přes volbu Přidat do playlistu"
           urlParamsGenerator={(_, index) => playlistParams(playlist, index)}
+          showActions={canEdit}
+          dropdownActions={dropDownActions}
         />
       </Box>
     </Box>

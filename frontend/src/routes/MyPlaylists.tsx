@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useMyPlaylistsQuery } from 'api/axios-client/Query';
 import { PlaylistDTO, VideoDTO } from 'api/axios-client';
 import AddIcon from '@mui/icons-material/Add';
 import { Route } from 'routes/RouteNames';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AxiosQuery } from 'api';
-import { Alert, Typography } from '@mui/material';
-import { Grid } from 'react-loader-spinner';
+import { Alert } from '@mui/material';
 import { ApiPath } from 'components/Utils/APIUtils';
 import AspectRatio from 'components/Utils/AspectRatio';
+import { UserContext } from 'routes/Root';
 
 function MyPlaylistsThumbnail(row: PlaylistDTO) {
   return (
@@ -34,7 +33,10 @@ function MyPlaylistsThumbnail(row: PlaylistDTO) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function MyPlaylists() {
-  const playlistQuery = useMyPlaylistsQuery();
+  const userContext = useContext(UserContext);
+  const playlistQuery = useMyPlaylistsQuery({
+    queryKey: ['Client', 'myPlaylists', userContext?.user?.id],
+  });
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
 

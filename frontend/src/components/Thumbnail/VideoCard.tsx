@@ -14,7 +14,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { ApiPath, NotPermittedGuid } from 'components/Utils/APIUtils';
 import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { Route } from 'routes/RouteNames';
@@ -34,6 +34,7 @@ interface Props {
   withPlayer?: boolean;
   currentlyPlaying?: boolean;
   urlParams?: string;
+  dropdownActions?: (DropDownMenuAction | DropDownMenuCustomAction)[];
 }
 
 function VideoCard({
@@ -49,11 +50,13 @@ function VideoCard({
   withPlayer,
   currentlyPlaying,
   urlParams,
+  dropdownActions,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
+  const notPermittedVideo = video.id === NotPermittedGuid;
   const userContext = useContext(UserContext);
 
-  const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
+  const defaultDropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
       elementFactory: (props) =>
         AddToPlaylistDropDownFactory({ ...props, parentObjectId: video.id }),
@@ -76,13 +79,8 @@ function VideoCard({
       >
         <Grid
           item
-          //xs={fullWidth ? (smallThumbnail ? 3.5 : 4) : 12}
           sx={{
             aspectRatio: '16 / 9',
-            ...(smallThumbnail &&
-              {
-                //width: '50%',
-              }),
             position: 'relative',
             ...(fullWidth && { display: 'flex' }),
           }}
@@ -95,7 +93,7 @@ function VideoCard({
                 <CardMedia
                   component="img"
                   draggable={false}
-                  image={ApiPath(imageUrl)}
+                  image={notPermittedVideo ? '/notPermitted.webp' : ApiPath(imageUrl)}
                   alt={imageUrl}
                   sx={{
                     maxHeight: '100%',
@@ -190,10 +188,14 @@ function VideoCard({
                   pt={1}
                   sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
                 >
-                  {name}
+                  {notPermittedVideo ? 'Nedostatečná oprávnění' : name}
                 </Typography>
                 {(showActions ?? true) && userContext?.user && (
-                  <DropDownMenu actions={dropdownActions} icon={<MoreVertIcon />} />
+                  <DropDownMenu
+                    actions={dropdownActions ?? defaultDropdownActions}
+                    icon={<MoreVertIcon />}
+                    sx={{ position: 'absolute', right: 0 }}
+                  />
                 )}
               </Box>
               {(showDescription ?? false) && (
@@ -214,7 +216,7 @@ function VideoCard({
                 <Box pb="4px">
                   <Typography variant="caption">{video.views} zhlédnutí • </Typography>
                   <Typography variant="caption">
-                    {TimestampToAgoWords(video.uploadTimestamp)}
+                    {notPermittedVideo ? '' : TimestampToAgoWords(video.uploadTimestamp)}
                   </Typography>
                 </Box>
               )}

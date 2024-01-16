@@ -12,6 +12,11 @@ import {
 import ReorderIcon from '@mui/icons-material/Reorder';
 import { Video } from 'model/Video';
 import { StrictModeDroppable } from 'components/Utils/StrictModeDroppable';
+import {
+  DropDownMenuAction,
+  DropDownMenuCustomAction,
+  IsDropDownMenuCustomAction,
+} from 'components/DropDownMenu/DropDownMenu';
 
 export interface Props {
   videos: Video[];
@@ -19,6 +24,8 @@ export interface Props {
   onDragEnd?(newVideos: Video[]): void;
   emptyText?: string;
   urlParamsGenerator?: (video: Video, index: number) => string;
+  showActions?: boolean;
+  dropdownActions?: (DropDownMenuAction | DropDownMenuCustomAction)[];
 }
 
 export function VerticalList({
@@ -27,6 +34,8 @@ export function VerticalList({
   onDragEnd,
   emptyText,
   urlParamsGenerator,
+  showActions,
+  dropdownActions,
 }: Props) {
   const [videos, setVideos] = useState<Video[]>(videosProp);
 
@@ -106,7 +115,12 @@ export function VerticalList({
                           showTags
                           showChannel
                           showDescription={false}
-                          showActions={false}
+                          showActions={showActions ?? false}
+                          dropdownActions={dropdownActions?.map((x) =>
+                            !IsDropDownMenuCustomAction(x) && x?.onClickWithId
+                              ? { ...x, onClick: () => x.onClickWithId?.(video.id) }
+                              : x,
+                          )}
                           urlParams={urlParamsGenerator ? urlParamsGenerator(video, index) : ''}
                         />
                       </Grid>
