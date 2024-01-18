@@ -11,6 +11,7 @@ import App from './App';
 const container = document.getElementById('root');
 const root = createRoot(container);
 const queryClient = new QueryClient();
+
 onlineManager.setOnline(true);
 AxiosQuery.setBaseUrl(`${import.meta.env.VITE_API_URL}`);
 AxiosQuery.setAxiosFactory(() => {

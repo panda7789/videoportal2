@@ -35,10 +35,8 @@ namespace Backend.Models
         public User Owner { get; set; }
         public bool Public { get; set; }
         public ICollection<Permission> Permissions { get; set; }
-        
-        public VideoDTO ToDTO()
-        {
-            return new VideoDTO(
+
+        public VideoDTO ToDTO() => new VideoDTO(
                 Id: Id,
                 Name: Name,
                 ImageUrl: ImageUrl,
@@ -54,9 +52,9 @@ namespace Backend.Models
                 MainPlaylistId: MainPlaylist.Id,
                 MainPlaylistName: MainPlaylist.Name,
                 Owner: Owner.ToDTO(),
-                IsPublic: Public
-                );
-        }
+                IsPublic: Public,
+                IsEmpty: Owner.Id == Guid.Empty
+            );
     }
     public class ModifyVideoDTO
     {
@@ -104,7 +102,8 @@ namespace Backend.Models
         Guid MainPlaylistId,
         string MainPlaylistName,
         UserDTO Owner,
-        bool IsPublic
+        bool IsPublic,
+        bool? IsEmpty = false
         );
 
     public record ObjectPermissions(

@@ -7,6 +7,7 @@ import { Outlet, useNavigation } from 'react-router-dom';
 import theme from 'Theme';
 import { UserDTO as User, UserDTO } from 'api/axios-client';
 import { AxiosQuery } from 'api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface NavigationContextInterface {
   open: boolean;
@@ -27,6 +28,7 @@ export default function Root() {
   const [navigationOpen, setNavigationOpen] = useState(true);
   const [user, setUser] = useState<User | undefined>();
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   const getCurrentUser = AxiosQuery.Query.useMeQuery({
     enabled: false,
@@ -41,11 +43,14 @@ export default function Root() {
         }),
       );
       setIsLoading(false);
+      queryClient.invalidateQueries();
     },
     onError: () => {
       setUser(undefined);
       localStorage.removeItem('token');
       setIsLoading(false);
+      queryClient.invalidateQueries();
+      // tyhle invaldiace se musí přenéíst do odhlášení
     },
   });
 

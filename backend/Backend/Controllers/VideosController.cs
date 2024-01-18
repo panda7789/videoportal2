@@ -406,9 +406,9 @@ namespace Backend.Controllers
         }
 
         [NonAction]
-        public static Video NotPermitedVideo() => new Video()
+        public static Video NotPermitedVideo(Video original) => new Video()
         {
-            Id = Guid.Empty,
+            Id = original.Id,
             Owner = new User()
             {
                 Id = Guid.Empty,
@@ -416,7 +416,7 @@ namespace Backend.Controllers
             MainPlaylist = new Playlist()
             {
                 Id = Guid.Empty
-            },
+            }
         };
     }
 

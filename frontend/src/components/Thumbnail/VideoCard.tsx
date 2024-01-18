@@ -53,7 +53,7 @@ function VideoCard({
   dropdownActions,
 }: Props) {
   const { imageUrl, name, id, duration, description } = video;
-  const notPermittedVideo = video.id === NotPermittedGuid;
+  const notPermittedVideo = video?.isEmpty === true;
   const userContext = useContext(UserContext);
 
   const defaultDropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [

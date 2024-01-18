@@ -22,6 +22,7 @@ import theme from 'Theme';
 import { SimpleListItem } from 'components/DropDownMenu/ListItem';
 import LoginForm from 'components/Forms/LoginForm';
 import RegistrationForm from 'components/Forms/RegistationForm';
+import { useQueryClient } from '@tanstack/react-query';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -40,6 +41,7 @@ function Avatar() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const userContext = useContext(UserContext);
   const [openRegistration, setOpenRegistration] = React.useState(false);
+  const queryClient = useQueryClient();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -52,6 +54,7 @@ function Avatar() {
   const handleLogout = () => {
     userContext?.setUser(undefined);
     localStorage.removeItem('token');
+    queryClient.invalidateQueries();
   };
 
   return (

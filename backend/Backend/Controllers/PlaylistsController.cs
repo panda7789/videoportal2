@@ -143,7 +143,7 @@ namespace Backend.Controllers
                 return Forbid();
             }
             var user = User.GetUser(_context);
-            playlist.Videos = playlist.Videos.Select(x => !VideosController.HasPermissions(x, user) ? VideosController.NotPermitedVideo() : x).ToList();
+            playlist.Videos = playlist.Videos.Select(x => !VideosController.HasPermissions(x, user) ? VideosController.NotPermitedVideo(x) : x).ToList();
 
             return playlist.ToDTO();
         }
