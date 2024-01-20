@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   TextField,
   Button,
@@ -14,7 +14,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import {
   useMyUsergroupsQuery,
-  useUserGroupsAllQuery,
   useUserGroupsGETQuery,
   useUserGroupsPOSTMutation,
   useUserGroupsPUTMutation,
@@ -47,7 +46,13 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   const [value, setValue] = useState<string | undefined>(user?.ownerGroupId ?? '');
   const ownerGroupQuery = useUserGroupsGETQuery(value ?? '');
   const groupsQuery = useMyUsergroupsQuery();
+  const [groupEditable, setGroupEditable] = useState<boolean>(false);
 
+  useEffect(() => {
+    setGroupEditable(
+      (newGroup || groupsQuery.data?.some((x) => x.id === user.ownerGroupId)) ?? false,
+    );
+  }, [user, groupsQuery.data]);
   if (newGroup) {
     postMutation = useUserGroupsPOSTMutation();
   }
@@ -58,7 +63,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   }
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const ownerGroupRef = useRef<HTMLInputElement>(null);
+  const ownerGroupInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     if (event.currentTarget.name === 'Cancel') {
@@ -71,7 +76,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
         new UserGroupPostPutDTO({
           name: nameRef.current!.value,
           userIds: targetUserKeys,
-          ownerGroupId: ownerGroupRef.current!.value,
+          ownerGroupId: ownerGroupInputRef.current!.value,
         }),
         {
           onSuccess: () => {
@@ -89,7 +94,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
       const updatedGroup = new UserGroupPostPutDTO({
         name: nameRef.current!.value,
         userIds: targetUserKeys,
-        ownerGroupId: ownerGroupRef.current!.value,
+        ownerGroupId: ownerGroupInputRef.current!.value,
       });
       updateMutation?.mutateAsync(updatedGroup, {
         onSuccess: () => {
@@ -157,7 +162,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
             </Grid>
             <Grid item xs={12} height="60vh">
               <Typography variant="subtitle1" gutterBottom>
-                Uživatelé ve skupině
+                Uživatelé
               </Typography>
               <Transfer
                 dataSource={usersQuery.data}
@@ -170,8 +175,9 @@ export function UserGroupEdit({ newGroup = false }: Props) {
                 listStyle={{ width: '100%', height: '90%' }}
                 render={(item) => `${item.name}(${item.email})`}
                 locale={{
+                  titles: ['', 's oprávněním'],
                   itemsUnit: 'uživatelé',
-                  itemUnit: 'uživatelé',
+                  itemUnit: 'uživatel',
                   notFoundContent: 'Kde nic tu nic',
                   searchPlaceholder: 'Hledat',
                   remove: 'Odebrat',
@@ -193,14 +199,18 @@ export function UserGroupEdit({ newGroup = false }: Props) {
                 required
                 label="Vlastník skupiny"
                 value={value}
-                inputRef={ownerGroupRef}
+                disabled={!groupEditable}
+                inputRef={ownerGroupInputRef}
                 onChange={(newValue) => {
                   setValue(newValue.target.value);
                 }}
                 InputProps={{
                   endAdornment: (
                     <IconButton
-                      sx={{ display: value ? undefined : 'none', marginRight: '8px' }}
+                      sx={{
+                        display: value && groupEditable ? undefined : 'none',
+                        marginRight: '8px',
+                      }}
                       onClick={() => setValue(undefined)}
                     >
                       <ClearIcon />

@@ -301,8 +301,9 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                             listStyle={{ width: '100%' }}
                             render={(item) => `${item.name}`}
                             locale={{
-                              itemsUnit: 'skupin',
-                              itemUnit: 'skupin',
+                              titles: ['', 's oprávněním'],
+                              itemsUnit: 'skupiny',
+                              itemUnit: 'skupina',
                               notFoundContent: 'Kde nic tu nic',
                               searchPlaceholder: 'Hledat',
                               remove: 'Odebrat',
@@ -327,8 +328,9 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                             listStyle={{ ...(isDesktop && { width: '100%' }) }}
                             render={(item) => `${item.name}(${item.email})`}
                             locale={{
+                              titles: ['', 's oprávněním'],
                               itemsUnit: 'uživatelé',
-                              itemUnit: 'uživatelé',
+                              itemUnit: 'uživatel',
                               notFoundContent: 'Kde nic tu nic',
                               searchPlaceholder: 'Hledat',
                               remove: 'Odebrat',
