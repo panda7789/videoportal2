@@ -37,13 +37,7 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            var result = _context.UserVideoStats.Where(x => x.VideoId == videoId && x.UserId == userId).FirstOrDefault();
-            if (result == null)
-            {
-                var newItem = CreateEmpty((Guid)userId, videoId);
-                return newItem;
-            }
-            return result;
+            return Get(videoId, userId, _context);
         }
 
         // PUT: api/UserVideoStats/5
@@ -109,7 +103,7 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-            private UserVideoStats CreateEmpty(Guid userId, Guid videoId) => new UserVideoStats()
+        private static UserVideoStats CreateEmpty(Guid userId, Guid videoId) => new UserVideoStats()
         {
             VideoId = videoId,
             UserId = userId,
@@ -118,5 +112,17 @@ namespace Backend.Controllers
             Like = false,
             TimeWatchedSec = 0
         };
+
+        public static UserVideoStats Get(Guid videoId, Guid? userId, MyDbContext _context)
+        {
+            var result = _context.UserVideoStats.Where(x => x.VideoId == videoId && x.UserId == userId).FirstOrDefault();
+            if (result == null)
+            {
+                var created = CreateEmpty((Guid)userId, videoId);
+                _context.UserVideoStats.Add(created);
+                return created;
+            }
+            return result;
+        }
     }
 }

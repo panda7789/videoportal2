@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -32,7 +33,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SupportNonNullableReferenceTypes();
     c.SchemaFilter<MarkAsRequiredIfNonNullable>();
     c.OperationFilter<SwaggerOptionalFormDataFilter>();
-    c.CustomSchemaIds(i => i.FriendlyId()); 
+    c.CustomSchemaIds(i => i.FriendlyId());
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 

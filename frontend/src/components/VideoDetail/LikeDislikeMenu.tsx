@@ -3,19 +3,16 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ShareIcon from '@mui/icons-material/Share';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import QueueIcon from '@mui/icons-material/Queue';
 import React, { useState } from 'react';
 import theme from 'Theme';
-import DropDownMenu, {
-  DropDownMenuAction,
-  DropDownMenuCustomAction,
-} from 'components/DropDownMenu/DropDownMenu';
 import { AxiosQuery } from 'api';
-import { useUserVideoStatsPUTMutation } from 'api/axios-client/Query';
+import {
+  useAddRemoveWatchLaterMutation,
+  useUserVideoStatsPUTMutation,
+} from 'api/axios-client/Query';
 import { UserVideoStats } from 'api/axios-client';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 import { UseQueryResult } from '@tanstack/react-query';
-import { AddToPlaylistDropDownFactory } from 'components/DropDownMenu/AddToPlaylistDropdown';
 
 export interface Props {
   videoId: string;
@@ -40,17 +37,18 @@ function LikeDislikeMenu({
   enabled = true,
 }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarText, setSnackbarText] = useState<string | undefined>(undefined);
   const videoUserStatsMutation = useUserVideoStatsPUTMutation(videoId, {
     onSuccess: () => {
       userStatsQuery?.refetch();
     },
   });
-  const dropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
-    {
-      elementFactory: (props) =>
-        AddToPlaylistDropDownFactory({ ...props, parentObjectId: videoId }),
+  const addToWatchLaterMutation = useAddRemoveWatchLaterMutation(videoId, {
+    onSuccess: () => {
+      userStatsQuery?.refetch();
+      setSnackbarOpen(true);
     },
-  ];
+  });
 
   const handleLikeClick = () => {
     // todo send like to api
@@ -75,11 +73,22 @@ function LikeDislikeMenu({
       );
     }
   };
+  const handleWatchLaterClick = () => {
+    if (userStatsQuery?.data) {
+      setSnackbarText(
+        `Video bylo ${
+          !userStatsQuery?.data?.addedToPlaylist ? 'přidáno do' : 'odebráno z'
+        } playlistu "Přehrát později"`,
+      );
+      addToWatchLaterMutation.mutate();
+    }
+  };
   const handleShareClick = () => {
     navigator.clipboard.writeText(window.location.href);
+    setSnackbarText('Odkaz byl zkopírován do schránky!');
     setSnackbarOpen(true);
   };
-  const handleShareClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+  const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -118,29 +127,27 @@ function LikeDislikeMenu({
         <Typography>{NumberToWords(dislikeCount)}</Typography>
       </Item>
       <Item>
-        <IconButton
-          disabled={!enabled}
-          onClick={handleShareClick}
-          color={userStatsQuery?.data?.addedToPlaylist ? 'success' : 'default'}
-        >
+        <IconButton disabled={!enabled} onClick={handleShareClick}>
           <ShareIcon />
         </IconButton>
         <Typography>Sdílení</Typography>
       </Item>
       <Item>
-        <DropDownMenu
-          actions={dropdownActions}
-          text="Uložit"
-          icon={<QueueIcon />}
-          enabled={enabled}
-        />
+        <IconButton
+          disabled={!enabled}
+          onClick={handleWatchLaterClick}
+          color={userStatsQuery?.data?.addedToPlaylist ? 'primary' : 'default'}
+        >
+          <WatchLaterIcon />
+        </IconButton>
+        <Typography>Přehrát později</Typography>
       </Item>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={snackbarOpen}
-        onClose={handleShareClose}
+        onClose={handleSnackbarClose}
         autoHideDuration={4000}
-        message="Odkaz byl zkopírován do schránky!"
+        message={snackbarText}
       />
     </Stack>
   );

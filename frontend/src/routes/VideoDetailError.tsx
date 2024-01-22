@@ -4,7 +4,7 @@ import ErrorPage from 'routes/ErrorPage';
 
 function VideoDetailError() {
   const [searchParams] = useSearchParams();
-  const [shouldRedirect, redirect] = React.useState(false);
+  const [shouldRedirect, redirect] = React.useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (searchParams.get('playlist')) {
@@ -12,10 +12,10 @@ function VideoDetailError() {
     }
   }, [searchParams]);
 
-  return shouldRedirect ? (
+  return shouldRedirect === true ? (
     <Navigate to={`/playlist/${searchParams.get('playlist')}`} />
   ) : (
-    <ErrorPage />
+    shouldRedirect === false && <ErrorPage />
   );
 }
 

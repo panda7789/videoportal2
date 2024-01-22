@@ -35,11 +35,13 @@ export function MyPlaylistsDropdown({ defaultValue, required = false }: Props) {
         ),
       }}
     >
-      {playlists.data?.map((playlist) => (
-        <MenuItem key={playlist.id} value={playlist.id}>
-          {playlist.name}
-        </MenuItem>
-      ))}
+      {playlists.data
+        ?.filter((x) => !x.isReadOnly)
+        .map((playlist) => (
+          <MenuItem key={playlist.id} value={playlist.id}>
+            {playlist.name}
+          </MenuItem>
+        ))}
     </TextField>
   );
 }

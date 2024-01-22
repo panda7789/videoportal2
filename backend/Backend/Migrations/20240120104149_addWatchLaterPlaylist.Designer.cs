@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240120104149_addWatchLaterPlaylist")]
+    partial class addWatchLaterPlaylist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,34 +103,11 @@ namespace Backend.Migrations
                     b.Property<string>("ThumbnailUrl")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("VideoId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("VideoId");
-
                     b.ToTable("Playlists");
-                });
-
-            modelBuilder.Entity("Backend.Models.PlaylistVideo", b =>
-                {
-                    b.Property<Guid>("PlaylistId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("VideoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.HasKey("PlaylistId", "VideoId");
-
-                    b.HasIndex("VideoId");
-
-                    b.ToTable("PlaylistVideo");
                 });
 
             modelBuilder.Entity("Backend.Models.Role", b =>
@@ -160,21 +140,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "b2fb8d9f-052f-4e89-8b0d-22eb0b749503",
+                            ConcurrencyStamp = "4677e072-b6a1-4105-badf-e03f1c71c1ab",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "892994ee-69b9-43ff-a86b-8bcf215e3f34",
+                            ConcurrencyStamp = "acabbc04-1c66-4fb7-8528-684a164cb2bd",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "c10b40e7-06fe-4abb-b614-d1f91e23f4f4",
+                            ConcurrencyStamp = "24de9787-713b-4069-b5d1-72069d7809e9",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -278,7 +258,7 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "02b98ca4-2c88-4e5e-9971-18ef4cfaaa5f",
+                            ConcurrencyStamp = "ed43e1ae-41ca-49d1-8e53-4a1b3f878c7d",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
@@ -286,7 +266,7 @@ namespace Backend.Migrations
                             Name = "Administrátor",
                             NormalizedEmail = "admin@admin.cz",
                             NormalizedUserName = "admin@admin.cz",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIGmt9JWYtlsV59F81riEaI9ngaQ0j3cIei5LDG9Cn4uhOMHJl9qsDx4qO39ZxWg6w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFN3s6hcemdXlndBU1g+aF3sQcfGVimA1Kx26ZsMxsq3yzrqASdUnP1oSaOdUgMtcQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"
@@ -504,6 +484,21 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PlaylistVideo", b =>
+                {
+                    b.Property<Guid>("PlaylistsId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("VideosId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("PlaylistsId", "VideosId");
+
+                    b.HasIndex("VideosId");
+
+                    b.ToTable("PlaylistVideo");
+                });
+
             modelBuilder.Entity("TagVideo", b =>
                 {
                     b.Property<Guid>("TagsId")
@@ -587,30 +582,7 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.Video", null)
-                        .WithMany("Playlists")
-                        .HasForeignKey("VideoId");
-
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Backend.Models.PlaylistVideo", b =>
-                {
-                    b.HasOne("Backend.Models.Playlist", "Playlist")
-                        .WithMany("Videos")
-                        .HasForeignKey("PlaylistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Models.Video", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Playlist");
-
-                    b.Navigation("Video");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -726,6 +698,21 @@ namespace Backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PlaylistVideo", b =>
+                {
+                    b.HasOne("Backend.Models.Playlist", null)
+                        .WithMany()
+                        .HasForeignKey("PlaylistsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Video", null)
+                        .WithMany()
+                        .HasForeignKey("VideosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TagVideo", b =>
                 {
                     b.HasOne("Backend.Models.Tag", null)
@@ -759,15 +746,11 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Playlist", b =>
                 {
                     b.Navigation("Permissions");
-
-                    b.Navigation("Videos");
                 });
 
             modelBuilder.Entity("Backend.Models.Video", b =>
                 {
                     b.Navigation("Permissions");
-
-                    b.Navigation("Playlists");
                 });
 #pragma warning restore 612, 618
         }

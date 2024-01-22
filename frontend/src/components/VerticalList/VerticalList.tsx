@@ -1,7 +1,7 @@
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import VideoCard from 'components/Thumbnail/VideoCard';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DragDropContext,
   DroppableProvided,
@@ -39,6 +39,9 @@ export function VerticalList({
 }: Props) {
   const [videos, setVideos] = useState<Video[]>(videosProp);
 
+  useEffect(() => {
+    setVideos(videosProp);
+  }, [videosProp]);
   const onDragEndLocal = (result: DropResult) => {
     const { destination, source } = result;
     if (destination?.droppableId === source.droppableId && destination.index === source.index) {
@@ -53,7 +56,7 @@ export function VerticalList({
 
     setVideos(newList);
     if (onDragEnd) {
-      onDragEnd(videos);
+      onDragEnd(newList);
     }
   };
 

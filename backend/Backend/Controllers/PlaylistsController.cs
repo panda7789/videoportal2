@@ -9,6 +9,9 @@ using Backend.Models;
 using Backend.Utils;
 using System.Threading.Channels;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
+using Backend.Migrations;
+using System.ComponentModel;
 
 namespace Backend.Controllers
 {
@@ -17,6 +20,7 @@ namespace Backend.Controllers
     public class PlaylistsController : ControllerBase
     {
         public readonly MyDbContext _context;
+        public const string WatchLaterPlaylistName = "Přehrát později";
 
         public PlaylistsController(MyDbContext context)
         {
@@ -116,7 +120,7 @@ namespace Backend.Controllers
             {
                 query = query.Skip(offset.Value);
             }
-            return await query.Include(x => x.Videos).Include(x => x.Owner).Select(x => x.ToBasicDTO()).ToListAsync();
+            return await query.Include(x => x.Videos).ThenInclude(x => x.Video).Include(x => x.Owner).Select(x => x.ToBasicDTO()).ToListAsync();
         }
 
         // GET: api/Playlists/5
@@ -131,6 +135,7 @@ namespace Backend.Controllers
                 _context.Playlists
                     .Where(x => x.Id == id)
                     .Include(x => x.Videos)
+                    .ThenInclude(x => x.Video)
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
 
@@ -143,7 +148,7 @@ namespace Backend.Controllers
                 return Forbid();
             }
             var user = User.GetUser(_context);
-            playlist.Videos = playlist.Videos.Select(x => !VideosController.HasPermissions(x, user) ? VideosController.NotPermitedVideo(x) : x).ToList();
+            playlist.Videos = playlist.Videos.OrderBy(x => x.Order).Select((x,i) => !VideosController.HasPermissions(x.Video, user) ? new PlaylistVideo() { Video = VideosController.NotPermitedVideo(x.Video), Order = i } : x).ToList();
 
             return playlist.ToDTO();
         }
@@ -162,7 +167,7 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
-            var playlistDB = await _context.Playlists.FindAsync(id);
+            var playlistDB = await _context.Playlists.Include(x => x.Videos).Where(x => x.Id ==id).FirstOrDefaultAsync();
             if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
                 return NotFound();
@@ -175,7 +180,30 @@ namespace Backend.Controllers
                 playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, playlist.Thumbnail);
             }
             var originalPublic = playlist.IsPublic;
-            playlistDB.Videos = playlist.Videos;
+            foreach (var video in playlistDB.Videos)
+            {
+                _context.Remove(video);
+            }
+            playlistDB.Videos.Clear();
+
+            if (playlist.Videos?.Count > 0)
+            {
+                var arr = playlist.Videos.ToArray();
+                for (var i = 0; i < playlist.Videos.Count; i++)
+                {
+                    var video = await _context.Videos.FindAsync(arr[i]);
+                    if (video == null)
+                    {
+                        return NotFound();
+                    }
+                    var added = new PlaylistVideo() { Video = video, Order = i, VideoId = video.Id, Playlist = playlistDB, PlaylistId = playlistDB.Id };
+                    playlistDB.Videos.Add(added);
+                }
+            }
+            else
+            {
+                playlistDB.Videos = new List<PlaylistVideo>();
+            }
             playlistDB.Name = playlist.Name;
             playlistDB.Public = playlist.IsPublic;
             if (!playlist.IsPublic || !originalPublic)
@@ -186,42 +214,7 @@ namespace Backend.Controllers
                     PermissionsController.SavePermissions(_context, playlist: playlistDB, permissions: playlist.Permissions);
                 }
             }
-            _context.Entry(playlistDB).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // PUT: api/Playlists/5
-        [HttpPut("{id}/video/{videoId}")]
-        public async Task<IActionResult> PutVideoInPlaylist(Guid id, Guid videoId, [FromQuery] bool add)
-        {
-            // todo tady chybí oprávnění
-            var userId = User.GetUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            var playlistDB = await _context.Playlists.Where(x => x.Id == id).Include(x => x.Videos).FirstOrDefaultAsync();
-            if (playlistDB == null || playlistDB.Owner.Id != userId)
-            {
-                return NotFound();
-            }
-            var videoDB = await _context.Videos.FindAsync(videoId);
-            if (videoDB == null)
-            {
-                return NotFound();
-            }
-            playlistDB.Videos ??= new List<Video>();
-            if (add)
-            {
-                playlistDB.Videos.Add(videoDB);
-            }
-            else
-            {
-                playlistDB.Videos.Remove(videoDB);
-            }
-            _context.Entry(playlistDB).State = EntityState.Modified;
+            _context.Playlists.Update(playlistDB);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -242,15 +235,16 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
+            var videos = playlist.Videos?.Count > 1 ? _context.Videos.Where(x => playlist.Videos.Contains(x.Id)).ToList() : new List<Video>();
             var playlistDB = new Playlist
             {
                 Owner = User.GetUser(_context),
                 CreatedTimestamp = DateTime.UtcNow,
                 Description = playlist.Description,
-                Videos = playlist.Videos,
                 Name = playlist.Name,
                 Public = playlist.IsPublic
             };
+            playlistDB.Videos = videos.Select((x, i) => new PlaylistVideo() { Video = x, Order = i, Playlist = playlistDB }).ToList();
             if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
@@ -293,18 +287,87 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        public static void AddVideoToPlaylist(MyDbContext _context, Guid playlistId, Video video)
+        /// <summary>
+        /// Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
+        /// </summary>
+        [HttpPost("add-remove-watch-later")]
+        public async Task<ActionResult<bool>> AddOrRemoveVideoFromWatchLater(Guid id)
         {
-            var playlist = _context.Playlists.Single(x => x.Id == playlistId);
-            playlist.Videos ??= new List<Video>();
-            playlist.Videos.Add(video);
+            var user = User.GetUser(_context);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            var video = await _context.Videos.FindAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+            var userWatchLaterPlaylist = _context.Playlists.Where(x => x.Id == user.WatchLaterPlaylistId).Include(x => x.Videos).FirstOrDefault();
+            if (userWatchLaterPlaylist == null)
+            {
+                CreateWatchLaterPlaylist(user);
+            }
+            if (userWatchLaterPlaylist == null)
+            {
+                return Problem("Uživatel nemá playlist přehrát později a nepovedlo se jej vytvořit.");
+            }
+
+            if (userWatchLaterPlaylist.Videos == null)
+            {
+                userWatchLaterPlaylist.Videos = new List<PlaylistVideo>();
+            }
+
+            var userVideoStats = UserVideoStatsController.Get(video.Id, user.Id, _context);
+
+            var added = false;
+            if (userWatchLaterPlaylist.Videos.Any(x => x.Video.Id == video.Id))
+            {
+                var arr = userWatchLaterPlaylist.Videos.ToList();
+                var index = arr.FindIndex(x => x.Video.Id == video.Id);
+                for (var i = index; i < arr.Count; i++)
+                {
+                    arr[i].Order--;
+                }
+                arr.RemoveAt(index);
+                userWatchLaterPlaylist.Videos = arr;
+                if (userVideoStats != null)
+                {
+                    userVideoStats.AddedToPlaylist = false;
+                }
+                added = false;
+            }
+            else
+            {
+                userWatchLaterPlaylist.Videos.Add(new PlaylistVideo() { Video = video, Order = userWatchLaterPlaylist.Videos.LastOrDefault()?.Order + 1 ?? 0 });
+                if (userVideoStats != null)
+                {
+                    userVideoStats.AddedToPlaylist = true;
+                }
+                added = true;
+            }
+            await _context.SaveChangesAsync();
+            return new ActionResult<bool>(added);
+
+        }
+
+        public static void AddVideoToPlaylist(MyDbContext _context, Playlist playlist, Video video)
+        {
+            playlist.Videos ??= new List<PlaylistVideo>();
+            playlist.Videos.Add(new PlaylistVideo() { Video = video, Order = playlist.Videos.LastOrDefault()?.Order + 1 ?? 0, Playlist = playlist });
             _context.SaveChanges();
         }
-        public static void RemoveVideoFromPlaylist(MyDbContext _context, Guid playlistId, Video video)
+        public static void RemoveVideoFromPlaylist(MyDbContext _context, Playlist playlist, Video video)
         {
-            var playlist = _context.Playlists.Single(x => x.Id == playlistId);
-            playlist.Videos ??= new List<Video>();
-            playlist.Videos.Remove(video);
+            playlist.Videos ??= new List<PlaylistVideo>();
+            var arr = playlist.Videos.ToList();
+            var index = arr.FindIndex(x => x.VideoId == video.Id);
+            for (var i = index; i < arr.Count; i++)
+            {
+                arr[i].Order--;
+            }
+            arr.RemoveAt(index);
+            playlist.Videos = arr;
             _context.SaveChanges();
         }
         private bool HasPermissions(Playlist playlist)
@@ -316,6 +379,17 @@ namespace Backend.Controllers
             }
             var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
             return playlist.Public || playlist.Owner.Id == user.Id || _context.Permissions.Any(x => x.PlaylistId == playlist.Id && (x.UserId == user.Id || (x.UserGroupId != null && userGroupsIds.Contains((Guid)x.UserGroupId))));
+        }
+        public static void CreateWatchLaterPlaylist(User user)
+        {
+            user.WatchLaterPlaylist = new Playlist
+            {
+                Name = WatchLaterPlaylistName,
+                Owner = user,
+                Public = false,
+                CreatedTimestamp = DateTime.UtcNow,
+                Videos = new List<PlaylistVideo>()
+            };
         }
     }
     public static class PlaylistExtensions

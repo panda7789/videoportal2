@@ -44,7 +44,7 @@ export type PlaylistsPOSTMutationParameters = {
   name?: string | null | undefined ;
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
-  videos?: Types.Video[] | null | undefined ;
+  videos?: string[] | null | undefined ;
   isPublic?: boolean | undefined ;
   permissions_UserIds?: string[] | null | undefined ;
   permissions_GroupIds?: string[] | null | undefined ;
@@ -59,7 +59,7 @@ export type PlaylistsPUTQueryParameters = {
   name?: string | null | undefined ;
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
-  videos?: Types.Video[] | null | undefined ;
+  videos?: string[] | null | undefined ;
   isPublic?: boolean | undefined ;
   permissions_UserIds?: string[] | null | undefined ;
   permissions_GroupIds?: string[] | null | undefined ;
@@ -69,7 +69,7 @@ export type PlaylistsPUTMutationParameters = {
   name?: string | null | undefined ;
   description?: string | null | undefined ;
   thumbnail?: Types.FileParameter | null | undefined ;
-  videos?: Types.Video[] | null | undefined ;
+  videos?: string[] | null | undefined ;
   isPublic?: boolean | undefined ;
   permissions_UserIds?: string[] | null | undefined ;
   permissions_GroupIds?: string[] | null | undefined ;
@@ -79,10 +79,8 @@ export type PlaylistsDELETEQueryParameters = {
   id: string ;
 }
 
-export type VideoQueryParameters = {
-  id: string ;
-  videoId: string ;
-  add?: boolean | undefined ;
+export type AddRemoveWatchLaterQueryParameters = {
+  id?: string | undefined ;
 }
 
 export type SearchQueryParameters = {
@@ -912,58 +910,52 @@ export function usePlaylistsDELETEMutationWithParameters<TContext>(options?: Omi
 return useMutation((data: PlaylistsDELETE__MutationParameters) => Client.playlistsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
-export function videoUrl(id: string, videoId: string, add?: boolean | undefined): string {
-  let url_ = getBaseUrl() + "/api/Playlists/{id}/video/{videoId}?";
-if (id === undefined || id === null)
-  throw new Error("The parameter 'id' must be defined.");
-url_ = url_.replace("{id}", encodeURIComponent("" + id));
-if (videoId === undefined || videoId === null)
-  throw new Error("The parameter 'videoId' must be defined.");
-url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
-if (add === null)
-    throw new Error("The parameter 'add' cannot be null.");
-else if (add !== undefined)
-    url_ += "add=" + encodeURIComponent("" + add) + "&";
+export function addRemoveWatchLaterUrl(id?: string | undefined): string {
+  let url_ = getBaseUrl() + "/api/Playlists/add-remove-watch-later?";
+if (id === null)
+    throw new Error("The parameter 'id' cannot be null.");
+else if (id !== undefined)
+    url_ += "id=" + encodeURIComponent("" + id) + "&";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function videoMutationKey(id: string, videoId: string, add?: boolean | undefined): MutationKey {
+export function addRemoveWatchLaterMutationKey(id?: string | undefined): MutationKey {
   return trimArrayEnd([
       'Client',
-      'video',
+      'addRemoveWatchLater',
       id as any,
-      videoId as any,
-      add as any,
     ]);
 }
 
 /**
- * @param add (optional) 
+ * Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
+ * @param id (optional) 
  * @return Success
  */
-export function useVideoMutation<TContext>(id: string, videoId: string, add?: boolean | undefined, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
-  const key = videoMutationKey(id, videoId, add);
+export function useAddRemoveWatchLaterMutation<TContext>(id?: string | undefined, options?: Omit<UseMutationOptions<boolean, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<boolean, unknown, void, TContext> {
+  const key = addRemoveWatchLaterMutationKey(id);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation(() => Client.video(id, videoId, add), {...options, mutationKey: key});
+  return useMutation(() => Client.addRemoveWatchLater(id), {...options, mutationKey: key});
 }
   
-type Video__MutationParameters = VideoQueryParameters
+type AddRemoveWatchLater__MutationParameters = AddRemoveWatchLaterQueryParameters
 
 /**
- * @param add (optional) 
+ * Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
+ * @param id (optional) 
  * @return Success
  */
-export function useVideoMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Video__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: VideoQueryParameters}): UseMutationResult<void, unknown, Video__MutationParameters, TContext> {
-  const key = videoMutationKey(options?.parameters?.id!, options?.parameters?.videoId!, options?.parameters?.add!);
+export function useAddRemoveWatchLaterMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<boolean, unknown, AddRemoveWatchLater__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: AddRemoveWatchLaterQueryParameters}): UseMutationResult<boolean, unknown, AddRemoveWatchLater__MutationParameters, TContext> {
+  const key = addRemoveWatchLaterMutationKey(options?.parameters?.id!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-return useMutation((data: Video__MutationParameters) => Client.video(data.id ?? options?.parameters?.id!, data.videoId ?? options?.parameters?.videoId!, data.add ?? options?.parameters?.add!), {...options, mutationKey: key});
+return useMutation((data: AddRemoveWatchLater__MutationParameters) => Client.addRemoveWatchLater(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
 export function searchUrl(q?: string | undefined, limit?: number | undefined, offset?: number | undefined): string {

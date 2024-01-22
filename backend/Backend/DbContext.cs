@@ -89,15 +89,17 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
                 UserId = new Guid("6B3E53EA-CEBF-42F3-BADB-DC9EE8EB064D")
             });
 
-        builder.Entity<Video>()
-            .HasMany(e => e.Playlists)
-            .WithMany(e => e.Videos);
+        builder.Entity<PlaylistVideo>()
+            .HasKey(p => new {p.PlaylistId, p.VideoId });
         builder.Entity<Video>()
             .HasOne(e => e.MainPlaylist);
+        builder.Entity<User>()
+            .HasOne(e => e.WatchLaterPlaylist).WithOne().HasForeignKey<User>(e => e.WatchLaterPlaylistId);
         builder.Entity<Video>().Navigation(e => e.MainPlaylist).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Tags).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Owner).AutoInclude();
         builder.Entity<Playlist>().Navigation(e => e.Owner).AutoInclude();
+        builder.Entity<PlaylistVideo>().Navigation(e => e.Video).AutoInclude();
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Video> Videos { get; set; }
@@ -107,6 +109,7 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
     public DbSet<Comment>? Comment { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+    public DbSet<PlaylistVideo> PlaylistVideo { get; set; }
 
 
 }

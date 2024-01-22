@@ -36,6 +36,8 @@ namespace Backend.Models
         public string Initials { get; set; }
         public UserRoles Roles { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
+        public Guid? WatchLaterPlaylistId { get; set; }
+        public virtual Playlist? WatchLaterPlaylist { get; set; }
 
         public UserDTO ToDTO() => new UserDTO
         {

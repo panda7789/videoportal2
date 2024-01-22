@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { VideoPlayer } from 'components/VideoDetail/VideoPlayer';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
 import { ApiPath, NotPermittedGuid } from 'components/Utils/APIUtils';
@@ -19,7 +20,8 @@ import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { Route } from 'routes/RouteNames';
 import { AddToPlaylistDropDownFactory } from 'components/DropDownMenu/AddToPlaylistDropdown';
-import { UserContext } from 'routes/Root';
+import { SnackbarContext, UserContext } from 'routes/Root';
+import { AxiosQuery } from 'api';
 
 interface Props {
   video: Video;
@@ -55,11 +57,27 @@ function VideoCard({
   const { imageUrl, name, id, duration, description } = video;
   const notPermittedVideo = video?.isEmpty === true;
   const userContext = useContext(UserContext);
+  const snackBarContext = useContext(SnackbarContext);
 
   const defaultDropdownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
-      elementFactory: (props) =>
-        AddToPlaylistDropDownFactory({ ...props, parentObjectId: video.id }),
+      name: 'Přehrát později',
+      onClick: () => {
+        AxiosQuery.Client.addRemoveWatchLater(video.id)
+          .then((value) => {
+            snackBarContext?.showText(
+              `Video bylo úspěšně ${
+                value === true ? 'přidáno do' : 'odebráno z'
+              } playlistu Přehrát později`,
+            );
+          })
+          .catch((error) => {
+            snackBarContext?.showText(
+              `Video se nepodařilo přidat/odebrat do/z playlistu Přehrát později - ${error}`,
+            );
+          });
+      },
+      icon: <WatchLaterIcon />,
     },
   ];
 

@@ -47,12 +47,18 @@ namespace Backend.Services
                 throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
             }
 
-            var rolesResult = await UsersController.UpdateUserRoles(_userManager, user, null, newUserRoles);
-            if (!rolesResult.Succeeded)
+            result = await UsersController.UpdateUserRoles(_userManager, user, null, newUserRoles);
+            if (!result.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
-                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(rolesResult.Errors)}");
+                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
+            }
 
+            PlaylistsController.CreateWatchLaterPlaylist(user);
+            result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Unable to register user {request.Email}, watchlater playlist not created - errors: {GetErrorsText(result.Errors)}");
             }
 
             return await Login(new LoginDTO { Email = request.Email, Password = request.Password });

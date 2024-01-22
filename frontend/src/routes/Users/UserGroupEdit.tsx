@@ -175,7 +175,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
                 listStyle={{ width: '100%', height: '90%' }}
                 render={(item) => `${item.name}(${item.email})`}
                 locale={{
-                  titles: ['', 's oprávněním'],
+                  titles: ['', 've skupině'],
                   itemsUnit: 'uživatelé',
                   itemUnit: 'uživatel',
                   notFoundContent: 'Kde nic tu nic',

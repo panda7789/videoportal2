@@ -126,8 +126,7 @@ namespace Backend.Controllers
             {
                 return Forbid();
             }
-            var playlists = await _context.Playlists.Where(x => x.Videos.Contains(video)).Select(x => x.Id).ToListAsync();
-            return playlists;
+            return await _context.Playlists.Where(x => x.Videos.Any(x => x.VideoId == video.Id)).Select(x => x.Id).ToListAsync();
         }
 
         [HttpGet("{id}/video-permissions")]
@@ -211,7 +210,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
             // todo tady chybí práva
-            var video = await _context.Videos.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
+            var video = await _context.Videos.Include(x => x.Tags).Include(x => x.MainPlaylist).ThenInclude(x => x.Videos).FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
                 return NotFound();
@@ -223,9 +222,9 @@ namespace Backend.Controllers
             video.Public = modifiedVideo.IsPublic;
             if (video.MainPlaylist != null && video.MainPlaylist.Id != modifiedVideo.PlaylistId)
             {
-                PlaylistsController.RemoveVideoFromPlaylist(_context, video.MainPlaylist.Id, video);
-                video.MainPlaylist = _context.Playlists.Single(x => x.Id == modifiedVideo.PlaylistId);
-                PlaylistsController.AddVideoToPlaylist(_context, modifiedVideo.PlaylistId, video);
+                PlaylistsController.RemoveVideoFromPlaylist(_context, video.MainPlaylist, video);
+                video.MainPlaylist = _context.Playlists.Include(x => x.Videos).Single(x => x.Id == modifiedVideo.PlaylistId);
+                PlaylistsController.AddVideoToPlaylist(_context, video.MainPlaylist, video);
             }
 
             if (video.Tags?.Any() ?? false)
@@ -314,7 +313,12 @@ namespace Backend.Controllers
                 _context.Tags.Where(x => video.Tags.Contains(x.Name)).ToList().ForEach(x => videoDB.Tags.Add(x));
             }
             _context.Videos.Add(videoDB);
-            PlaylistsController.AddVideoToPlaylist(_context, video.PlaylistId, videoDB);
+            var videoPlaylist = _context.Playlists.Find(video.PlaylistId);
+            if (videoPlaylist == null)
+            {
+                return BadRequest("Neplatné ID playlistu");
+            }
+            PlaylistsController.AddVideoToPlaylist(_context, videoPlaylist, videoDB);
             if (!video.IsPublic && (video.Permissions?.UserIds?.Any() ?? false) || (video.Permissions?.GroupIds?.Any() ?? false))
             {
                 PermissionsController.SavePermissions(_context, video: videoDB, permissions: video.Permissions);

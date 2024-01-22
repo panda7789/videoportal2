@@ -433,7 +433,7 @@ function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistBas
  * @param permissions_GroupIds (optional) 
  * @return Success
  */
-export function playlistsPOST(name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: Types.Video[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function playlistsPOST(name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: string[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Playlists";
       url_ = url_.replace(/[?&]$/, "");
 
@@ -562,7 +562,7 @@ function processPlaylistsGET(response: AxiosResponse): Promise<Types.PlaylistDTO
  * @param permissions_GroupIds (optional) 
  * @return Success
  */
-export function playlistsPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: Types.Video[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function playlistsPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, thumbnail?: Types.FileParameter | null | undefined, videos?: string[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Playlists/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
@@ -681,29 +681,25 @@ function processPlaylistsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
- * @param add (optional) 
+ * Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
+ * @param id (optional) 
  * @return Success
  */
-export function video(id: string, videoId: string, add?: boolean | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/api/Playlists/{id}/video/{videoId}?";
-    if (id === undefined || id === null)
-      throw new Error("The parameter 'id' must be defined.");
-    url_ = url_.replace("{id}", encodeURIComponent("" + id));
-    if (videoId === undefined || videoId === null)
-      throw new Error("The parameter 'videoId' must be defined.");
-    url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
-    if (add === null)
-        throw new Error("The parameter 'add' cannot be null.");
-    else if (add !== undefined)
-        url_ += "add=" + encodeURIComponent("" + add) + "&";
+export function addRemoveWatchLater(id?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<boolean> {
+    let url_ = getBaseUrl() + "/api/Playlists/add-remove-watch-later?";
+    if (id === null)
+        throw new Error("The parameter 'id' cannot be null.");
+    else if (id !== undefined)
+        url_ += "id=" + encodeURIComponent("" + id) + "&";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
-        ..._requestConfigVideo,
+        ..._requestConfigAddRemoveWatchLater,
         ...config,
-        method: "PUT",
+        method: "POST",
         url: url_,
         headers: {
+            "Accept": "text/plain"
         }
     };
 
@@ -714,11 +710,11 @@ export function video(id: string, videoId: string, add?: boolean | undefined, co
             throw _error;
         }
     }).then((_response: AxiosResponse) => {
-        return processVideo(_response);
+        return processAddRemoveWatchLater(_response);
     });
 }
 
-function processVideo(response: AxiosResponse): Promise<void> {
+function processAddRemoveWatchLater(response: AxiosResponse): Promise<boolean> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -730,13 +726,17 @@ function processVideo(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+        return Promise.resolve<boolean>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<boolean>(null as any);
 }
 
 /**
@@ -2686,15 +2686,15 @@ export function patchPlaylistsDELETERequestConfig(patch: (value: Partial<AxiosRe
   _requestConfigPlaylistsDELETE = patch(_requestConfigPlaylistsDELETE ?? {});
 }
 
-let _requestConfigVideo: Partial<AxiosRequestConfig> | undefined;
-export function getVideoRequestConfig() {
-  return _requestConfigVideo;
+let _requestConfigAddRemoveWatchLater: Partial<AxiosRequestConfig> | undefined;
+export function getAddRemoveWatchLaterRequestConfig() {
+  return _requestConfigAddRemoveWatchLater;
 }
-export function setVideoRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigVideo = value;
+export function setAddRemoveWatchLaterRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAddRemoveWatchLater = value;
 }
-export function patchVideoRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigVideo = patch(_requestConfigVideo ?? {});
+export function patchAddRemoveWatchLaterRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAddRemoveWatchLater = patch(_requestConfigAddRemoveWatchLater ?? {});
 }
 
 let _requestConfigSearch: Partial<AxiosRequestConfig> | undefined;

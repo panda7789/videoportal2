@@ -323,7 +323,7 @@ export class Playlist implements IPlaylist {
     createdTimestamp!: Date;
     description?: string | undefined;
     thumbnailUrl?: string | undefined;
-    videos?: Video[] | undefined;
+    videos?: PlaylistVideo[] | undefined;
     owner!: User;
     public!: boolean;
     permissions!: Permission[];
@@ -351,7 +351,7 @@ export class Playlist implements IPlaylist {
             if (Array.isArray(_data["videos"])) {
                 this.videos = [] as any;
                 for (let item of _data["videos"])
-                    this.videos!.push(Video.fromJS(item));
+                    this.videos!.push(PlaylistVideo.fromJS(item));
             }
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
             this.public = _data["public"];
@@ -399,7 +399,7 @@ export interface IPlaylist {
     createdTimestamp: Date;
     description?: string | undefined;
     thumbnailUrl?: string | undefined;
-    videos?: Video[] | undefined;
+    videos?: PlaylistVideo[] | undefined;
     owner: User;
     public: boolean;
     permissions: Permission[];
@@ -490,6 +490,7 @@ export class PlaylistDTO implements IPlaylistDTO {
     owner!: UserDTO;
     totalDuration!: string;
     isPublic!: boolean;
+    isReadOnly!: boolean;
 
     constructor(data?: IPlaylistDTO) {
         if (data) {
@@ -518,6 +519,7 @@ export class PlaylistDTO implements IPlaylistDTO {
             this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
             this.totalDuration = _data["totalDuration"];
             this.isPublic = _data["isPublic"];
+            this.isReadOnly = _data["isReadOnly"];
         }
     }
 
@@ -543,6 +545,7 @@ export class PlaylistDTO implements IPlaylistDTO {
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         data["totalDuration"] = this.totalDuration;
         data["isPublic"] = this.isPublic;
+        data["isReadOnly"] = this.isReadOnly;
         return data;
     }
 }
@@ -557,6 +560,63 @@ export interface IPlaylistDTO {
     owner: UserDTO;
     totalDuration: string;
     isPublic: boolean;
+    isReadOnly: boolean;
+}
+
+export class PlaylistVideo implements IPlaylistVideo {
+    playlistId!: string;
+    playlist!: Playlist;
+    videoId!: string;
+    video!: Video;
+    order!: number;
+
+    constructor(data?: IPlaylistVideo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.playlist = new Playlist();
+            this.video = new Video();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.playlistId = _data["playlistId"];
+            this.playlist = _data["playlist"] ? Playlist.fromJS(_data["playlist"]) : new Playlist();
+            this.videoId = _data["videoId"];
+            this.video = _data["video"] ? Video.fromJS(_data["video"]) : new Video();
+            this.order = _data["order"];
+        }
+    }
+
+    static fromJS(data: any): PlaylistVideo {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlaylistVideo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["playlistId"] = this.playlistId;
+        data["playlist"] = this.playlist ? this.playlist.toJSON() : <any>undefined;
+        data["videoId"] = this.videoId;
+        data["video"] = this.video ? this.video.toJSON() : <any>undefined;
+        data["order"] = this.order;
+        return data;
+    }
+}
+
+export interface IPlaylistVideo {
+    playlistId: string;
+    playlist: Playlist;
+    videoId: string;
+    video: Video;
+    order: number;
 }
 
 export class PostVideoResponse implements IPostVideoResponse {
@@ -754,6 +814,8 @@ export class User implements IUser {
     initials!: string;
     roles!: UserRoles;
     userGroups!: UserGroup[];
+    watchLaterPlaylistId?: string | undefined;
+    watchLaterPlaylist?: Playlist | undefined;
 
     constructor(data?: IUser) {
         if (data) {
@@ -793,6 +855,8 @@ export class User implements IUser {
                 for (let item of _data["userGroups"])
                     this.userGroups!.push(UserGroup.fromJS(item));
             }
+            this.watchLaterPlaylistId = _data["watchLaterPlaylistId"];
+            this.watchLaterPlaylist = _data["watchLaterPlaylist"] ? Playlist.fromJS(_data["watchLaterPlaylist"]) : <any>undefined;
         }
     }
 
@@ -828,6 +892,8 @@ export class User implements IUser {
             for (let item of this.userGroups)
                 data["userGroups"].push(item.toJSON());
         }
+        data["watchLaterPlaylistId"] = this.watchLaterPlaylistId;
+        data["watchLaterPlaylist"] = this.watchLaterPlaylist ? this.watchLaterPlaylist.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -852,6 +918,8 @@ export interface IUser {
     initials: string;
     roles: UserRoles;
     userGroups: UserGroup[];
+    watchLaterPlaylistId?: string | undefined;
+    watchLaterPlaylist?: Playlist | undefined;
 }
 
 export class UserDTO implements IUserDTO {

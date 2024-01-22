@@ -85,12 +85,32 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   });
   useLayoutEffect(() => ScrollToTop(), [playlist.id]);
 
-  const onListDragEnd = (videos: VideoDTO[]) => {
-    setPlaylist(new PlaylistDTO({ ...playlist, videos }));
-  };
-
   const toggleEditMode = (value: boolean) => {
     setEditMode(value);
+  };
+
+  const updatePlaylist = (name: string, description: string | undefined) => {
+    updatePlaylistMutation.mutate(
+      {
+        name,
+        description,
+        thumbnail: imageToUpload
+          ? { data: imageToUpload, fileName: imageToUpload.name }
+          : undefined,
+        isPublic: publicCheckbox,
+        permissions_UserIds: permissionsUserIds,
+        permissions_GroupIds: permissionsGroupIds,
+        videos: playlist.videos?.map((x) => x.id),
+      },
+      {
+        onSuccess: () => {
+          setStatusText('Playlist úspěšně aktualizován ☺️');
+        },
+        onError: () => {
+          setStatusText(`Playlist se nepodařilo aktualizovat 😥`);
+        },
+      },
+    );
   };
 
   useEffect(() => {
@@ -102,6 +122,11 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   useEffect(() => {
     setCanEdit(playlistProp?.owner.id === userContext?.user?.id ?? 0);
   }, [playlistProp, userContext]);
+
+  const onListDragEnd = (videos: VideoDTO[]) => {
+    setPlaylist(new PlaylistDTO({ ...playlist, videos }));
+  };
+
   const dropDownActions: (DropDownMenuAction | DropDownMenuCustomAction)[] = [
     {
       name: 'Upravit video',
@@ -109,13 +134,26 @@ export function PlaylistDetail({ newPlaylist }: Props) {
         navigate({ pathname: `/${Route.videoEdit}/${id}` });
       },
     },
+    {
+      name: 'Odebrat z playlistu',
+      onClickWithId: (id) => {
+        if (!playlist.videos || !canEdit) {
+          return;
+        }
+        const newVideos = playlist.videos.filter((video) => video.id !== id);
+        setPlaylist(new PlaylistDTO({ ...playlist, videos: newVideos }));
+        if (!editMode) {
+          updatePlaylist(playlist.name, playlist.description);
+        }
+      },
+    },
   ];
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    const description = data.get('description')?.toString()!;
-    const name = data.get('name')?.toString()!;
+    const description = data.get('description')?.toString() ?? playlist.description;
+    const name = data.get('name')?.toString() ?? playlist.name;
 
     if (newPlaylist) {
       createPlaylistMutation.mutate(
@@ -143,26 +181,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
         },
       );
     } else {
-      updatePlaylistMutation.mutate(
-        {
-          name,
-          description,
-          thumbnail: imageToUpload
-            ? { data: imageToUpload, fileName: imageToUpload.name }
-            : undefined,
-          isPublic: publicCheckbox,
-          permissions_UserIds: permissionsUserIds,
-          permissions_GroupIds: permissionsGroupIds,
-        },
-        {
-          onSuccess: () => {
-            setStatusText('Playlist úspěšně aktualizován ☺️');
-          },
-          onError: () => {
-            setStatusText(`Playlist se nepodařilo aktualizovat 😥`);
-          },
-        },
-      );
+      updatePlaylist(name, description);
     }
   };
   return (
@@ -209,7 +228,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                     ? playlist?.videos[0].imageUrl
                     : undefined,
                 )}
-                readOnly={!editMode}
+                readOnly={!editMode || playlist.isReadOnly}
               />
             </Box>
             {!editMode && (
@@ -239,13 +258,14 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                       startIcon={<DeleteForeverIcon />}
                       variant="contained"
                       color="error"
+                      disabled={playlist.isReadOnly}
                       onClick={() => deletePlaylistMutation.mutate()}
                     />
                   </>
                 )}
               </Box>
             )}
-            {editMode ? (
+            {editMode && !playlist.isReadOnly ? (
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -283,7 +303,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                           inputProps={{ 'aria-label': 'controlled' }}
                         />
                       }
-                      label="Veřejné video"
+                      label="Veřejný playlist"
                     />
                     {!publicCheckbox && (
                       <Grid container spacing={2}>

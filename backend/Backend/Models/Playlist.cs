@@ -1,4 +1,6 @@
-﻿using Backend.Utils;
+﻿using Backend.Controllers;
+using Backend.Utils;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models
@@ -10,7 +12,7 @@ namespace Backend.Models
         public DateTime CreatedTimestamp { get; set; }
         public string? Description { get; set; }
         public string? ThumbnailUrl { get; set; }
-        public ICollection<Video>? Videos { get; set; }
+        public ICollection<PlaylistVideo>? Videos { get; set; }
         public User Owner { get; set; }
         public bool Public { get; set; }
         public ICollection<Permission> Permissions { get; set; }
@@ -24,28 +26,40 @@ namespace Backend.Models
                 Name: Name,
                 Owner: Owner.ToDTO(),
                 ThumbnailUrl: ThumbnailUrl,
-                FirstVideoThumbnailUrl: Videos?.Any() ?? false ? Videos.First().ImageUrl : null,
-                FirstVideoId: Videos?.Any() ?? false ? Videos.First().Id : null,
-                VideoCount: Videos?.Count ?? 0,
-                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero);
+                FirstVideoThumbnailUrl: Videos?.Any() ?? false ? Videos.First().Video.ImageUrl : null,
+                FirstVideoId: Videos?.Any() ?? false ? Videos.First().Video.Id : null,
+                VideoCount: Videos?.Count() ?? 0,
+                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Video.Duration).Sum() : TimeSpan.Zero);
         }
 
         public PlaylistDTO ToDTO()
         {
             return new PlaylistDTO(
-                Videos: (Videos?.Any() ?? false) ? Videos.Select(x => x.ToDTO()).ToList() : null,
+                Videos: (Videos?.Any() ?? false) ? Videos.OrderBy(x => x.Order).Select(x => x.Video.ToDTO()).ToList() : null,
                 Id: Id,
                 CreatedTimestamp: CreatedTimestamp,
                 Description: Description,
                 Name: Name,
                 Owner: Owner.ToDTO(),
                 ThumbnailUrl: ThumbnailUrl,
-                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Duration).Sum() : TimeSpan.Zero,
-                IsPublic: Public
+                TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Video.Duration).Sum() : TimeSpan.Zero,
+                IsPublic: Public,
+                IsReadOnly: Name == PlaylistsController.WatchLaterPlaylistName
             );
         }
     }
 
+    [PrimaryKey(nameof(PlaylistId), nameof(VideoId))]
+    public class PlaylistVideo
+    {
+        public Guid PlaylistId { get; set; }
+        public Playlist Playlist { get; set; }
+
+        public Guid VideoId { get; set; }
+        public Video Video { get; set; }
+
+        public int Order { get; set; }
+    }
     public record PlaylistBasicInfoDTO(
          Guid Id,
         string Name,
@@ -67,7 +81,8 @@ namespace Backend.Models
         ICollection<VideoDTO>? Videos,
         UserDTO Owner,
         TimeSpan TotalDuration,
-        bool IsPublic
+        bool IsPublic,
+        bool IsReadOnly
     );
 
     public class PlaylistPostPutDTO
@@ -75,7 +90,7 @@ namespace Backend.Models
         public string Name { get; set; }
         public string? Description { get; set; }
         public IFormFile? Thumbnail { get; set; }
-        public ICollection<Video>? Videos { get; set; }
+        public ICollection<Guid>? Videos { get; set; }
         public bool IsPublic { get; set; }
         public ObjectPermissions? Permissions { get; set; }
     }
