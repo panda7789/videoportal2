@@ -15,11 +15,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
-import { ApiPath, NotPermittedGuid } from 'components/Utils/APIUtils';
+import { ApiPath } from 'components/Utils/APIUtils';
 import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { Route } from 'routes/RouteNames';
-import { AddToPlaylistDropDownFactory } from 'components/DropDownMenu/AddToPlaylistDropdown';
 import { SnackbarContext, UserContext } from 'routes/Root';
 import { AxiosQuery } from 'api';
 
@@ -186,7 +185,7 @@ function VideoCard({
                 minHeight: 64,
               }),
               ...(fullWidth && {
-                paddingRight: 1,
+                paddingRight: 0,
               }),
               ...(smallThumbnail && {
                 maxHeight: '100%',
@@ -212,7 +211,12 @@ function VideoCard({
                   <DropDownMenu
                     actions={dropdownActions ?? defaultDropdownActions}
                     icon={<MoreVertIcon />}
-                    sx={{ position: 'absolute', right: 0 }}
+                    sx={{
+                      right: 0,
+                      ...(!fullWidth && {
+                        position: 'absolute',
+                      }),
+                    }}
                   />
                 )}
               </Box>
@@ -238,7 +242,7 @@ function VideoCard({
                   </Typography>
                 </Box>
               )}
-              {(showTags ?? true) && video.tags?.length && (
+              {(showTags ?? true) && video.tags && video.tags?.length > 0 && (
                 <ChipLine chipData={video.tags} smaller={showChannel ?? false} />
               )}
             </Box>

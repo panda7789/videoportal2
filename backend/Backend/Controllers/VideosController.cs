@@ -38,7 +38,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist).AsQueryable().ApplyPermissions(this);
+            IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist).AsQueryable().ApplyPermissions(this, _context);
 
             if (!string.IsNullOrEmpty(orderBy))
             {
@@ -94,6 +94,8 @@ namespace Backend.Controllers
             var video = await _context.Videos
                     .Include(x => x.Tags)
                     .Include(x => x.MainPlaylist)
+                    .ThenInclude(x => x.Permissions)
+                    .Include(x => x.Permissions)
                        .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
@@ -130,7 +132,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("{id}/video-permissions")]
-        public async Task<ActionResult<ObjectPermissions>> GetVideoPermissions(Guid id)
+        public async Task<ActionResult<IncludeExcludeObjectPermissions>> GetVideoPermissions(Guid id)
         {
             if (_context.Videos == null)
             {
@@ -146,11 +148,19 @@ namespace Backend.Controllers
                 return Forbid();
             }
             var permissions = await _context.Permissions.Where(x => x.VideoId == id).ToListAsync();
-            var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
-            var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
-            return new ObjectPermissions(
-                UserIds: userPermissions,
-                GroupIds: groupPermissions
+            var includedUserPermissions = permissions.Where(x => x.UserId != null && x.OverridedEnableWatch == true).Select(x => x.UserId ?? Guid.Empty).ToList();
+            var excludedUserPermissions = permissions.Where(x => x.UserId != null && x.OverridedEnableWatch == false).Select(x => x.UserId ?? Guid.Empty).ToList();
+            var includedGroupPermissions = permissions.Where(x => x.UserGroupId != null && x.OverridedEnableWatch == true).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
+            var excludedGroupPermissions = permissions.Where(x => x.UserGroupId != null && x.OverridedEnableWatch == false).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
+            return new IncludeExcludeObjectPermissions(
+                IncludedPermissions:
+                    new ObjectPermissions(
+                        UserIds: includedUserPermissions,
+                        GroupIds: includedGroupPermissions),
+                ExcludedPermissions:
+                    new ObjectPermissions(
+                        UserIds: excludedUserPermissions,
+                        GroupIds: excludedGroupPermissions)
                 );
         }
         // GET: api/videos/my
@@ -196,7 +206,7 @@ namespace Backend.Controllers
                     WHERE v.id <> {video.Id}
                     ORDER BY Relevance desc
 ")
-                .AsQueryable().ApplyPermissions(this)
+                .AsQueryable().ApplyPermissions(this, _context)
                 .Take(10)
                 .AsNoTracking()
                 .Select(x => x.ToDTO())
@@ -215,11 +225,9 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            var originalPublic = video.Public;
             _context.Entry(video).State = EntityState.Modified;
             video.Name = modifiedVideo.Name;
             video.Description = modifiedVideo.Description;
-            video.Public = modifiedVideo.IsPublic;
             if (video.MainPlaylist != null && video.MainPlaylist.Id != modifiedVideo.PlaylistId)
             {
                 PlaylistsController.RemoveVideoFromPlaylist(_context, video.MainPlaylist, video);
@@ -239,13 +247,14 @@ namespace Backend.Controllers
             {
                 _context.Tags.Where(x => modifiedVideo.Tags.Contains(x.Name)).ToList().ForEach(x => video.Tags.Add(x));
             }
-            if (!modifiedVideo.IsPublic || !originalPublic)
+            PermissionsController.ClearExistingPermissions(_context, video);
+            if ((modifiedVideo.IncludedPermissions?.UserIds?.Any() ?? false) || (modifiedVideo.IncludedPermissions?.GroupIds?.Any() ?? false))
             {
-                PermissionsController.ClearExistingPermissions(_context, video);
-                if (!modifiedVideo.IsPublic && ((modifiedVideo.Permissions?.UserIds?.Any() ?? false) || (modifiedVideo.Permissions?.GroupIds?.Any() ?? false)))
-                {
-                    PermissionsController.SavePermissions(_context, video: video, permissions: modifiedVideo.Permissions);
-                }
+                PermissionsController.SavePermissions(_context, modifiedVideo.IncludedPermissions, video, null, true);
+            }
+            if ((modifiedVideo.ExcludedPermissions?.UserIds?.Any() ?? false) || (modifiedVideo.ExcludedPermissions?.GroupIds?.Any() ?? false))
+            {
+                PermissionsController.SavePermissions(_context, modifiedVideo.ExcludedPermissions, video, null, false);
             }
             if (modifiedVideo.Image != null)
             {
@@ -306,7 +315,6 @@ namespace Backend.Controllers
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
                 MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId),
-                Public = video.IsPublic
             };
             if (video.Tags?.Any() ?? false)
             {
@@ -318,10 +326,13 @@ namespace Backend.Controllers
             {
                 return BadRequest("Neplatné ID playlistu");
             }
-            PlaylistsController.AddVideoToPlaylist(_context, videoPlaylist, videoDB);
-            if (!video.IsPublic && (video.Permissions?.UserIds?.Any() ?? false) || (video.Permissions?.GroupIds?.Any() ?? false))
+            if ((video.IncludedPermissions?.UserIds?.Any() ?? false) || (video.IncludedPermissions?.GroupIds?.Any() ?? false))
             {
-                PermissionsController.SavePermissions(_context, video: videoDB, permissions: video.Permissions);
+                PermissionsController.SavePermissions(_context, video.IncludedPermissions, videoDB, null, true);
+            }
+            if ((video.ExcludedPermissions?.UserIds?.Any() ?? false) || (video.ExcludedPermissions?.GroupIds?.Any() ?? false))
+            {
+                PermissionsController.SavePermissions(_context, video.IncludedPermissions, videoDB, null, false);
             }
             await _context.SaveChangesAsync();
 
@@ -396,10 +407,39 @@ namespace Backend.Controllers
         {
             if (user == null)
             {
-                return video.Public;
+                return video.MainPlaylist.Public;
             }
             var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
-            return video.Public || video.Owner.Id == user.Id || (video?.Permissions.Any(y => y.VideoId == video.Id && (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)))) ?? false);
+            if (video.MainPlaylist.Public || video.Owner.Id == user.Id)
+            {
+                return true;
+            }
+            // user specific permissions
+            if (video?.Permissions.Where(y => y.UserId == user.Id) is var myPermissions && (myPermissions?.Any() ?? false))
+            {
+                if (myPermissions.Any(x => x.OverridedEnableWatch == false))
+                {
+                    return false;
+                }
+                if (myPermissions.Any(x => x.OverridedEnableWatch == true))
+                {
+                    return true;
+                }
+            }
+            // group specific permissions
+            if (video?.Permissions.Where(y => y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)) is var groupPermissions && (groupPermissions?.Any() ?? false))
+            {
+                if (groupPermissions.Any(x => x.OverridedEnableWatch == false))
+                {
+                    return false;
+                }
+                if (groupPermissions.Any(x => x.OverridedEnableWatch == true))
+                {
+                    return true;
+                }
+            }
+            return PlaylistsController.HasPermissions(video.MainPlaylist, user);
+
         }
 
         [NonAction]
@@ -426,20 +466,27 @@ namespace Backend.Controllers
 
     public static class VideoExtensions
     {
-        public static IQueryable<Video> ApplyPermissions(this IQueryable<Video> query, VideosController controller)
+        public static IQueryable<Video> ApplyPermissions(this IQueryable<Video> query, ControllerBase controller, MyDbContext _context)
         {
-            var user = controller.User.GetUser(controller._context);
+            var user = controller.User.GetUser(_context);
             if (user == null)
             {
-                return query.Where(x => x.Public);
+                return query.Where(x => x.MainPlaylist.Public);
             }
             var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
-            return query.Where(x =>
-                x.Public ||
-                x.Owner.Id == user.Id ||
-                (x.Permissions.Any(y =>
-                    y.VideoId == x.Id &&
-                    (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId))))
+            return query.Where(video =>
+                video.MainPlaylist.Public ||
+                video.Owner.Id == user.Id ||
+                (
+                    !video.Permissions.Any(y => y.UserId == user.Id && y.OverridedEnableWatch == false) &&
+                    (video.Permissions.Any(y => y.UserId == user.Id && y.OverridedEnableWatch == true) ||
+                    (
+                        !video.Permissions.Any(y => y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId) && y.OverridedEnableWatch == false) &&
+                        (video.Permissions.Any(y => y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId) && y.OverridedEnableWatch == true) ||
+                            video.MainPlaylist.Permissions.Any(y => y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)))
+                        )
+                    )
+                    )
                 )
             );
         }

@@ -33,7 +33,6 @@ namespace Backend.Models
         public ICollection<Playlist>? Playlists { get; set; }
         public Playlist MainPlaylist { get; set; }
         public User Owner { get; set; }
-        public bool Public { get; set; }
         public ICollection<Permission> Permissions { get; set; }
 
         public VideoDTO ToDTO() => new VideoDTO(
@@ -52,7 +51,6 @@ namespace Backend.Models
                 MainPlaylistId: MainPlaylist.Id,
                 MainPlaylistName: MainPlaylist.Name,
                 Owner: Owner.ToDTO(),
-                IsPublic: Public,
                 IsEmpty: Owner.Id == Guid.Empty
             );
     }
@@ -63,8 +61,8 @@ namespace Backend.Models
         public IFormFile? Image { get; set; }
         public Guid PlaylistId { get; set; }
         public ICollection<string>? Tags { get; set; }
-        public bool IsPublic { get; set; }
-        public ObjectPermissions? Permissions { get; set; }
+        public ObjectPermissions? IncludedPermissions { get; set; }
+        public ObjectPermissions? ExcludedPermissions { get; set; }
 
     }
     public class PostVideoRequest
@@ -77,8 +75,8 @@ namespace Backend.Models
         public Guid PlaylistId { get; set; }
         public ICollection<string>? Tags { get; set; }
 
-        public bool IsPublic { get; set; }
-        public ObjectPermissions? Permissions { get; set; }
+        public ObjectPermissions? IncludedPermissions { get; set; }
+        public ObjectPermissions? ExcludedPermissions { get; set; }
     }
 
     public class PostVideoResponse
@@ -102,11 +100,15 @@ namespace Backend.Models
         Guid MainPlaylistId,
         string MainPlaylistName,
         UserDTO Owner,
-        bool IsPublic,
         bool? IsEmpty = false
         );
 
     public record ObjectPermissions(
         ICollection<Guid>? UserIds,
         ICollection<Guid>? GroupIds);
+
+    public record IncludeExcludeObjectPermissions(
+        ObjectPermissions? IncludedPermissions,
+        ObjectPermissions? ExcludedPermissions
+        );
 }

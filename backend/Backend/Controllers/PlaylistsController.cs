@@ -275,10 +275,14 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            var playlistDB = await _context.Playlists.FindAsync(id);
+            var playlistDB = _context.Playlists.Include(x => x.Videos).Where(x => x.Id == id).FirstOrDefault();
             if (playlistDB == null || playlistDB.Owner.Id != userId)
             {
                 return NotFound();
+            }
+            if (playlistDB.Videos.Count > 0)
+            {
+                return Problem("Před odstraněním playlistu je nutné odebrat všechna videa v něm.");
             }
 
             _context.Playlists.Remove(playlistDB);
@@ -370,16 +374,26 @@ namespace Backend.Controllers
             playlist.Videos = arr;
             _context.SaveChanges();
         }
-        private bool HasPermissions(Playlist playlist)
+        public static bool HasPermissions(Playlist playlist, User user)
         {
-            var user = User.GetUser(_context);
             if (user == null)
             {
                 return playlist.Public;
             }
             var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
-            return playlist.Public || playlist.Owner.Id == user.Id || _context.Permissions.Any(x => x.PlaylistId == playlist.Id && (x.UserId == user.Id || (x.UserGroupId != null && userGroupsIds.Contains((Guid)x.UserGroupId))));
+            if (playlist.Public || playlist.Owner.Id == user.Id)
+            {
+                return true;
+            }
+            return playlist.Permissions.Any(x => (x.UserId == user.Id || (x.UserGroupId != null && userGroupsIds.Contains((Guid)x.UserGroupId))));
         }
+
+        private bool HasPermissions(Playlist playlist)
+        {
+            var user = User.GetUser(_context);
+            return HasPermissions(playlist, user);
+        }
+
         public static void CreateWatchLaterPlaylist(User user)
         {
             user.WatchLaterPlaylist = new Playlist
@@ -404,7 +418,7 @@ namespace Backend.Controllers
             var userGroupsIds = user.UserGroups.Select(x => x.Id).ToList();
             return query.Where(x => x.Public
                                      || x.Owner.Id == user.Id
-                                     || x.Permissions.Any(y => y.PlaylistId == x.Id && (y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId)))));
+                                     || x.Permissions.Any(y => y.UserId == user.Id || (y.UserGroupId != null && userGroupsIds.Contains((Guid)y.UserGroupId))));
         }
     }
 }

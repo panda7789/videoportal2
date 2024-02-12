@@ -336,6 +336,10 @@ export default function EnhancedTable<T extends TableDataBase>({
                           sx={{
                             paddingTop: 1,
                             paddingBottom: 1,
+                            maxWidth: 200,
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
                             ...(attr.image && {
                               width: 130,
                             }),
@@ -354,7 +358,9 @@ export default function EnhancedTable<T extends TableDataBase>({
                             </AspectRatio>
                           ) : (
                             String(
-                              attr.customFormat ? attr.customFormat(row[attr.id]) : row[attr.id],
+                              attr.customFormat
+                                ? attr.customFormat(row[attr.id])
+                                : row[attr.id] ?? '',
                             )
                           )}
                         </TableCell>

@@ -8,7 +8,7 @@ namespace Backend.Controllers
 {
     public class PermissionsController
     {
-        public static void SavePermissions(MyDbContext context, ObjectPermissions? permissions, Video? video = null, Playlist? playlist = null)
+        public static void SavePermissions(MyDbContext context, ObjectPermissions? permissions, Video? video = null, Playlist? playlist = null, bool? overridedEnableWatch = null)
         {
             if (permissions == null)
             {
@@ -23,7 +23,8 @@ namespace Backend.Controllers
                     {
                         User = user,
                         Video = video ?? null,
-                        Playlist = playlist ?? null
+                        Playlist = playlist ?? null,
+                        OverridedEnableWatch = overridedEnableWatch
                     };
                     context.Permissions.Add(permission);
                 }
@@ -37,7 +38,8 @@ namespace Backend.Controllers
                     {
                         Video = video ?? null,
                         Playlist = playlist ?? null,
-                        UserGroup = group
+                        UserGroup = group,
+                        OverridedEnableWatch = overridedEnableWatch
                     };
                     context.Permissions.Add(permission);
                 }

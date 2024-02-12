@@ -49,6 +49,7 @@ namespace Backend.Controllers
                     .AsNoTracking();
             }
 
+            query = query.ApplyPermissions(this, _context);
             var totalCount = query.Count();
             if (offset.HasValue)
             {

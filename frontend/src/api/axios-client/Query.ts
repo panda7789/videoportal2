@@ -147,9 +147,10 @@ export type VideosPOSTMutationParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
-  isPublic?: boolean | undefined ;
-  permissions_UserIds?: string[] | null | undefined ;
-  permissions_GroupIds?: string[] | null | undefined ;
+  includedPermissions_UserIds?: string[] | null | undefined ;
+  includedPermissions_GroupIds?: string[] | null | undefined ;
+  excludedPermissions_UserIds?: string[] | null | undefined ;
+  excludedPermissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosGETQueryParameters = {
@@ -163,9 +164,10 @@ export type VideosPUTQueryParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
-  isPublic?: boolean | undefined ;
-  permissions_UserIds?: string[] | null | undefined ;
-  permissions_GroupIds?: string[] | null | undefined ;
+  includedPermissions_UserIds?: string[] | null | undefined ;
+  includedPermissions_GroupIds?: string[] | null | undefined ;
+  excludedPermissions_UserIds?: string[] | null | undefined ;
+  excludedPermissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosPUTMutationParameters = {
@@ -174,9 +176,10 @@ export type VideosPUTMutationParameters = {
   image?: Types.FileParameter | null | undefined ;
   playlistId?: string | undefined ;
   tags?: string[] | null | undefined ;
-  isPublic?: boolean | undefined ;
-  permissions_UserIds?: string[] | null | undefined ;
-  permissions_GroupIds?: string[] | null | undefined ;
+  includedPermissions_UserIds?: string[] | null | undefined ;
+  includedPermissions_GroupIds?: string[] | null | undefined ;
+  excludedPermissions_UserIds?: string[] | null | undefined ;
+  excludedPermissions_GroupIds?: string[] | null | undefined ;
 }
 
 export type VideosDELETEQueryParameters = {
@@ -2271,9 +2274,10 @@ export function videosPOSTMutationKey(): MutationKey {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
- * @param isPublic (optional) 
- * @param permissions_UserIds (optional) 
- * @param permissions_GroupIds (optional) 
+ * @param includedPermissions_UserIds (optional) 
+ * @param includedPermissions_GroupIds (optional) 
+ * @param excludedPermissions_UserIds (optional) 
+ * @param excludedPermissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PostVideoResponse, unknown, VideosPOSTMutationParameters, TContext> {
@@ -2282,7 +2286,7 @@ export function useVideosPOSTMutation<TContext>(options?: Omit<UseMutationOption
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.fileName, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.playlistId, videosPOSTMutationParameters.tags, videosPOSTMutationParameters.isPublic, videosPOSTMutationParameters.permissions_UserIds, videosPOSTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
+  return useMutation((videosPOSTMutationParameters: VideosPOSTMutationParameters) => Client.videosPOST(videosPOSTMutationParameters.fileName, videosPOSTMutationParameters.name, videosPOSTMutationParameters.description, videosPOSTMutationParameters.durationSec, videosPOSTMutationParameters.image, videosPOSTMutationParameters.playlistId, videosPOSTMutationParameters.tags, videosPOSTMutationParameters.includedPermissions_UserIds, videosPOSTMutationParameters.includedPermissions_GroupIds, videosPOSTMutationParameters.excludedPermissions_UserIds, videosPOSTMutationParameters.excludedPermissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function videosGETUrl(id: string): string {
@@ -2400,9 +2404,10 @@ export function videosPUTMutationKey(id: string): MutationKey {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
- * @param isPublic (optional) 
- * @param permissions_UserIds (optional) 
- * @param permissions_GroupIds (optional) 
+ * @param includedPermissions_UserIds (optional) 
+ * @param includedPermissions_GroupIds (optional) 
+ * @param excludedPermissions_UserIds (optional) 
+ * @param excludedPermissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, VideosPUTMutationParameters, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, VideosPUTMutationParameters, TContext> {
@@ -2411,7 +2416,7 @@ export function useVideosPUTMutation<TContext>(id: string, options?: Omit<UseMut
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((videosPUTMutationParameters: VideosPUTMutationParameters) => Client.videosPUT(id, videosPUTMutationParameters.name, videosPUTMutationParameters.description, videosPUTMutationParameters.image, videosPUTMutationParameters.playlistId, videosPUTMutationParameters.tags, videosPUTMutationParameters.isPublic, videosPUTMutationParameters.permissions_UserIds, videosPUTMutationParameters.permissions_GroupIds), {...options, mutationKey: key});
+  return useMutation((videosPUTMutationParameters: VideosPUTMutationParameters) => Client.videosPUT(id, videosPUTMutationParameters.name, videosPUTMutationParameters.description, videosPUTMutationParameters.image, videosPUTMutationParameters.playlistId, videosPUTMutationParameters.tags, videosPUTMutationParameters.includedPermissions_UserIds, videosPUTMutationParameters.includedPermissions_GroupIds, videosPUTMutationParameters.excludedPermissions_UserIds, videosPUTMutationParameters.excludedPermissions_GroupIds), {...options, mutationKey: key});
 }
   
 type VideosPUT__MutationParameters = VideosPUTQueryParameters & {
@@ -2424,9 +2429,10 @@ type VideosPUT__MutationParameters = VideosPUTQueryParameters & {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
- * @param isPublic (optional) 
- * @param permissions_UserIds (optional) 
- * @param permissions_GroupIds (optional) 
+ * @param includedPermissions_UserIds (optional) 
+ * @param includedPermissions_GroupIds (optional) 
+ * @param excludedPermissions_UserIds (optional) 
+ * @param excludedPermissions_GroupIds (optional) 
  * @return Success
  */
 export function useVideosPUTMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, VideosPUT__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: VideosPUTQueryParameters}): UseMutationResult<void, unknown, VideosPUT__MutationParameters, TContext> {
@@ -2435,7 +2441,7 @@ export function useVideosPUTMutationWithParameters<TContext>(options?: Omit<UseM
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((data: VideosPUT__MutationParameters) => Client.videosPUT(data.id, data.name, data.description, data.image, data.playlistId, data.tags, data.isPublic, data.permissions_UserIds, data.permissions_GroupIds), {...options, mutationKey: key});
+  return useMutation((data: VideosPUT__MutationParameters) => Client.videosPUT(data.id, data.name, data.description, data.image, data.playlistId, data.tags, data.includedPermissions_UserIds, data.includedPermissions_GroupIds, data.excludedPermissions_UserIds, data.excludedPermissions_GroupIds), {...options, mutationKey: key});
 }
   
 export function videosDELETEUrl(id: string): string {
@@ -2582,13 +2588,13 @@ url_ = url_.replace("{id}", encodeURIComponent("" + id));
   return url_;
 }
 
-let videoPermissionsDefaultOptions: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> = {
+let videoPermissionsDefaultOptions: UseQueryOptions<Types.IncludeExcludeObjectPermissions, unknown, Types.IncludeExcludeObjectPermissions> = {
   queryFn: __videoPermissions,
 };
-export function getVideoPermissionsDefaultOptions(): UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> {
+export function getVideoPermissionsDefaultOptions(): UseQueryOptions<Types.IncludeExcludeObjectPermissions, unknown, Types.IncludeExcludeObjectPermissions> {
   return videoPermissionsDefaultOptions;
 };
-export function setVideoPermissionsDefaultOptions(options: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions>) {
+export function setVideoPermissionsDefaultOptions(options: UseQueryOptions<Types.IncludeExcludeObjectPermissions, unknown, Types.IncludeExcludeObjectPermissions>) {
   videoPermissionsDefaultOptions = options;
 }
 
@@ -2615,13 +2621,13 @@ function __videoPermissions(context: QueryFunctionContext) {
       context.queryKey[2] as string    );
 }
 
-export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(dto: VideoPermissionsQueryParameters, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjectPermissions, TError = unknown>(dto: VideoPermissionsQueryParameters, options?: UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * @return Success
  */
-export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData> | undefined = undefined;
+export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined;
   let id: any = undefined;
   
@@ -2642,17 +2648,17 @@ export function useVideoPermissionsQuery<TSelectData = Types.ObjectPermissions, 
     options!.meta = { ...options!.meta, axiosConfig };
   }
 
-  return useQuery<Types.ObjectPermissions, TError, TSelectData>({
+  return useQuery<Types.IncludeExcludeObjectPermissions, TError, TSelectData>({
     queryFn: __videoPermissions,
     queryKey: videoPermissionsQueryKey(id),
-    ...videoPermissionsDefaultOptions as unknown as UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>,
+    ...videoPermissionsDefaultOptions as unknown as UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData>,
     ...options,
   });
 }
 /**
  * @return Success
  */
-export function setVideoPermissionsData(queryClient: QueryClient, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions, id: string) {
+export function setVideoPermissionsData(queryClient: QueryClient, updater: (data: Types.IncludeExcludeObjectPermissions | undefined) => Types.IncludeExcludeObjectPermissions, id: string) {
   queryClient.setQueryData(videoPermissionsQueryKey(id),
     updater
   );
@@ -2661,7 +2667,7 @@ export function setVideoPermissionsData(queryClient: QueryClient, updater: (data
 /**
  * @return Success
  */
-export function setVideoPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions) {
+export function setVideoPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.IncludeExcludeObjectPermissions | undefined) => Types.IncludeExcludeObjectPermissions) {
   queryClient.setQueryData(queryKey, updater);
 }
     

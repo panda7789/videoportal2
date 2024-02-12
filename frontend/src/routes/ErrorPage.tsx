@@ -23,7 +23,7 @@ export default function ErrorPage() {
         />
 
         <Typography variant="h2" component="h1" align="center" gutterBottom>
-          Ups! 😥
+          {(error as any).status ?? ''} - Ups! 😥
         </Typography>
 
         <Typography variant="h6" component="h2" align="center" gutterBottom>

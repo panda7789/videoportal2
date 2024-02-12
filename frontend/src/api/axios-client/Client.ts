@@ -2003,12 +2003,13 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
- * @param isPublic (optional) 
- * @param permissions_UserIds (optional) 
- * @param permissions_GroupIds (optional) 
+ * @param includedPermissions_UserIds (optional) 
+ * @param includedPermissions_GroupIds (optional) 
+ * @param excludedPermissions_UserIds (optional) 
+ * @param excludedPermissions_GroupIds (optional) 
  * @return Success
  */
-export function videosPOST(fileName?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, playlistId?: string | undefined, tags?: string[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PostVideoResponse> {
+export function videosPOST(fileName?: string | null | undefined, name?: string | null | undefined, description?: string | null | undefined, durationSec?: number | undefined, image?: Types.FileParameter | null | undefined, playlistId?: string | undefined, tags?: string[] | null | undefined, includedPermissions_UserIds?: string[] | null | undefined, includedPermissions_GroupIds?: string[] | null | undefined, excludedPermissions_UserIds?: string[] | null | undefined, excludedPermissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.PostVideoResponse> {
     let url_ = getBaseUrl() + "/api/Videos";
       url_ = url_.replace(/[?&]$/, "");
 
@@ -2031,14 +2032,14 @@ export function videosPOST(fileName?: string | null | undefined, name?: string |
         content_.append("PlaylistId", playlistId.toString());
     if (tags !== null && tags !== undefined)
         tags.forEach(item_ => content_.append("Tags", item_.toString()));
-    if (isPublic === null || isPublic === undefined)
-        throw new Error("The parameter 'isPublic' cannot be null.");
-    else
-        content_.append("IsPublic", isPublic.toString());
-    if (permissions_UserIds !== null && permissions_UserIds !== undefined)
-        permissions_UserIds.forEach(item_ => content_.append("Permissions.UserIds", item_.toString()));
-    if (permissions_GroupIds !== null && permissions_GroupIds !== undefined)
-        permissions_GroupIds.forEach(item_ => content_.append("Permissions.GroupIds", item_.toString()));
+    if (includedPermissions_UserIds !== null && includedPermissions_UserIds !== undefined)
+        includedPermissions_UserIds.forEach(item_ => content_.append("IncludedPermissions.UserIds", item_.toString()));
+    if (includedPermissions_GroupIds !== null && includedPermissions_GroupIds !== undefined)
+        includedPermissions_GroupIds.forEach(item_ => content_.append("IncludedPermissions.GroupIds", item_.toString()));
+    if (excludedPermissions_UserIds !== null && excludedPermissions_UserIds !== undefined)
+        excludedPermissions_UserIds.forEach(item_ => content_.append("ExcludedPermissions.UserIds", item_.toString()));
+    if (excludedPermissions_GroupIds !== null && excludedPermissions_GroupIds !== undefined)
+        excludedPermissions_GroupIds.forEach(item_ => content_.append("ExcludedPermissions.GroupIds", item_.toString()));
 
     let options_: AxiosRequestConfig = {
         ..._requestConfigVideosPOST,
@@ -2147,12 +2148,13 @@ function processVideosGET(response: AxiosResponse): Promise<Types.VideoDTO> {
  * @param image (optional) 
  * @param playlistId (optional) 
  * @param tags (optional) 
- * @param isPublic (optional) 
- * @param permissions_UserIds (optional) 
- * @param permissions_GroupIds (optional) 
+ * @param includedPermissions_UserIds (optional) 
+ * @param includedPermissions_GroupIds (optional) 
+ * @param excludedPermissions_UserIds (optional) 
+ * @param excludedPermissions_GroupIds (optional) 
  * @return Success
  */
-export function videosPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, image?: Types.FileParameter | null | undefined, playlistId?: string | undefined, tags?: string[] | null | undefined, isPublic?: boolean | undefined, permissions_UserIds?: string[] | null | undefined, permissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function videosPUT(id: string, name?: string | null | undefined, description?: string | null | undefined, image?: Types.FileParameter | null | undefined, playlistId?: string | undefined, tags?: string[] | null | undefined, includedPermissions_UserIds?: string[] | null | undefined, includedPermissions_GroupIds?: string[] | null | undefined, excludedPermissions_UserIds?: string[] | null | undefined, excludedPermissions_GroupIds?: string[] | null | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Videos/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
@@ -2172,14 +2174,14 @@ export function videosPUT(id: string, name?: string | null | undefined, descript
         content_.append("PlaylistId", playlistId.toString());
     if (tags !== null && tags !== undefined)
         tags.forEach(item_ => content_.append("Tags", item_.toString()));
-    if (isPublic === null || isPublic === undefined)
-        throw new Error("The parameter 'isPublic' cannot be null.");
-    else
-        content_.append("IsPublic", isPublic.toString());
-    if (permissions_UserIds !== null && permissions_UserIds !== undefined)
-        permissions_UserIds.forEach(item_ => content_.append("Permissions.UserIds", item_.toString()));
-    if (permissions_GroupIds !== null && permissions_GroupIds !== undefined)
-        permissions_GroupIds.forEach(item_ => content_.append("Permissions.GroupIds", item_.toString()));
+    if (includedPermissions_UserIds !== null && includedPermissions_UserIds !== undefined)
+        includedPermissions_UserIds.forEach(item_ => content_.append("IncludedPermissions.UserIds", item_.toString()));
+    if (includedPermissions_GroupIds !== null && includedPermissions_GroupIds !== undefined)
+        includedPermissions_GroupIds.forEach(item_ => content_.append("IncludedPermissions.GroupIds", item_.toString()));
+    if (excludedPermissions_UserIds !== null && excludedPermissions_UserIds !== undefined)
+        excludedPermissions_UserIds.forEach(item_ => content_.append("ExcludedPermissions.UserIds", item_.toString()));
+    if (excludedPermissions_GroupIds !== null && excludedPermissions_GroupIds !== undefined)
+        excludedPermissions_GroupIds.forEach(item_ => content_.append("ExcludedPermissions.GroupIds", item_.toString()));
 
     let options_: AxiosRequestConfig = {
         ..._requestConfigVideosPUT,
@@ -2339,7 +2341,7 @@ function processVideoPlaylists(response: AxiosResponse): Promise<string[]> {
 /**
  * @return Success
  */
-export function videoPermissions(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ObjectPermissions> {
+export function videoPermissions(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.IncludeExcludeObjectPermissions> {
     let url_ = getBaseUrl() + "/api/Videos/{id}/video-permissions";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
@@ -2367,7 +2369,7 @@ export function videoPermissions(id: string, config?: AxiosRequestConfig | undef
     });
 }
 
-function processVideoPermissions(response: AxiosResponse): Promise<Types.ObjectPermissions> {
+function processVideoPermissions(response: AxiosResponse): Promise<Types.IncludeExcludeObjectPermissions> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -2381,14 +2383,14 @@ function processVideoPermissions(response: AxiosResponse): Promise<Types.ObjectP
         const _responseText = response.data;
         let result200: any = null;
         let resultData200  = _responseText;
-        result200 = Types.ObjectPermissions.fromJS(resultData200);
-        return Promise.resolve<Types.ObjectPermissions>(result200);
+        result200 = Types.IncludeExcludeObjectPermissions.fromJS(resultData200);
+        return Promise.resolve<Types.IncludeExcludeObjectPermissions>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.ObjectPermissions>(null as any);
+    return Promise.resolve<Types.IncludeExcludeObjectPermissions>(null as any);
 }
 
 /**

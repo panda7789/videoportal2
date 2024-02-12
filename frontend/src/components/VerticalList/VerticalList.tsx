@@ -67,7 +67,8 @@ export function VerticalList({
           <Grid
             container
             item
-            spacing={2}
+            spacing={1}
+            pt={1}
             xs={12}
             ref={provided.innerRef}
             {...provided.droppableProps}
@@ -93,7 +94,6 @@ export function VerticalList({
                         xs={12}
                         display="flex"
                         alignItems="stretch"
-                        maxHeight="125px"
                         p={1}
                         pl={-1}
                         pr={2}

@@ -20,7 +20,7 @@ import { VerticalList } from 'components/VerticalList/VerticalList';
 import { AxiosQuery } from 'api';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { PlaylistDTO, VideoDTO } from 'api/axios-client';
+import { ApiException, PlaylistDTO, VideoDTO } from 'api/axios-client';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
 import { ApiPath } from 'components/Utils/APIUtils';
 import {
@@ -79,8 +79,9 @@ export function PlaylistDetail({ newPlaylist }: Props) {
       setStatusText('Playlist úspěšně smazán.');
       setTimeout(() => navigate({ pathname: `/${Route.myPlaylists}` }), 2000);
     },
-    onError: () => {
-      setStatusText(`Playlist se nepodařilo smazat.`);
+    onError: (response) => {
+      const error = response as ApiException;
+      setStatusText(`Playlist se nepodařilo smazat ${(error?.response as any)?.detail ?? ''}`);
     },
   });
   useLayoutEffect(() => ScrollToTop(), [playlist.id]);
@@ -104,7 +105,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
       },
       {
         onSuccess: () => {
-          setStatusText('Playlist úspěšně aktualizován ☺️');
+          setStatusText('Playlist úspěšně aktualizován ️');
         },
         onError: () => {
           setStatusText(`Playlist se nepodařilo aktualizovat 😥`);
@@ -379,6 +380,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                 Celková délka: {playlist?.totalDuration ?? '00:00'}
               </Typography>
             )}
+            .8.8.8.8.8.8.8
           </Box>
         </Grid>
       </Grid>

@@ -4,11 +4,13 @@ import ErrorPage from 'routes/ErrorPage';
 
 function VideoDetailError() {
   const [searchParams] = useSearchParams();
-  const [shouldRedirect, redirect] = React.useState<boolean | undefined>(undefined);
+  const [shouldRedirect, setShouldRedirect] = React.useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (searchParams.get('playlist')) {
-      redirect(true);
+      setShouldRedirect(true);
+    } else {
+      setShouldRedirect(false);
     }
   }, [searchParams]);
 

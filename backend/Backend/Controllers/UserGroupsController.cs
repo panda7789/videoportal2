@@ -12,6 +12,7 @@ using Backend.Migrations;
 
 namespace Backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserGroupsController : ControllerBase

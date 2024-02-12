@@ -153,6 +153,46 @@ export interface ICommentPutDTO {
     text: string;
 }
 
+export class IncludeExcludeObjectPermissions implements IIncludeExcludeObjectPermissions {
+    includedPermissions?: ObjectPermissions | undefined;
+    excludedPermissions?: ObjectPermissions | undefined;
+
+    constructor(data?: IIncludeExcludeObjectPermissions) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.includedPermissions = _data["includedPermissions"] ? ObjectPermissions.fromJS(_data["includedPermissions"]) : <any>undefined;
+            this.excludedPermissions = _data["excludedPermissions"] ? ObjectPermissions.fromJS(_data["excludedPermissions"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): IncludeExcludeObjectPermissions {
+        data = typeof data === 'object' ? data : {};
+        let result = new IncludeExcludeObjectPermissions();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["includedPermissions"] = this.includedPermissions ? this.includedPermissions.toJSON() : <any>undefined;
+        data["excludedPermissions"] = this.excludedPermissions ? this.excludedPermissions.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IIncludeExcludeObjectPermissions {
+    includedPermissions?: ObjectPermissions | undefined;
+    excludedPermissions?: ObjectPermissions | undefined;
+}
+
 export class LoginDTO implements ILoginDTO {
     email!: string;
     password!: string;
@@ -259,6 +299,7 @@ export class Permission implements IPermission {
     playlist?: Playlist | undefined;
     videoId?: string | undefined;
     video?: Video | undefined;
+    overridedEnableWatch?: boolean | undefined;
 
     constructor(data?: IPermission) {
         if (data) {
@@ -280,6 +321,7 @@ export class Permission implements IPermission {
             this.playlist = _data["playlist"] ? Playlist.fromJS(_data["playlist"]) : <any>undefined;
             this.videoId = _data["videoId"];
             this.video = _data["video"] ? Video.fromJS(_data["video"]) : <any>undefined;
+            this.overridedEnableWatch = _data["overridedEnableWatch"];
         }
     }
 
@@ -301,6 +343,7 @@ export class Permission implements IPermission {
         data["playlist"] = this.playlist ? this.playlist.toJSON() : <any>undefined;
         data["videoId"] = this.videoId;
         data["video"] = this.video ? this.video.toJSON() : <any>undefined;
+        data["overridedEnableWatch"] = this.overridedEnableWatch;
         return data;
     }
 }
@@ -315,6 +358,7 @@ export interface IPermission {
     playlist?: Playlist | undefined;
     videoId?: string | undefined;
     video?: Video | undefined;
+    overridedEnableWatch?: boolean | undefined;
 }
 
 export class Playlist implements IPlaylist {
@@ -1265,7 +1309,6 @@ export class Video implements IVideo {
     playlists?: Playlist[] | undefined;
     mainPlaylist!: Playlist;
     owner!: User;
-    public!: boolean;
     permissions!: Permission[];
 
     constructor(data?: IVideo) {
@@ -1306,7 +1349,6 @@ export class Video implements IVideo {
             }
             this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : new Playlist();
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
-            this.public = _data["public"];
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
@@ -1346,7 +1388,6 @@ export class Video implements IVideo {
         }
         data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
-        data["public"] = this.public;
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)
@@ -1371,7 +1412,6 @@ export interface IVideo {
     playlists?: Playlist[] | undefined;
     mainPlaylist: Playlist;
     owner: User;
-    public: boolean;
     permissions: Permission[];
 }
 
@@ -1391,7 +1431,6 @@ export class VideoDTO implements IVideoDTO {
     mainPlaylistId!: string;
     mainPlaylistName!: string;
     owner!: UserDTO;
-    isPublic!: boolean;
     isEmpty?: boolean | undefined;
 
     constructor(data?: IVideoDTO) {
@@ -1431,7 +1470,6 @@ export class VideoDTO implements IVideoDTO {
             this.mainPlaylistId = _data["mainPlaylistId"];
             this.mainPlaylistName = _data["mainPlaylistName"];
             this.owner = _data["owner"] ? UserDTO.fromJS(_data["owner"]) : new UserDTO();
-            this.isPublic = _data["isPublic"];
             this.isEmpty = _data["isEmpty"];
         }
     }
@@ -1468,7 +1506,6 @@ export class VideoDTO implements IVideoDTO {
         data["mainPlaylistId"] = this.mainPlaylistId;
         data["mainPlaylistName"] = this.mainPlaylistName;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
-        data["isPublic"] = this.isPublic;
         data["isEmpty"] = this.isEmpty;
         return data;
     }
@@ -1490,7 +1527,6 @@ export interface IVideoDTO {
     mainPlaylistId: string;
     mainPlaylistName: string;
     owner: UserDTO;
-    isPublic: boolean;
     isEmpty?: boolean | undefined;
 }
 
@@ -1693,7 +1729,7 @@ export function initPersister() {
   addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
   addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___videoPermissions', (data: any) => { const result = new ObjectPermissions(); result.init(data); return result; });
+  addResultTypeFactory('Client___videoPermissions', (data: any) => { const result = new IncludeExcludeObjectPermissions(); result.init(data); return result; });
   addResultTypeFactory('Client___myVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___relatedVideos', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
 

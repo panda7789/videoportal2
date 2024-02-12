@@ -1,4 +1,6 @@
-﻿namespace Backend.Models
+﻿using System.ComponentModel;
+
+namespace Backend.Models
 {
     public class Permission
     {
@@ -12,5 +14,7 @@
         public Guid? VideoId { get; set; }
         public virtual Video? Video { get; set; }
 
+        [Description("Příznak který je možné nastavit pouze v případě že se jedná o právo na video, a určuje, zdali má uživatel právo na video případně nemá.")]
+        public bool? OverridedEnableWatch { get; set; }
     }
 }

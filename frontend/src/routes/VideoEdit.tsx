@@ -12,11 +12,14 @@ import {
   Paper,
   useMediaQuery,
   Switch,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
+import HelpIcon from '@mui/icons-material/Help';
 import ChipEditLine, { ChipData, ChipLineFunctions } from 'components/Chip/ChipEditLine';
 import nanoMetadata from 'nano-metadata';
 import ChunkedUploady, {
@@ -84,7 +87,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const [statusText, setStatusText] = useState<string>();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [publicCheckbox, setPublicCheckbox] = useState(video?.isPublic ?? true);
+  const [advancedPermissions, setAdvancedPermissions] = useState(false);
   const [fileUploadInfo, setFileUploadInfo] = useState<{
     name: string;
     size: string;
@@ -102,11 +105,17 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const permissionsQuery = !newVideo ? useVideoPermissionsQuery(video?.id ?? '') : undefined;
   const usersQuery = useUsersAllQuery();
   const groupsQuery = useMyUsergroupsQuery();
-  const [permissionsUserIds, setPermissionsUserIds] = useState<string[] | undefined>(
-    permissionsQuery?.data?.userIds ?? [],
+  const [includedUserIds, setIncludedUserIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.includedPermissions?.userIds ?? [],
   );
-  const [permissionsGroupIds, setPermissionsGroupIds] = useState<string[] | undefined>(
-    permissionsQuery?.data?.groupIds ?? [],
+  const [includedGroupIds, setIncludedGroupIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.includedPermissions?.groupIds ?? [],
+  );
+  const [excludedUserIds, setExcludedUserIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.excludedPermissions?.userIds ?? [],
+  );
+  const [excludedGroupIds, setExcludedGroupIds] = useState<string[] | undefined>(
+    permissionsQuery?.data?.excludedPermissions?.groupIds ?? [],
   );
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
@@ -124,8 +133,18 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
   useEffect(() => {
     if (permissionsQuery?.data) {
-      setPermissionsUserIds(permissionsQuery.data.userIds);
-      setPermissionsGroupIds(permissionsQuery.data.groupIds);
+      setIncludedUserIds(permissionsQuery.data?.includedPermissions?.userIds);
+      setExcludedUserIds(permissionsQuery.data?.excludedPermissions?.userIds);
+      setIncludedGroupIds(permissionsQuery.data?.includedPermissions?.groupIds);
+      setExcludedGroupIds(permissionsQuery.data?.excludedPermissions?.groupIds);
+      if (
+        (permissionsQuery.data?.includedPermissions?.userIds?.length ?? 0) > 0 ||
+        (permissionsQuery.data?.includedPermissions?.groupIds?.length ?? 0) > 0 ||
+        (permissionsQuery.data?.excludedPermissions?.userIds?.length ?? 0) > 0 ||
+        (permissionsQuery.data?.excludedPermissions?.groupIds?.length ?? 0) > 0
+      ) {
+        setAdvancedPermissions(true);
+      }
     }
   }, [permissionsQuery?.data]);
 
@@ -136,7 +155,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   useItemFinishListener(() => {
     setProgress(100);
     setUploading(false);
-    setStatusText('Video úspěšně nahráno ☺️');
+    setStatusText('Video úspěšně nahráno ');
   });
   useItemErrorListener(() => {
     setUploading(false);
@@ -190,7 +209,6 @@ function VideoEditInner({ newVideo }: InnerProps) {
     const name = data.get('name')?.toString()!;
     const tags = tagsRef?.current?.getActiveChips()?.map((x) => x.label) ?? [];
     const playlistId = data.get('playlistSelect')?.toString()!;
-    const isPublic = data.get('isPublic')?.toString()!;
 
     if (newVideo) {
       if (!imageToUpload) {
@@ -212,9 +230,10 @@ function VideoEditInner({ newVideo }: InnerProps) {
           fileName: fileUploadInfo.name,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
           playlistId,
-          isPublic: isPublic === 'on',
-          permissions_GroupIds: permissionsGroupIds,
-          permissions_UserIds: permissionsUserIds,
+          includedPermissions_UserIds: includedUserIds,
+          includedPermissions_GroupIds: includedGroupIds,
+          excludedPermissions_UserIds: excludedUserIds,
+          excludedPermissions_GroupIds: excludedGroupIds,
         },
         {
           onSuccess: (res: PostVideoResponse) => {
@@ -244,15 +263,16 @@ function VideoEditInner({ newVideo }: InnerProps) {
           tags,
           image: imageToUpload ? { data: imageToUpload, fileName: imageToUpload.name } : undefined,
           playlistId,
-          isPublic: isPublic === 'on',
-          permissions_GroupIds: permissionsGroupIds,
-          permissions_UserIds: permissionsUserIds,
+          includedPermissions_UserIds: includedUserIds,
+          includedPermissions_GroupIds: includedGroupIds,
+          excludedPermissions_UserIds: excludedUserIds,
+          excludedPermissions_GroupIds: excludedGroupIds,
         },
         {
           onSuccess: () => {
             setProgress(100);
             setUploading(false);
-            setStatusText('Video úspěšně aktualizováno ☺️');
+            setStatusText('Video úspěšně aktualizováno ️');
           },
           onError: () => {
             setUploading(false);
@@ -367,75 +387,152 @@ function VideoEditInner({ newVideo }: InnerProps) {
               </Grid>
             )}
             <Grid item xs={12}>
-              <Paper>
+              <Box display="inline" pr={1}>
                 <FormControlLabel
                   sx={{ pl: 1 }}
                   control={
                     <Switch
                       id="isPublic"
                       name="isPublic"
-                      checked={publicCheckbox}
-                      onChange={(_, checked) => setPublicCheckbox(checked)}
+                      checked={advancedPermissions}
+                      onChange={(_, checked) => setAdvancedPermissions(checked)}
                       inputProps={{ 'aria-label': 'controlled' }}
                     />
                   }
-                  label="Veřejné video"
+                  label="Pokročilé nastavení oprávnění"
                 />
-                {!publicCheckbox && (
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} minHeight="200px">
-                      <Transfer
-                        dataSource={groupsQuery.data}
-                        showSearch
-                        filterOption={(inputValue, option) => option.name.indexOf(inputValue) > -1}
-                        onChange={(newTargetKeys) => setPermissionsGroupIds(newTargetKeys)}
-                        targetKeys={permissionsGroupIds}
-                        rowKey={(item) => item.id}
-                        style={{ width: '100%' }}
-                        listStyle={{ width: '100%' }}
-                        render={(item) => `${item.name}`}
-                        locale={{
-                          titles: ['', 's oprávněním'],
-                          itemsUnit: 'skupiny',
-                          itemUnit: 'skupin',
-                          notFoundContent: 'Kde nic tu nic',
-                          searchPlaceholder: 'Hledat',
-                          remove: 'Odebrat',
-                          selectAll: 'Vybrat vše',
-                          selectCurrent: 'Vybrat aktuální',
-                          selectInvert: 'Otočit výběr',
-                        }}
-                      />
+                <Tooltip
+                  title="Umožňuje přidávat uživatele/skupiny, kteří mají mít na video právo oproti nastavení z playlistu.
+                Kromě toho umožňuje odebrat uživatele/skupiny kteří na video nemají mít právo, ačkoliv na playlist právo mají."
+                >
+                  <IconButton>
+                    <HelpIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {advancedPermissions && (
+                <Grid container gap={2}>
+                  <Paper elevation={2}>
+                    <Typography variant="subtitle1" pl={2} pt={1}>
+                      Zahrnuté skupiny a uživatelé
+                    </Typography>
+                    <Grid container p={1} spacing={2}>
+                      <Grid item xs={12} minHeight="100px">
+                        <Transfer
+                          dataSource={groupsQuery.data}
+                          showSearch
+                          filterOption={(inputValue, option) =>
+                            option.name.indexOf(inputValue) > -1
+                          }
+                          onChange={(newTargetKeys) => setIncludedGroupIds(newTargetKeys)}
+                          targetKeys={includedGroupIds}
+                          rowKey={(item) => item.id}
+                          style={{ width: '100%' }}
+                          listStyle={{ width: '100%' }}
+                          render={(item) => `${item.name}`}
+                          locale={{
+                            titles: ['', 'zahrnuté skupiny'],
+                            itemsUnit: 'skupiny',
+                            itemUnit: 'skupin',
+                            notFoundContent: 'Kde nic tu nic',
+                            searchPlaceholder: 'Hledat',
+                            remove: 'Odebrat',
+                            selectAll: 'Vybrat vše',
+                            selectCurrent: 'Vybrat aktuální',
+                            selectInvert: 'Otočit výběr',
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} minHeight="100px">
+                        <Transfer
+                          dataSource={usersQuery.data}
+                          showSearch
+                          filterOption={(inputValue, option) =>
+                            option.name.indexOf(inputValue) > -1 ||
+                            option.email.indexOf(inputValue) > -1
+                          }
+                          onChange={(newTargetKeys) => setIncludedUserIds(newTargetKeys)}
+                          targetKeys={includedUserIds}
+                          rowKey={(item) => item.id}
+                          style={{ width: '100%' }}
+                          listStyle={{ ...(isDesktop && { width: '100%' }) }}
+                          render={(item) => `${item.name}(${item.email})`}
+                          locale={{
+                            titles: ['', 'zahrnutí uživatelé'],
+                            itemsUnit: 'uživatelé',
+                            itemUnit: 'uživatel',
+                            notFoundContent: 'Kde nic tu nic',
+                            searchPlaceholder: 'Hledat',
+                            remove: 'Odebrat',
+                            selectAll: 'Vybrat vše',
+                            selectCurrent: 'Vybrat aktuální',
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} minHeight="200px">
-                      <Transfer
-                        dataSource={usersQuery.data}
-                        showSearch
-                        filterOption={(inputValue, option) =>
-                          option.name.indexOf(inputValue) > -1 ||
-                          option.email.indexOf(inputValue) > -1
-                        }
-                        onChange={(newTargetKeys) => setPermissionsUserIds(newTargetKeys)}
-                        targetKeys={permissionsUserIds}
-                        rowKey={(item) => item.id}
-                        style={{ width: '100%' }}
-                        listStyle={{ ...(isDesktop && { width: '100%' }) }}
-                        render={(item) => `${item.name}(${item.email})`}
-                        locale={{
-                          titles: ['', 's oprávněním'],
-                          itemsUnit: 'uživatelé',
-                          itemUnit: 'uživatel',
-                          notFoundContent: 'Kde nic tu nic',
-                          searchPlaceholder: 'Hledat',
-                          remove: 'Odebrat',
-                          selectAll: 'Vybrat vše',
-                          selectCurrent: 'Vybrat aktuální',
-                        }}
-                      />
+                  </Paper>
+                  <Paper elevation={2}>
+                    <Typography variant="subtitle1" pl={2} pt={1}>
+                      Vyloučené skupiny a uživatelé
+                    </Typography>
+                    <Grid container p={1} spacing={2}>
+                      <Grid item xs={12} minHeight="100px">
+                        <Transfer
+                          dataSource={groupsQuery.data}
+                          showSearch
+                          filterOption={(inputValue, option) =>
+                            option.name.indexOf(inputValue) > -1
+                          }
+                          onChange={(newTargetKeys) => setExcludedGroupIds(newTargetKeys)}
+                          targetKeys={excludedGroupIds}
+                          rowKey={(item) => item.id}
+                          style={{ width: '100%' }}
+                          listStyle={{ width: '100%' }}
+                          render={(item) => `${item.name}`}
+                          locale={{
+                            titles: ['', 'vyloučené skupiny'],
+                            itemsUnit: 'skupiny',
+                            itemUnit: 'skupin',
+                            notFoundContent: 'Kde nic tu nic',
+                            searchPlaceholder: 'Hledat',
+                            remove: 'Odebrat',
+                            selectAll: 'Vybrat vše',
+                            selectCurrent: 'Vybrat aktuální',
+                            selectInvert: 'Otočit výběr',
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} minHeight="100px">
+                        <Transfer
+                          dataSource={usersQuery.data}
+                          showSearch
+                          filterOption={(inputValue, option) =>
+                            option.name.indexOf(inputValue) > -1 ||
+                            option.email.indexOf(inputValue) > -1
+                          }
+                          onChange={(newTargetKeys) => setExcludedUserIds(newTargetKeys)}
+                          targetKeys={excludedUserIds}
+                          rowKey={(item) => item.id}
+                          style={{ width: '100%' }}
+                          listStyle={{ ...(isDesktop && { width: '100%' }) }}
+                          render={(item) => `${item.name}(${item.email})`}
+                          locale={{
+                            titles: ['', 'vyjmutí uživatelé'],
+                            itemsUnit: 'uživatelé',
+                            itemUnit: 'uživatel',
+                            notFoundContent: 'Kde nic tu nic',
+                            searchPlaceholder: 'Hledat',
+                            remove: 'Odebrat',
+                            selectAll: 'Vybrat vše',
+                            selectCurrent: 'Vybrat aktuální',
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                )}
-              </Paper>
+                  </Paper>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>

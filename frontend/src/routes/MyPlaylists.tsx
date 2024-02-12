@@ -3,12 +3,12 @@ import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import { useMyPlaylistsQuery } from 'api/axios-client/Query';
-import { PlaylistDTO, VideoDTO } from 'api/axios-client';
+import { ApiException, PlaylistDTO, VideoDTO } from 'api/axios-client';
 import AddIcon from '@mui/icons-material/Add';
 import { Route } from 'routes/RouteNames';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AxiosQuery } from 'api';
-import { Alert } from '@mui/material';
+import { Alert, Grid, Skeleton } from '@mui/material';
 import { ApiPath } from 'components/Utils/APIUtils';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { UserContext } from 'routes/Root';
@@ -80,8 +80,11 @@ export function MyPlaylists() {
           playlistQuery.refetch();
           setStatusText('Playlist úspěšně smazán');
         })
-        .catch(() => {
-          setStatusText('Playlist se nepodařilo smazat');
+        .catch((response) => {
+          const error = response as ApiException;
+          setStatusText(
+            `Playlist se nepodařilo smazat (${(error?.response as any)?.detail ?? ''})`,
+          );
         });
     },
   });
@@ -103,17 +106,24 @@ export function MyPlaylists() {
   return (
     <Box margin={4}>
       {statusText && <Alert severity="info">{statusText}</Alert>}
-      {playlistQuery.data && (
-        <EnhancedTable
-          attributes={attributes}
-          rows={playlistQuery.data}
-          orderBy="createdTimestamp"
-          desc="desc"
-          buttons={buttons}
-          staticButtons={staticButtons}
-          rowClick={rowClick}
-        />
-      )}
+      {!playlistQuery.isLoading
+        ? playlistQuery.data && (
+            <EnhancedTable
+              attributes={attributes}
+              rows={playlistQuery.data}
+              orderBy="createdTimestamp"
+              desc="desc"
+              buttons={buttons}
+              staticButtons={staticButtons}
+              rowClick={rowClick}
+            />
+          )
+        : [...Array(6)].map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <Grid key={`${i}-skeleton`} item xs={6} p={0.5}>
+              <Skeleton variant="rounded" animation="wave" width="100%" height="100px" />
+            </Grid>
+          ))}
     </Box>
   );
 }

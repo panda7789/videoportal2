@@ -27,7 +27,7 @@ function HomePage() {
           <VideoInlineList videos={videos.data} />
         </Grid>
       </Grid>
-      <Grid item xs={12} md={3}>
+      <Grid item xs={12} md={1}>
         <Typography variant="h6">Tagy</Typography>
         <Grid container gap={0.5} pt={1} direction={{ xs: 'row', md: 'column' }}>
           {!tags.isLoading
@@ -40,15 +40,17 @@ function HomePage() {
               ))}
         </Grid>{' '}
       </Grid>
-      <Grid item xs={12} md={9}>
+      <Grid item xs={12} md={11}>
         <Typography variant="h6">Playlisty</Typography>
         <Grid container gap={1}>
           {!playlists.isLoading
-            ? playlists?.data?.map((playlist) => (
-                <Grid item xs={3} key={playlist.id}>
-                  <PlaylistCard playlist={playlist} smallThumbnail />
-                </Grid>
-              ))
+            ? playlists?.data
+                ?.filter((x) => x.videoCount > 0)
+                .map((playlist) => (
+                  <Grid item xs={2.5} key={playlist.id}>
+                    <PlaylistCard playlist={playlist} smallThumbnail />
+                  </Grid>
+                ))
             : [...Array(6)].map((_, i) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <Grid key={`${i}-skeleton`} item xs={6} p={0.5}>
