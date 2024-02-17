@@ -68,3 +68,4 @@ frontend/package-lock.json
 
 docker/db/data/
 docker/db/data_demo
+/backend/Backend/appsettings.json
