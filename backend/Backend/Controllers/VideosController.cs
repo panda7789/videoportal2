@@ -40,6 +40,7 @@ namespace Backend.Controllers
             }
             IQueryable<Video> query = _context.Videos.Include(x => x.MainPlaylist).AsQueryable().ApplyPermissions(this, _context);
 
+            var sorted = false;
             if (!string.IsNullOrEmpty(orderBy))
             {
                 string[] orderByParts = orderBy?.Split(':') ?? Array.Empty<string>();
@@ -59,11 +60,12 @@ namespace Backend.Controllers
                     {
                         query = query.OrderBy(x => propertyInfo.GetValue(x));
                     }
+                    sorted = true;
                 }
             }
-            else
+            if (!sorted)
             {
-                query = query.OrderByDescending(x => x.Id);
+                query = query.OrderByDescending(x => x.UploadTimestamp);
             }
 
             if (limit.HasValue)
@@ -326,6 +328,7 @@ namespace Backend.Controllers
             {
                 return BadRequest("Neplatné ID playlistu");
             }
+            PlaylistsController.AddVideoToPlaylist(_context, videoPlaylist, videoDB);
             if ((video.IncludedPermissions?.UserIds?.Any() ?? false) || (video.IncludedPermissions?.GroupIds?.Any() ?? false))
             {
                 PermissionsController.SavePermissions(_context, video.IncludedPermissions, videoDB, null, true);

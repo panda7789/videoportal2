@@ -81,6 +81,7 @@ namespace Backend.Controllers
             }
             IQueryable<Playlist> query = _context.Playlists.ApplyPermissions(this);
 
+            var sorted = false;
             if (!string.IsNullOrEmpty(orderBy))
             {
                 string[] orderByParts = orderBy?.Split(':') ?? Array.Empty<string>();
@@ -100,9 +101,10 @@ namespace Backend.Controllers
                     {
                         query = query.OrderBy(x => propertyInfo.GetValue(x));
                     }
+                    sorted = true;
                 }
             }
-            else
+            if (!sorted)
             {
                 query = query.OrderByDescending(x => x.Id);
             }
@@ -366,6 +368,10 @@ namespace Backend.Controllers
             playlist.Videos ??= new List<PlaylistVideo>();
             var arr = playlist.Videos.ToList();
             var index = arr.FindIndex(x => x.VideoId == video.Id);
+            if (index == -1)
+            {
+                return;
+            }
             for (var i = index; i < arr.Count; i++)
             {
                 arr[i].Order--;

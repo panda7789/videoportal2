@@ -380,7 +380,6 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                 Celková délka: {playlist?.totalDuration ?? '00:00'}
               </Typography>
             )}
-            .8.8.8.8.8.8.8
           </Box>
         </Grid>
       </Grid>

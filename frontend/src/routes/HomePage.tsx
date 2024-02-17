@@ -27,7 +27,7 @@ function HomePage() {
           <VideoInlineList videos={videos.data} />
         </Grid>
       </Grid>
-      <Grid item xs={12} md={1}>
+      <Grid item xs={12} md={1.5}>
         <Typography variant="h6">Tagy</Typography>
         <Grid container gap={0.5} pt={1} direction={{ xs: 'row', md: 'column' }}>
           {!tags.isLoading
@@ -40,7 +40,7 @@ function HomePage() {
               ))}
         </Grid>{' '}
       </Grid>
-      <Grid item xs={12} md={11}>
+      <Grid item xs={12} md={10.5}>
         <Typography variant="h6">Playlisty</Typography>
         <Grid container gap={1}>
           {!playlists.isLoading
