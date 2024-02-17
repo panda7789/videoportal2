@@ -335,7 +335,7 @@ namespace Backend.Controllers
             }
             if ((video.ExcludedPermissions?.UserIds?.Any() ?? false) || (video.ExcludedPermissions?.GroupIds?.Any() ?? false))
             {
-                PermissionsController.SavePermissions(_context, video.IncludedPermissions, videoDB, null, false);
+                PermissionsController.SavePermissions(_context, video.ExcludedPermissions, videoDB, null, false);
             }
             await _context.SaveChangesAsync();
 

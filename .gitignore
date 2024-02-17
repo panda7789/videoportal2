@@ -17,7 +17,7 @@ frontend/coverage
 .env.development.local
 .env.test.local
 .env.production.local
-.env.production
+frontend/.env.production
 frontend/package-lock.json
 
 npm-debug.log*
