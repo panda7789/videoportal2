@@ -10,4 +10,5 @@ export enum Route {
   video = 'video',
   videoEdit = 'video-edit',
   groups = 'groups',
+  passwordReset = 'password-reset',
 }

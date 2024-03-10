@@ -19,6 +19,7 @@ import { Route } from 'routes/RouteNames';
 import { UserGroups } from 'routes/Users/UserGroups';
 import { UserGroupEdit, loader as groupsLoader } from 'routes/Users/UserGroupEdit';
 import VideoDetailError from 'routes/VideoDetailError';
+import { PasswordReset } from 'routes/Users/PasswordReset';
 
 function App() {
   const router = createBrowserRouter([
@@ -79,6 +80,10 @@ function App() {
             {
               path: Route.tagEdit,
               element: <TagEdit />,
+            },
+            {
+              path: `${Route.passwordReset}`,
+              element: <PasswordReset />,
             },
             {
               path: Route.myPlaylists,

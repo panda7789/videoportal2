@@ -17,12 +17,14 @@ import MUIAvatar from '@mui/material/Avatar';
 import { TransitionProps } from '@mui/material/transitions';
 import React, { useContext } from 'react';
 // eslint-disable-next-line import/no-cycle
-import { UserContext } from 'routes/Root';
+import { NavigationContext, UserContext } from 'routes/Root';
 import theme from 'Theme';
 import { SimpleListItem } from 'components/DropDownMenu/ListItem';
 import LoginForm from 'components/Forms/LoginForm';
 import RegistrationForm from 'components/Forms/RegistationForm';
 import { useQueryClient } from '@tanstack/react-query';
+import PasswordResetForm from 'components/Forms/PasswordResetForm';
+import { register } from 'api/axios-client/Client';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -41,6 +43,7 @@ function Avatar() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const userContext = useContext(UserContext);
   const [openRegistration, setOpenRegistration] = React.useState(false);
+  const [openPasswordReset, setPasswordReset] = React.useState(false);
   const queryClient = useQueryClient();
 
   const handleClickOpen = () => {
@@ -48,6 +51,8 @@ function Avatar() {
   };
 
   const handleClose = () => {
+    setOpenRegistration(false);
+    setPasswordReset(false);
     setOpen(false);
   };
 
@@ -85,7 +90,7 @@ function Avatar() {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Účet
+              {openRegistration ? 'Registrace' : openPasswordReset ? 'Obnova hesla' : 'Přihlášení'}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -114,9 +119,27 @@ function Avatar() {
                 <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} onClick={handleLogout} />
               </>
             ) : openRegistration ? (
-              <RegistrationForm handleLoginClick={() => setOpenRegistration(false)} />
+              <RegistrationForm
+                handleSuccessfullLogin={() => handleClose()}
+                handleLoginClick={() => setOpenRegistration(false)}
+              />
+            ) : openPasswordReset ? (
+              <PasswordResetForm
+                handleLoginClick={() => {
+                  setPasswordReset(false);
+                  setOpenRegistration(false);
+                }}
+                handleRegisterClick={() => {
+                  setPasswordReset(false);
+                  setOpenRegistration(true);
+                }}
+              />
             ) : (
-              <LoginForm handleRegisterClick={() => setOpenRegistration(true)} />
+              <LoginForm
+                handleSuccessfullLogin={() => handleClose()}
+                handleRegisterClick={() => setOpenRegistration(true)}
+                handlePasswordResetClick={() => setPasswordReset(true)}
+              />
             )
           }
         </List>

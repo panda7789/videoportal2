@@ -289,6 +289,50 @@ export interface IObjectPermissions {
     groupIds?: string[] | undefined;
 }
 
+export class PasswordResetDTO implements IPasswordResetDTO {
+    email!: string;
+    password!: string;
+    token!: string;
+
+    constructor(data?: IPasswordResetDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.token = _data["token"];
+        }
+    }
+
+    static fromJS(data: any): PasswordResetDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new PasswordResetDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["token"] = this.token;
+        return data;
+    }
+}
+
+export interface IPasswordResetDTO {
+    email: string;
+    password: string;
+    token: string;
+}
+
 export class Permission implements IPermission {
     id!: string;
     userId?: string | undefined;

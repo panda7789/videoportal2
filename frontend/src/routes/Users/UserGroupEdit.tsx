@@ -24,6 +24,7 @@ import { ApiException, UserDTO, UserGroupDTO, UserGroupPostPutDTO } from 'api/ax
 import { Transfer } from 'antd';
 import ClearIcon from '@mui/icons-material/Clear';
 import { unionBy } from 'lodash';
+import { Route } from 'routes/RouteNames';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.userGroupsGET(params.Id);
@@ -81,6 +82,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
         {
           onSuccess: () => {
             setStatusText('Skupina byla úspěšně vytvořena');
+            setTimeout(() => navigate(`/${Route.groups}/`), 300);
           },
           onError: (response) => {
             const error = response as ApiException;
@@ -99,6 +101,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
       updateMutation?.mutateAsync(updatedGroup, {
         onSuccess: () => {
           setStatusText('Skupina byla úspěšně upravena');
+          setTimeout(() => navigate(`/${Route.groups}/`), 300);
         },
         onError: (response) => {
           const error = response as ApiException;

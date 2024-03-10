@@ -17,6 +17,10 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+if (builder.Configuration.GetSection("MailSettings") is var mailConfig && mailConfig != null)
+{
+    builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+}
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -24,6 +28,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 ;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<IMailService, MailService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

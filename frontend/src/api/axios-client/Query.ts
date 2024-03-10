@@ -1952,6 +1952,58 @@ export function setUsersGETDataByQueryId(queryClient: QueryClient, queryKey: Que
   queryClient.setQueryData(queryKey, updater);
 }
     
+export function resetPasswordUrl(): string {
+  let url_ = getBaseUrl() + "/api/users/reset-password";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function resetPasswordMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'resetPassword',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useResetPasswordMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, string, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, string, TContext> {
+  const key = resetPasswordMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation((body: string) => Client.resetPassword(body), {...options, mutationKey: key});
+}
+  
+export function submitResetPasswordUrl(): string {
+  let url_ = getBaseUrl() + "/api/users/submit-reset-password";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function submitResetPasswordMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'submitResetPassword',
+    ]);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function useSubmitResetPasswordMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.PasswordResetDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.PasswordResetDTO, TContext> {
+  const key = submitResetPasswordMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation((body: Types.PasswordResetDTO) => Client.submitResetPassword(body), {...options, mutationKey: key});
+}
+  
 export function userVideoStatsGETUrl(videoId: string): string {
   let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}";
 if (videoId === undefined || videoId === null)

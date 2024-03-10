@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Backend.Utils;
 using Microsoft.AspNetCore.Identity;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Web;
 
 namespace Backend.Controllers
 {
@@ -23,13 +25,15 @@ namespace Backend.Controllers
         private readonly MyDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IAuthenticationService _authenticationService;
+        private readonly IMailService _mailService;
 
 
-        public UsersController(MyDbContext context, UserManager<User> userManager, IAuthenticationService authenticationService)
+        public UsersController(MyDbContext context, UserManager<User> userManager, IAuthenticationService authenticationService, IMailService emailService)
         {
             _context = context;
             _userManager = userManager;
             _authenticationService = authenticationService;
+            _mailService = emailService;
         }
 
         [AllowAnonymous]
@@ -166,6 +170,45 @@ namespace Backend.Controllers
             }
 
             return user.ToDTO();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<ActionResult> ResetPassword([FromBody] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Ok();
+            }
+
+            string token = HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
+            Console.WriteLine("TOKEN: " + token);
+            await _mailService.SendMailAsync(new MailData
+            {
+                EmailToId = email,
+                EmailToName = user.Name,
+                EmailSubject = "VideoPortál - Reset hesla",
+                EmailBody = $"Byla vyžádána změna hesla pro Váš účet, pro změnu prosím použijte odkaz: {_mailService.GetAppUrl()}/password-reset?token={token}"
+            });
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("submit-reset-password")]
+        public async Task<ActionResult> SubmitPasswordReset([FromBody] PasswordResetDTO passwordReset)
+        {
+            var user = await _userManager.FindByEmailAsync(passwordReset.Email);
+            if (user == null)
+            {
+                return Problem();
+            }
+            var result = await _userManager.ResetPasswordAsync(user, passwordReset.Token, passwordReset.Password);
+            if (!result.Succeeded)
+            {
+                return Problem();
+            }
+            return Ok();
         }
 
 

@@ -1755,6 +1755,112 @@ function processUsersGET(response: AxiosResponse): Promise<Types.UserDTO> {
 }
 
 /**
+ * @param body (optional) 
+ * @return Success
+ */
+export function resetPassword(body?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/users/reset-password";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigResetPassword,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processResetPassword(_response);
+    });
+}
+
+function processResetPassword(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return Success
+ */
+export function submitResetPassword(body?: Types.PasswordResetDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/users/submit-reset-password";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigSubmitResetPassword,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processSubmitResetPassword(_response);
+    });
+}
+
+function processSubmitResetPassword(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
  * @return Success
  */
 export function userVideoStatsGET(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserVideoStats> {
@@ -2895,6 +3001,28 @@ export function setUsersGETRequestConfig(value: Partial<AxiosRequestConfig>) {
 }
 export function patchUsersGETRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigUsersGET = patch(_requestConfigUsersGET ?? {});
+}
+
+let _requestConfigResetPassword: Partial<AxiosRequestConfig> | undefined;
+export function getResetPasswordRequestConfig() {
+  return _requestConfigResetPassword;
+}
+export function setResetPasswordRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigResetPassword = value;
+}
+export function patchResetPasswordRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigResetPassword = patch(_requestConfigResetPassword ?? {});
+}
+
+let _requestConfigSubmitResetPassword: Partial<AxiosRequestConfig> | undefined;
+export function getSubmitResetPasswordRequestConfig() {
+  return _requestConfigSubmitResetPassword;
+}
+export function setSubmitResetPasswordRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigSubmitResetPassword = value;
+}
+export function patchSubmitResetPasswordRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigSubmitResetPassword = patch(_requestConfigSubmitResetPassword ?? {});
 }
 
 let _requestConfigUserVideoStatsGET: Partial<AxiosRequestConfig> | undefined;

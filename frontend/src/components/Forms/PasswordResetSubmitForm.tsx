@@ -1,47 +1,26 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { FormEvent, useContext, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { IconButton, InputAdornment, Typography } from '@mui/material';
-import { UserContext } from 'routes/Root';
-import { Privileges } from 'model/User';
 import { AxiosQuery } from 'api';
-import { RegisterDTO } from 'api/axios-client';
+import { PasswordResetDTO } from 'api/axios-client';
 import { TailSpin } from 'react-loader-spinner';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface Props {
-  handleLoginClick(): void;
-  handleSuccessfullLogin(): void;
+  token: string;
 }
 
-export default function RegistrationForm({ handleLoginClick, handleSuccessfullLogin }: Props) {
+export default function PasswordResetSubmitForm({ token }: Props) {
   const [statusText, setStatusText] = useState<string | undefined>(undefined);
   const [sucessfullRegistration, setSuccessfullRegistration] = useState<boolean>(false);
-  const userContext = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const registrationMutation = AxiosQuery.Query.useRegisterMutation();
-  const getCurrentUser = AxiosQuery.Query.useMeQuery({
-    enabled: false,
-    onSuccess: (result) => {
-      const user = result;
-      setTimeout(() => {
-        userContext?.setUser({
-          email: user.email,
-          id: user.id,
-          initials: user.initials,
-          name: user.name,
-          rights: user.rights as unknown as Privileges,
-        });
-      }, 500);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const mutation = AxiosQuery.Query.useSubmitResetPasswordMutation();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -49,21 +28,18 @@ export default function RegistrationForm({ handleLoginClick, handleSuccessfullLo
     const data = new FormData(event.currentTarget);
     const password = data.get('password')!.toString();
     const email = data.get('email')!.toString();
-    const name = data.get('name')!.toString();
-    if (password.length === 0 || email.length === 0 || name.length === 0) {
+    if (password.length === 0 || email.length === 0) {
       setStatusText('Všechna pole musí být vyplněna');
       return;
     }
-    registrationMutation.mutateAsync(new RegisterDTO({ email, name, password }), {
-      onSuccess: (result) => {
-        localStorage.setItem('token', result);
-        setStatusText('Registrace proběhla úspěšně 🤗');
+    mutation.mutateAsync(new PasswordResetDTO({ email, password, token }), {
+      onSuccess: () => {
+        setStatusText('Heslo bylo úspěšně změněno');
         setSuccessfullRegistration(true);
-        getCurrentUser.refetch();
-        handleSuccessfullLogin();
+        setTimeout(() => navigate('/'), 1000);
       },
       onError: (error: any) => {
-        setStatusText((error?.response ?? error) as string);
+        setStatusText(`Heslo se nepodařilo změnit (${(error?.response as any)?.detail ?? ''})`);
         setSuccessfullRegistration(false);
       },
     });
@@ -94,18 +70,7 @@ export default function RegistrationForm({ handleLoginClick, handleSuccessfullLo
             label="Email"
             name="email"
             type="email"
-            autoComplete="email"
             autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Jméno"
-            name="name"
-            type="text"
-            autoComplete="name"
           />
           <TextField
             margin="normal"
@@ -115,7 +80,6 @@ export default function RegistrationForm({ handleLoginClick, handleSuccessfullLo
             label="Heslo"
             type={showPassword ? 'text' : 'password'}
             id="password"
-            autoComplete="current-password"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -131,8 +95,8 @@ export default function RegistrationForm({ handleLoginClick, handleSuccessfullLo
             }}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Registrovat
-            {registrationMutation.isLoading && (
+            Nastavit nové heslo
+            {mutation.isLoading && (
               <TailSpin
                 height="25"
                 width="25"
@@ -144,13 +108,6 @@ export default function RegistrationForm({ handleLoginClick, handleSuccessfullLo
               />
             )}
           </Button>
-          <Grid container justifyContent="end">
-            <Grid item>
-              <Button onClick={handleLoginClick}>
-                <Typography variant="body2">Přihlásit se</Typography>
-              </Button>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
     </Container>

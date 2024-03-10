@@ -388,6 +388,8 @@ export default function EnhancedTable<T extends TableDataBase>({
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Řádků na stránku"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} z ${count}`}
         />
       </Paper>
     </Box>

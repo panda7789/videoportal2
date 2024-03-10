@@ -17,6 +17,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { useRegisterMutation, useUsersPUTMutation } from 'api/axios-client/Query';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { RegisterDTO } from 'api/axios-client';
+import { Route } from 'routes/RouteNames';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.usersGET(params.Id);
@@ -64,6 +65,7 @@ export function UserEditor({ newUser = false }: Props) {
         {
           onSuccess: () => {
             setStatusText('Uživatel byl úspěšně vytvořen');
+            setTimeout(() => navigate(`/${Route.users}/`), 300);
           },
           onError: () => {
             setStatusText('Nepodařilo se vytvořit uživatele');
@@ -85,6 +87,7 @@ export function UserEditor({ newUser = false }: Props) {
       updateUserMutation?.mutateAsync(updatedUser, {
         onSuccess: () => {
           setStatusText('Uživatel byl úspěšně upraven');
+          setTimeout(() => navigate(`/${Route.users}/`), 300);
         },
         onError: () => {
           setStatusText('Nepodařilo se upravit uživatele');

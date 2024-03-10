@@ -9,60 +9,30 @@ import { UserContext } from 'routes/Root';
 import { AxiosQuery } from 'api';
 import { LoginDTO, UserDTO } from 'api/axios-client';
 import { TailSpin } from 'react-loader-spinner';
+import { useResetPasswordMutation } from 'api/axios-client/Query';
 
 export interface Props {
   handleRegisterClick(): void;
-  handlePasswordResetClick(): void;
-  handleSuccessfullLogin(): void;
+  handleLoginClick(): void;
 }
 
-export default function LoginForm({
-  handleRegisterClick,
-  handleSuccessfullLogin,
-  handlePasswordResetClick,
-}: Props) {
+export default function PasswordResetForm({ handleRegisterClick, handleLoginClick }: Props) {
   const [statusText, setStatusText] = useState<string | undefined>(undefined);
   const [sucessfullLogin, setSucessfullLogin] = useState<boolean>(false);
-  const userContext = useContext(UserContext);
-
-  const loginMutation = AxiosQuery.Query.useLoginMutation();
-  const getCurrentUser = AxiosQuery.Query.useMeQuery({
-    enabled: false,
-    onSuccess: (result) => {
-      const user = result;
-      setTimeout(() => {
-        userContext?.setUser(
-          new UserDTO({
-            email: user.email,
-            id: user.id,
-            initials: user.initials,
-            name: user.name,
-            roles: user.roles,
-          }),
-        );
-      }, 500);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const mutation = useResetPasswordMutation();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatusText(undefined);
     const data = new FormData(event.currentTarget);
-    const password = data.get('password')!.toString();
     const email = data.get('email')!.toString();
-    loginMutation.mutateAsync(new LoginDTO({ email, password }), {
-      onSuccess: async (result) => {
-        localStorage.setItem('token', result);
-        setStatusText('Přihlášení proběhlo úspěšně 🤗');
+    mutation.mutateAsync(email, {
+      onSuccess: () => {
+        setStatusText('Reset hesla proběhl úspěšně.');
         setSucessfullLogin(true);
-        getCurrentUser.refetch();
-        handleSuccessfullLogin();
       },
       onError: () => {
-        setStatusText('Email nebo heslo nemáme bohužel v databázi 😥');
+        setStatusText('Reset hesla skončil chybou.');
         setSucessfullLogin(false);
       },
     });
@@ -93,19 +63,9 @@ export default function LoginForm({
             autoComplete="email"
             autoFocus
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Heslo"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Přihlásit
-            {loginMutation.isLoading && (
+            Obnovit heslo
+            {mutation.isLoading && (
               <TailSpin
                 height="25"
                 width="25"
@@ -119,8 +79,8 @@ export default function LoginForm({
           </Button>
           <Grid container justifyContent="end">
             <Grid item>
-              <Button onClick={handlePasswordResetClick}>
-                <Typography variant="body2">Zapomenuté heslo</Typography>
+              <Button onClick={handleLoginClick}>
+                <Typography variant="body2">Přihlásit se</Typography>
               </Button>
               <Button onClick={handleRegisterClick}>
                 <Typography variant="body2">Registrovat se</Typography>
