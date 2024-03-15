@@ -922,7 +922,7 @@ function processTagsAll(response: AxiosResponse): Promise<Types.TagDTO[]> {
  * @param body (optional) 
  * @return Success
  */
-export function tagsPOST(body?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function tagsPOST(body?: Types.PostTagDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/Tags";
       url_ = url_.replace(/[?&]$/, "");
 

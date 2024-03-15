@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240315213854_tag-color")]
+    partial class tagcolor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,21 +166,21 @@ namespace Backend.Migrations
                         new
                         {
                             Id = new Guid("ef1279c9-4e92-447f-8617-924e536be6f1"),
-                            ConcurrencyStamp = "6f565882-6fd0-43d2-ba41-f54401a80911",
+                            ConcurrencyStamp = "3321565c-19ca-4b2c-a141-80be79280da5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("df782ef4-097c-4bc5-9ee3-e65f1863fcf8"),
-                            ConcurrencyStamp = "6ac4c6e7-9458-4569-8047-8b6570622815",
+                            ConcurrencyStamp = "855f6957-1a89-43ca-b913-812b9ccb8f52",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("3ac3367c-f9ff-44d9-be8f-8bdc5377fa46"),
-                            ConcurrencyStamp = "86684e48-c9a6-412b-bfbf-6772fb06b8d1",
+                            ConcurrencyStamp = "06c28bff-164d-4df4-89a1-e73950530a3e",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -190,7 +193,6 @@ namespace Backend.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Color")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
@@ -285,7 +287,7 @@ namespace Backend.Migrations
                         {
                             Id = new Guid("6b3e53ea-cebf-42f3-badb-dc9ee8eb064d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a00e9f0f-4b61-4e62-9b5c-d3303ab27bd5",
+                            ConcurrencyStamp = "b470df72-7cf7-4bc1-8d1b-6dde066d09e5",
                             Email = "admin@admin.cz",
                             EmailConfirmed = false,
                             Initials = "A",
@@ -293,7 +295,7 @@ namespace Backend.Migrations
                             Name = "Administrátor",
                             NormalizedEmail = "admin@admin.cz",
                             NormalizedUserName = "admin@admin.cz",
-                            PasswordHash = "AQAAAAEAACcQAAAAEErpi+b0zqlv0fXDPeojBVBzsZn8uCLe3eamwxypjvaA7OBpLjvkwIjEMyJwf39wgA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEN4nTEY3rLyd3kJkBx0TE5B5epEAiJNXMAbjhwvWUe2sUl8snA1am3z+L0kYPzcB6Q==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.cz"

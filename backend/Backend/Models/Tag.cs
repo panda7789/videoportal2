@@ -8,10 +8,12 @@ namespace Backend.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Video> Videos { get; set; }
+        public string Color { get; set; }
         public TagDTO ToDTO() => new()
         {
             Id = Id,
             Name = Name,
+            Color = Color
         };
     }
 
@@ -19,5 +21,12 @@ namespace Backend.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string Color { get; set; }
+    }
+
+    public record class PostTagDTO
+    {
+        public string Name { get; set; }
+        public string Color { get; set; }
     }
 }

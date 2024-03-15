@@ -31,7 +31,9 @@ function HomePage() {
         <Typography variant="h6">Tagy</Typography>
         <Grid container gap={0.5} pt={1} direction={{ xs: 'row', md: 'column' }}>
           {!tags.isLoading
-            ? tags?.data?.map((tag) => <CustomChip key={tag.id} text={tag.name} />)
+            ? tags?.data?.map((tag) => (
+                <CustomChip key={tag.id} text={tag.name} bgColor={tag.color} />
+              ))
             : [...Array(6)].map((_, i) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <Grid key={`${i}-skeleton`} item xs={12} p={0.5}>

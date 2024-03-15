@@ -44,17 +44,17 @@ namespace Backend.Controllers
         // POST: api/Tags
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IActionResult> PostTag([FromBody] string name)
+        public async Task<IActionResult> PostTag([FromBody] PostTagDTO tag)
         {
             if (_context.Tags == null)
             {
                 return Problem("Entity set 'MyDbContext.Tags'  is null.");
             }
-            if (_context.Tags.Any(x => x.Name == name))
+            if (_context.Tags.Any(x => x.Name == tag.Name))
             {
                 return Problem("Tag with this name already exists.");
             }
-            _context.Tags.Add(new Tag() { Name= name});
+            _context.Tags.Add(new Tag() { Name = tag.Name, Color = tag.Color });
             await _context.SaveChangesAsync();
             return NoContent();
         }

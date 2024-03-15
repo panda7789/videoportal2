@@ -16,7 +16,9 @@ function ChipLine({ chipData, smaller }: Props) {
       }}
     >
       {chipData
-        ? chipData.map((tag) => <CustomChip key={tag.id} text={tag.name} smaller={smaller} />)
+        ? chipData.map((tag) => (
+            <CustomChip key={tag.id} text={tag.name} bgColor={tag.color} smaller={smaller} />
+          ))
         : [...Array(6)].map(() => (
             // eslint-disable-next-line react/jsx-key
             <Grid item xs={6} p={0.5}>

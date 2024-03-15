@@ -1182,13 +1182,13 @@ export function tagsPOSTMutationKey(): MutationKey {
  * @param body (optional) 
  * @return Success
  */
-export function useTagsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, string, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, string, TContext> {
+export function useTagsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, Types.PostTagDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, Types.PostTagDTO, TContext> {
   const key = tagsPOSTMutationKey();
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
-  return useMutation((body: string) => Client.tagsPOST(body), {...options, mutationKey: key});
+  return useMutation((body: Types.PostTagDTO) => Client.tagsPOST(body), {...options, mutationKey: key});
 }
   
 export function tagsWithVideosUrl(): string {

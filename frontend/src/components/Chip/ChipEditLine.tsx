@@ -13,6 +13,7 @@ import {
 import { useEffect, useImperativeHandle } from 'react';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import CustomChip from './CustomChip';
+import { PostTagDTO } from 'api/axios-client';
 
 export interface ChipData {
   key: string;
@@ -27,7 +28,7 @@ const ListItem = styled('li')(({ theme }) => ({
 
 export interface Props {
   chips?: ChipData[];
-  addChipHandle(name: string): Promise<void>;
+  addChipHandle(tag: PostTagDTO): Promise<void>;
   deleteChipHandle?(id: string): void;
 }
 
@@ -105,8 +106,9 @@ const ChipEditLine = React.forwardRef<ChipLineFunctions, Props>(
         return;
       }
       setDialogError(undefined);
+      const newColor = GetRandomColor();
       try {
-        await addChipHandle(newValue);
+        await addChipHandle(new PostTagDTO({ name: newValue, color: newColor }));
       } catch (error) {
         console.log(error);
         setAddNewDialogOpen(false);
@@ -120,7 +122,7 @@ const ChipEditLine = React.forwardRef<ChipLineFunctions, Props>(
             active: true,
             key: newValue,
             label: newValue,
-            bgColor: GetRandomColor(),
+            bgColor: newColor,
           },
         ].sort(pleaseSort),
       );

@@ -747,6 +747,46 @@ export interface IPlaylistVideo {
     order: number;
 }
 
+export class PostTagDTO implements IPostTagDTO {
+    name!: string;
+    color!: string;
+
+    constructor(data?: IPostTagDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.color = _data["color"];
+        }
+    }
+
+    static fromJS(data: any): PostTagDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new PostTagDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["color"] = this.color;
+        return data;
+    }
+}
+
+export interface IPostTagDTO {
+    name: string;
+    color: string;
+}
+
 export class PostVideoResponse implements IPostVideoResponse {
     dataUrl!: string;
 
@@ -831,6 +871,7 @@ export class Tag implements ITag {
     id!: string;
     name!: string;
     videos!: Video[];
+    color?: string | undefined;
 
     constructor(data?: ITag) {
         if (data) {
@@ -853,6 +894,7 @@ export class Tag implements ITag {
                 for (let item of _data["videos"])
                     this.videos!.push(Video.fromJS(item));
             }
+            this.color = _data["color"];
         }
     }
 
@@ -872,6 +914,7 @@ export class Tag implements ITag {
             for (let item of this.videos)
                 data["videos"].push(item.toJSON());
         }
+        data["color"] = this.color;
         return data;
     }
 }
@@ -880,11 +923,13 @@ export interface ITag {
     id: string;
     name: string;
     videos: Video[];
+    color?: string | undefined;
 }
 
 export class TagDTO implements ITagDTO {
     id!: string;
     name!: string;
+    color?: string | undefined;
 
     constructor(data?: ITagDTO) {
         if (data) {
@@ -899,6 +944,7 @@ export class TagDTO implements ITagDTO {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            this.color = _data["color"];
         }
     }
 
@@ -913,6 +959,7 @@ export class TagDTO implements ITagDTO {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["color"] = this.color;
         return data;
     }
 }
@@ -920,6 +967,7 @@ export class TagDTO implements ITagDTO {
 export interface ITagDTO {
     id: string;
     name: string;
+    color?: string | undefined;
 }
 
 export class User implements IUser {

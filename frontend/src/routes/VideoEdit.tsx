@@ -44,7 +44,7 @@ import {
   useVideosPOSTMutation,
   useVideosPUTMutation,
 } from 'api/axios-client/Query';
-import { PostVideoResponse } from 'api/axios-client';
+import { PostTagDTO, PostVideoResponse } from 'api/axios-client';
 import { SizeToWords } from 'components/Utils/NumberUtils';
 import { GetRandomColor } from 'components/Utils/CoolColors';
 import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown';
@@ -186,8 +186,8 @@ function VideoEditInner({ newVideo }: InnerProps) {
     selectRandomThumbnail();
   }, [generatedThumbnails]);
 
-  const handleTagAdd = async (name: string) => {
-    return createTagMutation.mutateAsync(name);
+  const handleTagAdd = async (tag: PostTagDTO) => {
+    return createTagMutation.mutateAsync(tag);
   };
 
   const thumbnailAdditionalButtons = [
@@ -556,7 +556,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
                 (x) =>
                   ({
                     active: video?.tags?.some((y) => y.name === x.name),
-                    bgColor: GetRandomColor(),
+                    bgColor: x.color,
                     key: x.id,
                     label: x.name,
                   } as ChipData),
