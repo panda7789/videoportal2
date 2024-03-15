@@ -25,7 +25,7 @@ namespace Backend.Controllers
 
         // GET: api/UserVideoStats/5
         [HttpGet("{videoId}")]
-        public async Task<ActionResult<UserVideoStats>> GetUserVideoStats(Guid videoId)
+        public async Task<ActionResult<UserVideoStatsDTO>> GetUserVideoStats(Guid videoId)
         {
             if (_context.UserVideoStats == null)
             {
@@ -37,13 +37,28 @@ namespace Backend.Controllers
             {
                 return Unauthorized();
             }
-            return Get(videoId, userId, _context);
+            return Get(videoId, userId, _context).ToDTO();
+        }
+
+        [HttpGet("{videoId}/stats")]
+        public async Task<ActionResult<LikeDislikeStats>> GetLikeDislikeStats(Guid videoId)
+        {
+            if (_context.UserVideoStats == null)
+            {
+                return NotFound();
+            }
+            var query = _context.UserVideoStats.Where(x => x.VideoId == videoId);
+            return new LikeDislikeStats(
+                query.Count(x => x.Like),
+                query.Count(x => x.Dislike)
+                );
+
         }
 
         // PUT: api/UserVideoStats/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{videoId}")]
-        public async Task<IActionResult> PutUserVideoStats(Guid videoId, UserVideoStats userVideoStats)
+        public async Task<IActionResult> PutUserVideoStats(Guid videoId, UserVideoStatsDTO userVideoStats)
         {
             if (videoId != userVideoStats.VideoId)
             {
@@ -62,7 +77,6 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
-            
             var result = _context.UserVideoStats.Where(x => x.UserId == userId && x.VideoId == videoId).FirstOrDefault();
             if (result == null)
             {
@@ -83,7 +97,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{videoId}/watched")]
-        public async Task<IActionResult> PutVideoWatchedtime(Guid videoId,[FromBody] int watchedSec)
+        public async Task<IActionResult> PutVideoWatchedtime(Guid videoId, [FromBody] int watchedSec)
         {
             var userId = User.GetUserId();
             if (userId == null)

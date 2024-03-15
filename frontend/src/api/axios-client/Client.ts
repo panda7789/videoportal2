@@ -1916,7 +1916,7 @@ function processSubmitResetPassword(response: AxiosResponse): Promise<void> {
 /**
  * @return Success
  */
-export function userVideoStatsGET(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserVideoStats> {
+export function userVideoStatsGET(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserVideoStatsDTO> {
     let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}";
     if (videoId === undefined || videoId === null)
       throw new Error("The parameter 'videoId' must be defined.");
@@ -1944,7 +1944,7 @@ export function userVideoStatsGET(videoId: string, config?: AxiosRequestConfig |
     });
 }
 
-function processUserVideoStatsGET(response: AxiosResponse): Promise<Types.UserVideoStats> {
+function processUserVideoStatsGET(response: AxiosResponse): Promise<Types.UserVideoStatsDTO> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -1958,21 +1958,21 @@ function processUserVideoStatsGET(response: AxiosResponse): Promise<Types.UserVi
         const _responseText = response.data;
         let result200: any = null;
         let resultData200  = _responseText;
-        result200 = Types.UserVideoStats.fromJS(resultData200);
-        return Promise.resolve<Types.UserVideoStats>(result200);
+        result200 = Types.UserVideoStatsDTO.fromJS(resultData200);
+        return Promise.resolve<Types.UserVideoStatsDTO>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.UserVideoStats>(null as any);
+    return Promise.resolve<Types.UserVideoStatsDTO>(null as any);
 }
 
 /**
  * @param body (optional) 
  * @return Success
  */
-export function userVideoStatsPUT(videoId: string, body?: Types.UserVideoStats | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function userVideoStatsPUT(videoId: string, body?: Types.UserVideoStatsDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}";
     if (videoId === undefined || videoId === null)
       throw new Error("The parameter 'videoId' must be defined.");
@@ -2022,6 +2022,61 @@ function processUserVideoStatsPUT(response: AxiosResponse): Promise<void> {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @return Success
+ */
+export function stats(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.LikeDislikeStats> {
+    let url_ = getBaseUrl() + "/api/UserVideoStats/{videoId}/stats";
+    if (videoId === undefined || videoId === null)
+      throw new Error("The parameter 'videoId' must be defined.");
+    url_ = url_.replace("{videoId}", encodeURIComponent("" + videoId));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigStats,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processStats(_response);
+    });
+}
+
+function processStats(response: AxiosResponse): Promise<Types.LikeDislikeStats> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.LikeDislikeStats.fromJS(resultData200);
+        return Promise.resolve<Types.LikeDislikeStats>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.LikeDislikeStats>(null as any);
 }
 
 /**
@@ -3109,6 +3164,17 @@ export function setUserVideoStatsPUTRequestConfig(value: Partial<AxiosRequestCon
 }
 export function patchUserVideoStatsPUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigUserVideoStatsPUT = patch(_requestConfigUserVideoStatsPUT ?? {});
+}
+
+let _requestConfigStats: Partial<AxiosRequestConfig> | undefined;
+export function getStatsRequestConfig() {
+  return _requestConfigStats;
+}
+export function setStatsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigStats = value;
+}
+export function patchStatsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigStats = patch(_requestConfigStats ?? {});
 }
 
 let _requestConfigWatched: Partial<AxiosRequestConfig> | undefined;

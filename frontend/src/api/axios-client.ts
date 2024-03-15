@@ -193,6 +193,46 @@ export interface IIncludeExcludeObjectPermissions {
     excludedPermissions?: ObjectPermissions | undefined;
 }
 
+export class LikeDislikeStats implements ILikeDislikeStats {
+    likeCount!: number;
+    dislikeCount!: number;
+
+    constructor(data?: ILikeDislikeStats) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.likeCount = _data["likeCount"];
+            this.dislikeCount = _data["dislikeCount"];
+        }
+    }
+
+    static fromJS(data: any): LikeDislikeStats {
+        data = typeof data === 'object' ? data : {};
+        let result = new LikeDislikeStats();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["likeCount"] = this.likeCount;
+        data["dislikeCount"] = this.dislikeCount;
+        return data;
+    }
+}
+
+export interface ILikeDislikeStats {
+    likeCount: number;
+    dislikeCount: number;
+}
+
 export class LoginDTO implements ILoginDTO {
     email!: string;
     password!: string;
@@ -1289,8 +1329,71 @@ export class UserVideoStats implements IUserVideoStats {
     timeWatchedSec!: number;
     userId!: string;
     videoId!: string;
+    video!: Video;
 
     constructor(data?: IUserVideoStats) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.video = new Video();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.like = _data["like"];
+            this.dislike = _data["dislike"];
+            this.addedToPlaylist = _data["addedToPlaylist"];
+            this.timeWatchedSec = _data["timeWatchedSec"];
+            this.userId = _data["userId"];
+            this.videoId = _data["videoId"];
+            this.video = _data["video"] ? Video.fromJS(_data["video"]) : new Video();
+        }
+    }
+
+    static fromJS(data: any): UserVideoStats {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserVideoStats();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["like"] = this.like;
+        data["dislike"] = this.dislike;
+        data["addedToPlaylist"] = this.addedToPlaylist;
+        data["timeWatchedSec"] = this.timeWatchedSec;
+        data["userId"] = this.userId;
+        data["videoId"] = this.videoId;
+        data["video"] = this.video ? this.video.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUserVideoStats {
+    like: boolean;
+    dislike: boolean;
+    addedToPlaylist: boolean;
+    timeWatchedSec: number;
+    userId: string;
+    videoId: string;
+    video: Video;
+}
+
+export class UserVideoStatsDTO implements IUserVideoStatsDTO {
+    like!: boolean;
+    dislike!: boolean;
+    addedToPlaylist!: boolean;
+    timeWatchedSec!: number;
+    userId!: string;
+    videoId!: string;
+
+    constructor(data?: IUserVideoStatsDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1310,9 +1413,9 @@ export class UserVideoStats implements IUserVideoStats {
         }
     }
 
-    static fromJS(data: any): UserVideoStats {
+    static fromJS(data: any): UserVideoStatsDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new UserVideoStats();
+        let result = new UserVideoStatsDTO();
         result.init(data);
         return result;
     }
@@ -1329,7 +1432,7 @@ export class UserVideoStats implements IUserVideoStats {
     }
 }
 
-export interface IUserVideoStats {
+export interface IUserVideoStatsDTO {
     like: boolean;
     dislike: boolean;
     addedToPlaylist: boolean;
@@ -1354,6 +1457,7 @@ export class Video implements IVideo {
     mainPlaylist!: Playlist;
     owner!: User;
     permissions!: Permission[];
+    userVideoStats!: UserVideoStats[];
 
     constructor(data?: IVideo) {
         if (data) {
@@ -1366,6 +1470,7 @@ export class Video implements IVideo {
             this.mainPlaylist = new Playlist();
             this.owner = new User();
             this.permissions = [];
+            this.userVideoStats = [];
         }
     }
 
@@ -1397,6 +1502,11 @@ export class Video implements IVideo {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
                     this.permissions!.push(Permission.fromJS(item));
+            }
+            if (Array.isArray(_data["userVideoStats"])) {
+                this.userVideoStats = [] as any;
+                for (let item of _data["userVideoStats"])
+                    this.userVideoStats!.push(UserVideoStats.fromJS(item));
             }
         }
     }
@@ -1437,6 +1547,11 @@ export class Video implements IVideo {
             for (let item of this.permissions)
                 data["permissions"].push(item.toJSON());
         }
+        if (Array.isArray(this.userVideoStats)) {
+            data["userVideoStats"] = [];
+            for (let item of this.userVideoStats)
+                data["userVideoStats"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -1457,6 +1572,7 @@ export interface IVideo {
     mainPlaylist: Playlist;
     owner: User;
     permissions: Permission[];
+    userVideoStats: UserVideoStats[];
 }
 
 export class VideoDTO implements IVideoDTO {
@@ -1770,7 +1886,8 @@ export function initPersister() {
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersAll', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___usersGET', (data: any) => { const result = new UserDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStats(); result.init(data); return result; });
+  addResultTypeFactory('Client___userVideoStatsGET', (data: any) => { const result = new UserVideoStatsDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___stats', (data: any) => { const result = new LikeDislikeStats(); result.init(data); return result; });
   addResultTypeFactory('Client___videosAll', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videosGET', (data: any) => { const result = new VideoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___videoPermissions', (data: any) => { const result = new IncludeExcludeObjectPermissions(); result.init(data); return result; });

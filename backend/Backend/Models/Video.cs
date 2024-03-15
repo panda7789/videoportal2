@@ -16,7 +16,30 @@ namespace Backend.Models
         public Guid UserId { get; set; }
         public Guid VideoId { get; set; }
         public virtual Video Video { get; set; }
+
+        public UserVideoStatsDTO ToDTO() => new(
+            Like: Like,
+            Dislike: Dislike,
+            AddedToPlaylist: AddedToPlaylist,
+            TimeWatchedSec: TimeWatchedSec,
+            UserId: UserId,
+            VideoId: VideoId);
     }
+
+    public record UserVideoStatsDTO(
+        bool Like,
+        bool Dislike,
+        bool AddedToPlaylist,
+        int TimeWatchedSec,
+        Guid UserId,
+        Guid VideoId
+        );
+
+    public record LikeDislikeStats(
+        int LikeCount,
+               int DislikeCount
+               );
+
 
     public class Video
     {

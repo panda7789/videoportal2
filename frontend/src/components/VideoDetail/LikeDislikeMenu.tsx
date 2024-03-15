@@ -8,9 +8,10 @@ import theme from 'Theme';
 import { AxiosQuery } from 'api';
 import {
   useAddRemoveWatchLaterMutation,
+  useStatsQuery,
   useUserVideoStatsPUTMutation,
 } from 'api/axios-client/Query';
-import { UserVideoStats } from 'api/axios-client';
+import { UserVideoStatsDTO } from 'api/axios-client';
 import { NumberToWords } from 'components/Utils/NumberUtils';
 import { UseQueryResult } from '@tanstack/react-query';
 
@@ -38,9 +39,11 @@ function LikeDislikeMenu({
 }: Props) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarText, setSnackbarText] = useState<string | undefined>(undefined);
+  const likeDislikeStatsQuery = useStatsQuery(videoId, { enabled: false });
   const videoUserStatsMutation = useUserVideoStatsPUTMutation(videoId, {
     onSuccess: () => {
       userStatsQuery?.refetch();
+      likeDislikeStatsQuery.refetch();
     },
   });
   const addToWatchLaterMutation = useAddRemoveWatchLaterMutation(videoId, {
@@ -51,10 +54,9 @@ function LikeDislikeMenu({
   });
 
   const handleLikeClick = () => {
-    // todo send like to api
     if (userStatsQuery?.data) {
       videoUserStatsMutation.mutateAsync(
-        new UserVideoStats({
+        new UserVideoStatsDTO({
           ...userStatsQuery?.data,
           like: !userStatsQuery?.data?.like ?? true,
           dislike: false,
@@ -65,7 +67,7 @@ function LikeDislikeMenu({
   const handleDislikeClick = () => {
     if (userStatsQuery?.data) {
       videoUserStatsMutation.mutateAsync(
-        new UserVideoStats({
+        new UserVideoStatsDTO({
           ...userStatsQuery?.data,
           like: false,
           dislike: !userStatsQuery?.data?.dislike ?? true,
@@ -114,7 +116,9 @@ function LikeDislikeMenu({
         >
           <ThumbUpIcon />
         </IconButton>
-        <Typography>{NumberToWords(likeCount)}</Typography>
+        <Typography>
+          {NumberToWords(likeDislikeStatsQuery?.data?.likeCount ?? likeCount)}
+        </Typography>
       </Item>
       <Item>
         <IconButton
@@ -124,7 +128,9 @@ function LikeDislikeMenu({
         >
           <ThumbDownIcon />
         </IconButton>
-        <Typography>{NumberToWords(dislikeCount)}</Typography>
+        <Typography>
+          {NumberToWords(likeDislikeStatsQuery?.data?.dislikeCount ?? dislikeCount)}
+        </Typography>
       </Item>
       <Item>
         <IconButton disabled={!enabled} onClick={handleShareClick}>
