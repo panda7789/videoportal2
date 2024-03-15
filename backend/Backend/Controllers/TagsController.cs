@@ -24,10 +24,10 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsDTO()
         {
-          if (_context.Tags == null)
-          {
-              return NotFound();
-          }
+            if (_context.Tags == null)
+            {
+                return NotFound();
+            }
             return await _context.Tags.Select(x => x.ToDTO()).ToListAsync();
         }
 
@@ -78,6 +78,5 @@ namespace Backend.Controllers
 
             return NoContent();
         }
-
     }
 }

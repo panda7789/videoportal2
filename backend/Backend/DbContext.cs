@@ -99,6 +99,7 @@ public class MyDbContext : IdentityDbContext<User, Role, Guid>
         builder.Entity<Video>().Navigation(e => e.Tags).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Owner).AutoInclude();
         builder.Entity<Video>().Navigation(e => e.Permissions).AutoInclude();
+        builder.Entity<Video>().Navigation(e => e.UserVideoStats).AutoInclude();
         builder.Entity<Playlist>().Navigation(e => e.Permissions).AutoInclude();
         builder.Entity<Playlist>().Navigation(e => e.Owner).AutoInclude();
         builder.Entity<PlaylistVideo>().Navigation(e => e.Video).AutoInclude();

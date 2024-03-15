@@ -15,6 +15,7 @@ namespace Backend.Models
         public int TimeWatchedSec { get; set; }
         public Guid UserId { get; set; }
         public Guid VideoId { get; set; }
+        public virtual Video Video { get; set; }
     }
 
     public class Video
@@ -34,7 +35,8 @@ namespace Backend.Models
         public Playlist MainPlaylist { get; set; }
         public User Owner { get; set; }
         public ICollection<Permission> Permissions { get; set; }
-
+        public ICollection<UserVideoStats> UserVideoStats { get; set; }
+        
         public VideoDTO ToDTO() => new VideoDTO(
                 Id: Id,
                 Name: Name,
@@ -42,9 +44,9 @@ namespace Backend.Models
                 Duration: Duration,
                 Description: Description,
                 DataUrl: DataUrl,
-                LikeCount: LikeCount,
-                DislikeCount: DislikeCount,
-                Views: Views,
+                LikeCount: UserVideoStats.Count(x => x.Like),
+                DislikeCount: UserVideoStats.Count(x => x.Dislike),
+                Views: UserVideoStats.Count,
                 UploadTimestamp: UploadTimestamp,
                 Tags: Tags?.Select(x => x.ToDTO()).ToList(),
                 Playlists: null,

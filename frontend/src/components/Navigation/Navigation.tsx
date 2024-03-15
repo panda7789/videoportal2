@@ -39,6 +39,13 @@ export const NavigationItems: NavigationItem[] = [
     userRole: ['videoEditor'],
   },
   {
+    route: `/${Route.watchLater}`,
+    title: 'Přehrát později',
+    icon: <PlaylistPlayIcon />,
+    signed: true,
+    userRole: ['user'],
+  },
+  {
     route: `/${Route.myPlaylists}`,
     title: 'Správa playlistů',
     icon: <PlaylistPlayIcon />,

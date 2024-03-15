@@ -57,6 +57,7 @@ namespace Backend.Controllers
         {
             try
             {
+                ValidateDuplicates(request.Email);
                 var response = await _authenticationService.Register(request);
                 return Ok(response);
 
@@ -116,6 +117,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            ValidateDuplicates(userDto.Email);
 
             _context.Entry(user).State = EntityState.Modified;
             user.Name = userDto.Name;
@@ -256,8 +258,14 @@ namespace Backend.Controllers
             //Set password
             await userManager.CreateAsync(user, "123");
             await UpdateUserRoles(userManager, user, new UserRoles(), roles);
+        }
 
-
+        private void ValidateDuplicates(string email)
+        {
+            if (_context.Users.Any(x => x.Email == email))
+            {
+                throw new Exception("User with the same or email already exists.");
+            }
         }
     }
 

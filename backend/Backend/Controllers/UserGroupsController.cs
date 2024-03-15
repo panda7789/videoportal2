@@ -80,6 +80,7 @@ namespace Backend.Controllers
             }
             try
             {
+                ValidateDuplicates(userGroup.Name);
                 if (userGroup.OwnerGroupId != userGroupDB.OwnerGroupId)
                 {
                     var ownerGroup = await _context.UserGroups.FindAsync(userGroup.OwnerGroupId);
@@ -141,6 +142,8 @@ namespace Backend.Controllers
             {
                 return Problem("Entity set 'MyDbContext.UserGroups'  is null.");
             }
+
+            ValidateDuplicates(userGroup.Name);
 
             var ownerGroup = await _context.UserGroups.FindAsync(userGroup.OwnerGroupId);
             if (ownerGroup == null)
@@ -206,6 +209,14 @@ namespace Backend.Controllers
         {
             var userGroups = user.UserGroups.Select(x => x.Id);
             return await _context.UserGroups.Include(x => x.Users).Where(x => x.OwnerGroupId != null && userGroups.Any(y => y == (Guid)x.OwnerGroupId)).ToListAsync();
+        }
+
+        private void ValidateDuplicates(string name)
+        {
+            if (_context.UserGroups.Any(x => x.Name == name))
+            {
+                throw new Exception("Group with the same name already exists.");
+            }
         }
     }
 }

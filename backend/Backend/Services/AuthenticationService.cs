@@ -23,12 +23,6 @@ namespace Backend.Services
 
         public async Task<string> Register(RegisterDTO request)
         {
-            var userByEmail = await _userManager.FindByEmailAsync(request.Email);
-            if (userByEmail is not null)
-            {
-                throw new Exception($"User with email {request.Email} already exists.");
-            }
-
             var newUserRoles = new UserRoles() { User = true };
 
             User user = new()

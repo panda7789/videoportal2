@@ -108,9 +108,6 @@ namespace Backend.Controllers
             {
                 return Forbid();
             }
-            var userStats = await _context.UserVideoStats.Where(x => x.VideoId == id).ToListAsync();
-            video.LikeCount = userStats.Where(x => x.Like).Count();
-            video.DislikeCount = userStats.Where(x => x.Dislike).Count();
             return video.ToDTO();
         }
 

@@ -16,7 +16,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import HelpIcon from '@mui/icons-material/Help';
@@ -53,6 +53,7 @@ import { getFileFromBase64 } from 'components/Utils/FileUtils';
 import { UserContext } from './Root';
 import { Transfer } from 'antd';
 import theme from 'Theme';
+import { Route } from 'routes/RouteNames';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -105,6 +106,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const permissionsQuery = !newVideo ? useVideoPermissionsQuery(video?.id ?? '') : undefined;
   const usersQuery = useUsersAllQuery();
   const groupsQuery = useMyUsergroupsQuery();
+  const navigate = useNavigate();
   const [includedUserIds, setIncludedUserIds] = useState<string[] | undefined>(
     permissionsQuery?.data?.includedPermissions?.userIds ?? [],
   );
@@ -156,6 +158,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
     setProgress(100);
     setUploading(false);
     setStatusText('Video úspěšně nahráno ');
+    setTimeout(() => navigate(`/${Route.myVideos}`), 2000);
   });
   useItemErrorListener(() => {
     setUploading(false);

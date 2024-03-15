@@ -9,7 +9,7 @@ import VideoDetail, { loader as videoLoader } from 'routes/VideoDetail';
 import { loader as searchLoader } from 'components/AppBar/Search';
 import { MyVideos } from 'routes/MyVideos';
 import { VideoEdit, loader as videoEditLoader } from 'routes/VideoEdit';
-import { PlaylistDetail, loader as playlistLoader } from 'routes/Playlist';
+import { PlaylistDetail, loader as playlistLoader, watchLaterLoader } from 'routes/Playlist';
 import { UsersEdit } from 'routes/Users/UsersEdit';
 import { UserEditor, loader as userEditLoader } from 'routes/Users/UserEdit';
 import SearchResult from 'routes/SearchResult';
@@ -63,6 +63,11 @@ function App() {
               path: `${Route.playlist}/:Id`,
               element: <PlaylistDetail />,
               loader: playlistLoader,
+            },
+            {
+              path: `${Route.watchLater}`,
+              element: <PlaylistDetail />,
+              loader: watchLaterLoader,
             },
             {
               path: Route.users,

@@ -174,6 +174,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
+            ValidateDuplicates(playlist.Name);
 
             playlistDB.Description = playlist.Description;
             if (playlist.Thumbnail != null)
@@ -237,6 +238,7 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
+            ValidateDuplicates(playlist.Name);
             var videos = playlist.Videos?.Count > 1 ? _context.Videos.Where(x => playlist.Videos.Contains(x.Id)).ToList() : new List<Video>();
             var playlistDB = new Playlist
             {
@@ -293,38 +295,38 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpGet("watch-later-id")]
+        public async Task<ActionResult<Guid>> GetWatchLaterId()
+        {
+
+            var user = User.GetUser(_context);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            var userWatchLaterPlaylist = GetOrCreateWatchLater();
+            return userWatchLaterPlaylist.Id;
+        }
+
         /// <summary>
         /// Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
         /// </summary>
         [HttpPost("add-remove-watch-later")]
         public async Task<ActionResult<bool>> AddOrRemoveVideoFromWatchLater(Guid id)
         {
-            var user = User.GetUser(_context);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
                 return NotFound();
             }
-            var userWatchLaterPlaylist = _context.Playlists.Where(x => x.Id == user.WatchLaterPlaylistId).Include(x => x.Videos).FirstOrDefault();
-            if (userWatchLaterPlaylist == null)
-            {
-                CreateWatchLaterPlaylist(user);
-            }
-            if (userWatchLaterPlaylist == null)
-            {
-                return Problem("Uživatel nemá playlist přehrát později a nepovedlo se jej vytvořit.");
-            }
-
+            var userWatchLaterPlaylist = GetOrCreateWatchLater();
             if (userWatchLaterPlaylist.Videos == null)
             {
                 userWatchLaterPlaylist.Videos = new List<PlaylistVideo>();
             }
 
-            var userVideoStats = UserVideoStatsController.Get(video.Id, user.Id, _context);
+            var userId = User.GetUserId();
+            var userVideoStats = UserVideoStatsController.Get(video.Id, userId, _context);
 
             var added = false;
             if (userWatchLaterPlaylist.Videos.Any(x => x.Video.Id == video.Id))
@@ -400,9 +402,9 @@ namespace Backend.Controllers
             return HasPermissions(playlist, user);
         }
 
-        public static void CreateWatchLaterPlaylist(User user)
+        public static Playlist CreateWatchLaterPlaylist(User user)
         {
-            user.WatchLaterPlaylist = new Playlist
+            var playlist = new Playlist
             {
                 Name = WatchLaterPlaylistName,
                 Owner = user,
@@ -410,6 +412,35 @@ namespace Backend.Controllers
                 CreatedTimestamp = DateTime.UtcNow,
                 Videos = new List<PlaylistVideo>()
             };
+            user.WatchLaterPlaylist = playlist;
+            return playlist;
+        }
+
+        private void ValidateDuplicates(string name)
+        {
+            if (_context.Playlists.Any(x => x.Name == name))
+            {
+                throw new Exception("Playlist with this name already exists.");
+            }
+        }
+
+        private Playlist GetOrCreateWatchLater()
+        {
+            var user = User.GetUser(_context);
+            if (user == null)
+            {
+                throw new Exception();// Unauthorized();
+            }
+            var userWatchLaterPlaylist = _context.Playlists.Where(x => x.Id == user.WatchLaterPlaylistId).Include(x => x.Videos).FirstOrDefault();
+            if (userWatchLaterPlaylist == null)
+            {
+                userWatchLaterPlaylist = CreateWatchLaterPlaylist(user);
+            }
+            if (userWatchLaterPlaylist == null)
+            {
+                throw new Exception("Uživatel nemá playlist přehrát později a nepovedlo se jej vytvořit.");
+            }
+            return userWatchLaterPlaylist;
         }
     }
     public static class PlaylistExtensions

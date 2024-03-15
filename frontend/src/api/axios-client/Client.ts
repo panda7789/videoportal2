@@ -681,6 +681,59 @@ function processPlaylistsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * @return Success
+ */
+export function watchLaterId(config?: AxiosRequestConfig | undefined): Promise<string> {
+    let url_ = getBaseUrl() + "/api/Playlists/watch-later-id";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigWatchLaterId,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processWatchLaterId(_response);
+    });
+}
+
+function processWatchLaterId(response: AxiosResponse): Promise<string> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+        return Promise.resolve<string>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<string>(null as any);
+}
+
+/**
  * Přidá nebo odebere video z playlistu 'Přehrát později'. V případě zdařilé operace vrací v odpovědi příznak, zdali se video do playlistu přidávalo(true), nebo odebíralo(false).
  * @param id (optional) 
  * @return Success
@@ -2792,6 +2845,17 @@ export function setPlaylistsDELETERequestConfig(value: Partial<AxiosRequestConfi
 }
 export function patchPlaylistsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigPlaylistsDELETE = patch(_requestConfigPlaylistsDELETE ?? {});
+}
+
+let _requestConfigWatchLaterId: Partial<AxiosRequestConfig> | undefined;
+export function getWatchLaterIdRequestConfig() {
+  return _requestConfigWatchLaterId;
+}
+export function setWatchLaterIdRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigWatchLaterId = value;
+}
+export function patchWatchLaterIdRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigWatchLaterId = patch(_requestConfigWatchLaterId ?? {});
 }
 
 let _requestConfigAddRemoveWatchLater: Partial<AxiosRequestConfig> | undefined;

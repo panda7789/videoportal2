@@ -913,6 +913,76 @@ export function usePlaylistsDELETEMutationWithParameters<TContext>(options?: Omi
 return useMutation((data: PlaylistsDELETE__MutationParameters) => Client.playlistsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
+export function watchLaterIdUrl(): string {
+  let url_ = getBaseUrl() + "/api/Playlists/watch-later-id";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let watchLaterIdDefaultOptions: UseQueryOptions<string, unknown, string> = {
+  queryFn: __watchLaterId,
+};
+export function getWatchLaterIdDefaultOptions(): UseQueryOptions<string, unknown, string> {
+  return watchLaterIdDefaultOptions;
+};
+export function setWatchLaterIdDefaultOptions(options: UseQueryOptions<string, unknown, string>) {
+  watchLaterIdDefaultOptions = options;
+}
+
+export function watchLaterIdQueryKey(): QueryKey;
+export function watchLaterIdQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'watchLaterId',
+    ]);
+}
+function __watchLaterId() {
+  return Client.watchLaterId(
+    );
+}
+
+/**
+ * @return Success
+ */
+export function useWatchLaterIdQuery<TSelectData = string, TError = unknown>(options?: UseQueryOptions<string, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useWatchLaterIdQuery<TSelectData = string, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<string, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<string, TError, TSelectData>({
+    queryFn: __watchLaterId,
+    queryKey: watchLaterIdQueryKey(),
+    ...watchLaterIdDefaultOptions as unknown as UseQueryOptions<string, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * @return Success
+ */
+export function setWatchLaterIdData(queryClient: QueryClient, updater: (data: string | undefined) => string, ) {
+  queryClient.setQueryData(watchLaterIdQueryKey(),
+    updater
+  );
+}
+
+/**
+ * @return Success
+ */
+export function setWatchLaterIdDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: string | undefined) => string) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
 export function addRemoveWatchLaterUrl(id?: string | undefined): string {
   let url_ = getBaseUrl() + "/api/Playlists/add-remove-watch-later?";
 if (id === null)

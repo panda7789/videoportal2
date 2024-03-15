@@ -42,6 +42,11 @@ export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
 };
 
+export const watchLaterLoader = async () => {
+  const playlistId = await AxiosQuery.Client.watchLaterId();
+  return AxiosQuery.Client.playlistsGET(playlistId);
+};
+
 export interface Props {
   newPlaylist?: boolean;
 }
