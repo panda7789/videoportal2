@@ -6,4 +6,4 @@ EXPOSE 3000
 
 RUN npm i serve
 
-CMD [ "npx", "serve", "/app/storage"]
+CMD [ "npx", "serve", "/app/storage", "--cors"]

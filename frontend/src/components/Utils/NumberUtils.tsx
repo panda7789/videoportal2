@@ -26,6 +26,11 @@ export function TimeSpanToReadableFormat(input: string, includeHours = false): s
   return includeHours ? input : input.slice(3);
 }
 
+export function TimeSpanToSec(input: string): number {
+  const time = input.split(':');
+  return +time[0] * 3600 + +time[1] * 60 + +time[2];
+}
+
 export function TimestampToAgoWords(input: Date): string {
   const now = dayjs(Date.now());
   const diff = new Date(now.diff(input));

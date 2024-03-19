@@ -14,11 +14,16 @@ import {
   Switch,
   Tooltip,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
 import { getVideoById, Video } from 'model/Video';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
+import UpdateIcon from '@mui/icons-material/Update';
 import HelpIcon from '@mui/icons-material/Help';
 import ChipEditLine, { ChipData, ChipLineFunctions } from 'components/Chip/ChipEditLine';
 import nanoMetadata from 'nano-metadata';
@@ -45,15 +50,18 @@ import {
   useVideosPUTMutation,
 } from 'api/axios-client/Query';
 import { PostTagDTO, PostVideoResponse } from 'api/axios-client';
-import { SizeToWords } from 'components/Utils/NumberUtils';
-import { GetRandomColor } from 'components/Utils/CoolColors';
+import { SizeToWords, TimeSpanToSec } from 'components/Utils/NumberUtils';
 import { MyPlaylistsDropdown } from 'components/DropDownMenu/MyPlaylistsDropdown';
-import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
+import {
+  getVideoThumbnail,
+  generateVideoThumbnails,
+  generateVideoThumbnailViaUrl,
+} from '@rajesh896/video-thumbnails-generator';
 import { getFileFromBase64 } from 'components/Utils/FileUtils';
-import { UserContext } from './Root';
 import { Transfer } from 'antd';
 import theme from 'Theme';
 import { Route } from 'routes/RouteNames';
+import { UserContext } from './Root';
 
 export async function loader({ params }: { params: any }) {
   return getVideoById(params.videoId);
@@ -80,10 +88,7 @@ const CustomUploadButton = asUploadButton(
 );
 
 function VideoEditInner({ newVideo }: InnerProps) {
-  let video: Video | undefined;
-  if (!newVideo) {
-    video = useLoaderData() as Video;
-  }
+  const video = newVideo ? undefined : (useLoaderData() as Video);
   const [imageToUpload, setImageToUpload] = useState<File>();
   const [statusText, setStatusText] = useState<string>();
   const [uploading, setUploading] = useState(false);
@@ -103,7 +108,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const uploady = useUploadyContext();
   const allTagsQuery = useTagsAllQuery({ refetchOnWindowFocus: false });
   const createTagMutation = useTagsPOSTMutation();
-  const permissionsQuery = !newVideo ? useVideoPermissionsQuery(video?.id ?? '') : undefined;
+  const permissionsQuery = useVideoPermissionsQuery(video?.id ?? '');
   const usersQuery = useUsersAllQuery();
   const groupsQuery = useMyUsergroupsQuery();
   const navigate = useNavigate();
@@ -120,17 +125,61 @@ function VideoEditInner({ newVideo }: InnerProps) {
     permissionsQuery?.data?.excludedPermissions?.groupIds ?? [],
   );
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const [videoDurationSeconds, setVideoDurationSeconds] = useState<number>(0);
+  const [timeThumbDialogOpen, setTimeThumbDialogOpen] = React.useState(false);
+  const timeThumbDialogInput = React.createRef<HTMLInputElement>();
+  const [generatedSecond, setGeneratedSecond] = useState<number | undefined>(undefined);
 
-  const selectRandomThumbnail = () => {
+  const handleCloseTimeThumbDialog = () => {
+    setTimeThumbDialogOpen(false);
+  };
+
+  const handleConfirmTimeThumbDialog = () => {
+    if (!timeThumbDialogInput.current?.value) return;
+    const sec = Number.parseInt(timeThumbDialogInput.current.value, 10);
+    if (video) {
+      generateVideoThumbnailViaUrl(ApiPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
+        setImageToUpload(getFileFromBase64(thumbnailArray, 'generatedThumbnail.jpeg'));
+        setGeneratedSecond(sec);
+      });
+    } else if (uploady.getInternalFileInput()?.current?.files?.length === 1) {
+      getVideoThumbnail(uploady.getInternalFileInput()?.current?.files?.[0] as File, sec).then(
+        (thumbnailArray: string) => {
+          setImageToUpload(getFileFromBase64(thumbnailArray, 'generatedThumbnail.jpeg'));
+          setGeneratedSecond(sec);
+        },
+      );
+    }
+
+    handleCloseTimeThumbDialog();
+  };
+
+  useEffect(() => {
+    if (!video?.duration) {
+      setAdvancedPermissions(false);
+      return;
+    }
+    setVideoDurationSeconds(TimeSpanToSec(video.duration));
+  }, [video?.duration]);
+
+  const selectRandomThumbnail = (createNew = false) => {
+    if (createNew && !newVideo && video?.dataUrl) {
+      const sec = Math.floor(Math.random() * videoDurationSeconds);
+      generateVideoThumbnailViaUrl(ApiPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
+        setImageToUpload(getFileFromBase64(thumbnailArray, 'generatedThumbnail.jpeg'));
+        setGeneratedSecond(sec);
+      });
+
+      return;
+    }
     if (!generatedThumbnails) {
       return;
     }
+    const randomIndex = Math.floor(Math.random() * generatedThumbnails.length);
     setImageToUpload(
-      getFileFromBase64(
-        generatedThumbnails[Math.floor(Math.random() * generatedThumbnails.length)],
-        'generatedThumbnail.jpeg',
-      ),
+      getFileFromBase64(generatedThumbnails[randomIndex], 'generatedThumbnail.jpeg'),
     );
+    setGeneratedSecond(randomIndex * (videoDurationSeconds / 5));
   };
 
   useEffect(() => {
@@ -178,6 +227,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
         generateVideoThumbnails(file as File, 5, 'file').then((thumbnailArray: string[]) => {
           setGeneratedThumbnails(thumbnailArray);
         });
+        setVideoDurationSeconds(dur);
       }
     })();
   });
@@ -197,10 +247,21 @@ function VideoEditInner({ newVideo }: InnerProps) {
       startIcon={<AutorenewIcon />}
       variant="outlined"
       onClick={() => {
-        selectRandomThumbnail();
+        selectRandomThumbnail(true);
       }}
     >
-      Přegenerovat náhled
+      Generovat
+    </Button>,
+    <Button
+      key="timeRegenerateButton"
+      component="label"
+      startIcon={<UpdateIcon />}
+      variant="outlined"
+      onClick={() => {
+        setTimeThumbDialogOpen(true);
+      }}
+    >
+      Generovat(sekundy)
     </Button>,
   ];
 
@@ -310,7 +371,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
           </Button>
         </Box>
       </Box>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} key={video?.id}>
         <Grid item xs={12}>
           {statusText && <Alert severity="info">{statusText}</Alert>}
         </Grid>
@@ -540,7 +601,13 @@ function VideoEditInner({ newVideo }: InnerProps) {
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography>Náhledový obrázek:</Typography>
+          <Typography>
+            Náhledový obrázek
+            {generatedSecond !== undefined
+              ? `(generováno dle ${generatedSecond.toFixed(0)} sekundy)`
+              : ''}
+            :
+          </Typography>
           <FileUploadWithPreview
             uploadedFile={imageToUpload}
             setUploadedFile={setImageToUpload}
@@ -566,6 +633,30 @@ function VideoEditInner({ newVideo }: InnerProps) {
             />
           </Grid>
         </Grid>
+        <Dialog
+          open={timeThumbDialogOpen}
+          onClose={() => {
+            handleCloseTimeThumbDialog();
+          }}
+          disableEnforceFocus
+        >
+          <DialogTitle>Náhled dle času</DialogTitle>
+          <DialogContent>
+            <TextField
+              margin="dense"
+              id="timeSec"
+              label="Čas v sekundách"
+              type="number"
+              fullWidth
+              variant="standard"
+              inputRef={timeThumbDialogInput}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseTimeThumbDialog}>Zrušit</Button>
+            <Button onClick={handleConfirmTimeThumbDialog}>Generovat dle času</Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
     </Box>
   );

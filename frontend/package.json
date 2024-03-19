@@ -80,5 +80,10 @@
     "vite": "^4.4.11",
     "vite-plugin-svgr": "^2.4.0",
     "vite-tsconfig-paths": "^4.2.1"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@rajesh896/video-thumbnails-generator@2.3.9": "patches/@rajesh896__video-thumbnails-generator@2.3.9.patch"
+    }
   }
 }

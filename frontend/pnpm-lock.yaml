@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@rajesh896/video-thumbnails-generator@2.3.9':
+    hash: rx3sr3duhdkwy3dxrn33c63esi
+    path: patches/@rajesh896__video-thumbnails-generator@2.3.9.patch
+
 importers:
 
   .:
@@ -28,7 +33,7 @@ importers:
         version: 5.14.12(@types/react@18.2.25)(react@18.2.0)
       '@rajesh896/video-thumbnails-generator':
         specifier: ^2.3.9
-        version: 2.3.9
+        version: 2.3.9(patch_hash=rx3sr3duhdkwy3dxrn33c63esi)
       '@rpldy/chunked-uploady':
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.2.0)(react@18.2.0)
@@ -1077,9 +1082,10 @@ packages:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: false
 
-  /@rajesh896/video-thumbnails-generator@2.3.9:
+  /@rajesh896/video-thumbnails-generator@2.3.9(patch_hash=rx3sr3duhdkwy3dxrn33c63esi):
     resolution: {integrity: sha512-tV775KsZpyhaXMG/z+APNBL8bpGSaYgvCmELC7k3z0n6rGcFhsDhFFqJkmguiVR83bNLWth8wdFOGkpsBS3Jzw==}
     dev: false
+    patched: true
 
   /@rc-component/color-picker@1.5.0(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-sWZCV0VAJlSYfo8FwpHVK0UZUSECddYxkLUGjiYuc9cOVVB/+hYr0BJbgzSG21MWYad3Wl8O0qBwalBsK4J4Dg==}
