@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
@@ -9,12 +9,14 @@ import { useMyUsergroupsQuery, useUserGroupsAllQuery } from 'api/axios-client/Qu
 import { AxiosQuery } from 'api';
 import { Route } from 'routes/RouteNames';
 import { Alert } from '@mui/material';
+import { UserContext } from 'routes/Root';
 
 // eslint-disable-next-line import/prefer-default-export
 export function UserGroups() {
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
   const groupsQuery = useMyUsergroupsQuery();
+  const userContext = useContext(UserContext);
 
   const attributes: Attribute<UserGroupDTO>[] = [
     {
@@ -57,6 +59,9 @@ export function UserGroups() {
       pathname: `/${Route.groups}/${id}`,
     });
   };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4}>

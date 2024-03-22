@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Box } from '@mui/system';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import { useTagsWithVideosQuery } from 'api/axios-client/Query';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Tag } from 'api/axios-client';
 import { AxiosQuery } from 'api';
+import { UserContext } from 'routes/Root';
 
 // eslint-disable-next-line import/prefer-default-export
 export function TagEdit() {
   const arr = useTagsWithVideosQuery().data;
+  const userContext = useContext(UserContext);
 
   const attributes: Attribute<Tag>[] = [
     {
@@ -37,6 +39,9 @@ export function TagEdit() {
       });
     },
   });
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4}>

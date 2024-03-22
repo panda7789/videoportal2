@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { Video } from 'model/Video';
 import { useNavigate } from 'react-router-dom';
@@ -122,6 +122,10 @@ export function MyVideos() {
       .catch(() => setStatusText('Videa se nepovedlo přidat do playlistu'))
       .finally(() => handleDialogClose());
   };
+
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4}>

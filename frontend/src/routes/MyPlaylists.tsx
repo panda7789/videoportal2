@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
@@ -102,6 +102,9 @@ export function MyPlaylists() {
       pathname: `/${Route.myPlaylists}/${id}`,
     });
   };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4}>

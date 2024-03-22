@@ -191,7 +191,7 @@ namespace Backend.Controllers
                 EmailToId = email,
                 EmailToName = user.Name,
                 EmailSubject = "VideoPortál - Reset hesla",
-                EmailBody = $"Byla vyžádána změna hesla pro Váš účet, pro změnu prosím použijte odkaz: {_mailService.GetAppUrl()}/password-reset?token={token}"
+                EmailBody = $"Byla vyžádána změna hesla pro Váš účet, pro změnu prosím použijte odkaz:<br />{_mailService.GetAppUrl()}/password-reset?token={token}"
             });
             return Ok();
         }

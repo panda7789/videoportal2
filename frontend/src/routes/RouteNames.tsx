@@ -12,4 +12,5 @@ export enum Route {
   groups = 'groups',
   passwordReset = 'password-reset',
   watchLater = 'watch-later',
+  myUserSettings = 'my-user-settings',
 }

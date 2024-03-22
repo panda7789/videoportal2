@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   TextField,
   Button,
@@ -25,6 +25,7 @@ import { Transfer } from 'antd';
 import ClearIcon from '@mui/icons-material/Clear';
 import { unionBy } from 'lodash';
 import { Route } from 'routes/RouteNames';
+import { UserContext } from 'routes/Root';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.userGroupsGET(params.Id);
@@ -48,6 +49,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   const ownerGroupQuery = useUserGroupsGETQuery(value ?? '');
   const groupsQuery = useMyUsergroupsQuery();
   const [groupEditable, setGroupEditable] = useState<boolean>(false);
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
     setGroupEditable(
@@ -120,6 +122,9 @@ export function UserGroupEdit({ newGroup = false }: Props) {
       keyEvent.preventDefault();
     }
   };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   const filterOption = (inputValue: string, option: UserDTO) =>
     option.name.indexOf(inputValue) > -1 || option.email.indexOf(inputValue) > -1;

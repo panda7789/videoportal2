@@ -236,6 +236,10 @@ function VideoEditInner({ newVideo }: InnerProps) {
     selectRandomThumbnail();
   }, [generatedThumbnails]);
 
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
+
   const handleTagAdd = async (tag: PostTagDTO) => {
     return createTagMutation.mutateAsync(tag);
   };

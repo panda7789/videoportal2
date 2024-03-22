@@ -8,7 +8,7 @@ import { AxiosQuery } from 'api';
 import { PasswordResetDTO } from 'api/axios-client';
 import { TailSpin } from 'react-loader-spinner';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export interface Props {
   token: string;

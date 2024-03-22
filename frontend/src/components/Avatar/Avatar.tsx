@@ -25,6 +25,8 @@ import RegistrationForm from 'components/Forms/RegistationForm';
 import { useQueryClient } from '@tanstack/react-query';
 import PasswordResetForm from 'components/Forms/PasswordResetForm';
 import { register } from 'api/axios-client/Client';
+import { useNavigate } from 'react-router-dom';
+import { Route } from 'routes/RouteNames';
 
 // eslint-disable-next-line react/display-name
 const Transition = React.forwardRef(
@@ -45,6 +47,7 @@ function Avatar() {
   const [openRegistration, setOpenRegistration] = React.useState(false);
   const [openPasswordReset, setPasswordReset] = React.useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,6 +57,11 @@ function Avatar() {
     setOpenRegistration(false);
     setPasswordReset(false);
     setOpen(false);
+  };
+
+  const handleSettingsClick = () => {
+    navigate(Route.myUserSettings);
+    handleClose();
   };
 
   const handleLogout = () => {
@@ -115,7 +123,11 @@ function Avatar() {
             // eslint-disable-next-line no-nested-ternary
             userContext?.user ? (
               <>
-                <SimpleListItem text="Nastavení" icon={<SettingsIcon />} />
+                <SimpleListItem
+                  text="Nastavení"
+                  icon={<SettingsIcon />}
+                  onClick={handleSettingsClick}
+                />
                 <SimpleListItem text="Odhlásit se" icon={<LogoutIcon />} onClick={handleLogout} />
               </>
             ) : openRegistration ? (

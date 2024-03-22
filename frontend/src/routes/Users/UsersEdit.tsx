@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
@@ -9,12 +9,14 @@ import { useUsersAllQuery } from 'api/axios-client/Query';
 import { AxiosQuery } from 'api';
 import { Route } from 'routes/RouteNames';
 import { Alert } from '@mui/material';
+import { UserContext } from 'routes/Root';
 
 // eslint-disable-next-line import/prefer-default-export
 export function UsersEdit() {
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
   const usersQuery = useUsersAllQuery();
+  const userContext = useContext(UserContext);
 
   const attributes: Attribute<UserDTO>[] = [
     {
@@ -61,6 +63,9 @@ export function UsersEdit() {
       pathname: `/${Route.userEdit}/${id}`,
     });
   };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4}>

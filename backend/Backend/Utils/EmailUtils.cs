@@ -45,7 +45,7 @@ namespace Backend.Utils
 
                 var emailBodyBuilder = new BodyBuilder
                 {
-                    TextBody = mailData.EmailBody
+                    HtmlBody = mailData.EmailBody
                 };
 
                 emailMessage.Body = emailBodyBuilder.ToMessageBody();

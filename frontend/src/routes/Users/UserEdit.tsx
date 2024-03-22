@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   TextField,
   Checkbox,
@@ -14,10 +14,16 @@ import { AxiosQuery } from 'api';
 import { User, UserRoles } from 'model/User';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { useRegisterMutation, useUsersPUTMutation } from 'api/axios-client/Query';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import {
+  useRegisterMutation,
+  useResetPasswordMutation,
+  useUsersPUTMutation,
+} from 'api/axios-client/Query';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { RegisterDTO } from 'api/axios-client';
 import { Route } from 'routes/RouteNames';
+import { UserContext } from 'routes/Root';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.usersGET(params.Id);
@@ -32,6 +38,8 @@ export function UserEditor({ newUser = false }: Props) {
   let registerMutation: ReturnType<typeof useRegisterMutation> | undefined;
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState<string>();
+  const passwordResetMutation = useResetPasswordMutation();
+  const userContext = useContext(UserContext);
   const user = useLoaderData() as User;
   if (newUser) {
     registerMutation = useRegisterMutation();
@@ -105,6 +113,20 @@ export function UserEditor({ newUser = false }: Props) {
       keyEvent.preventDefault();
     }
   };
+  const handlePasswordResetClick = () => {
+    setStatusText(undefined);
+    passwordResetMutation.mutateAsync(user.email, {
+      onSuccess: () => {
+        setStatusText('Reset hesla proběhl úspěšně. Na Váš email dorazí další informace.');
+      },
+      onError: () => {
+        setStatusText('Reset hesla skončil chybou.');
+      },
+    });
+  };
+  useEffect(() => {
+    if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
+  }, [userContext?.user, userContext?.isLoading]);
 
   return (
     <Box margin={4} component="form" onSubmit={handleSubmit} onKeyDown={onKeyDown}>
@@ -202,6 +224,15 @@ export function UserEditor({ newUser = false }: Props) {
                     label="Uživatel"
                   />
                 </FormGroup>
+                <Grid item xs={6} pt={2}>
+                  <Button
+                    variant="outlined"
+                    onClick={handlePasswordResetClick}
+                    startIcon={<LockResetIcon />}
+                  >
+                    Resetovat heslo
+                  </Button>
+                </Grid>
               </Grid>
             )}
           </Grid>

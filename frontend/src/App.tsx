@@ -20,6 +20,7 @@ import { UserGroups } from 'routes/Users/UserGroups';
 import { UserGroupEdit, loader as groupsLoader } from 'routes/Users/UserGroupEdit';
 import VideoDetailError from 'routes/VideoDetailError';
 import { PasswordReset } from 'routes/Users/PasswordReset';
+import { MyUserSettings, loader as myUserSettingsLoader } from 'routes/Users/MyUserSettings';
 
 function App() {
   const router = createBrowserRouter([
@@ -81,6 +82,11 @@ function App() {
             {
               path: Route.userEdit,
               element: <UserEditor newUser />,
+            },
+            {
+              path: Route.myUserSettings,
+              element: <MyUserSettings />,
+              loader: myUserSettingsLoader,
             },
             {
               path: Route.tagEdit,
