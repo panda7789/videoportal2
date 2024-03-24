@@ -25,7 +25,7 @@ export interface ToolbarButton {
   color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   onClick(selectedIDs?: readonly string[]): boolean | void;
 }
-interface TableDataBase {
+export interface TableDataBase {
   id: string;
 }
 
@@ -195,10 +195,12 @@ export interface EnhancedTableProps<T> {
   buttons?: ToolbarButton[];
   staticButtons?: ToolbarButton[];
   rowClick?(event: React.MouseEvent<unknown>, name: string): void;
+  checkClick?(event: React.MouseEvent<unknown>, name: string): void;
   rows: T[];
   orderBy: keyof T;
   desc?: Order;
   checkVisible?: boolean;
+  adjustWidth?: boolean;
 }
 
 export default function EnhancedTable<T extends TableDataBase>({
@@ -210,6 +212,8 @@ export default function EnhancedTable<T extends TableDataBase>({
   rowClick,
   checkVisible,
   staticButtons,
+  adjustWidth,
+  checkClick,
 }: EnhancedTableProps<T>) {
   const [order, setOrder] = React.useState<Order>(desc ?? 'asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(_orderby ?? 'id');
@@ -241,6 +245,9 @@ export default function EnhancedTable<T extends TableDataBase>({
   const handleCheckboxClick = (event: React.MouseEvent<unknown>, name: string) => {
     event.preventDefault();
     event.stopPropagation();
+    if (checkClick) {
+      checkClick(event, name);
+    }
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -277,9 +284,19 @@ export default function EnhancedTable<T extends TableDataBase>({
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar buttons={buttons} selected={selected} staticButtons={staticButtons} />
+        {(buttons || staticButtons) && (
+          <EnhancedTableToolbar
+            buttons={buttons}
+            selected={selected}
+            staticButtons={staticButtons}
+          />
+        )}
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+          <Table
+            sx={{ minWidth: adjustWidth ? undefined : 750 }}
+            aria-labelledby="tableTitle"
+            size="medium"
+          >
             <EnhancedTableHead
               attributes={attributes}
               numSelected={selected.length}

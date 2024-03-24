@@ -21,11 +21,12 @@ import {
 } from 'api/axios-client/Query';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { ApiException, UserDTO, UserGroupDTO, UserGroupPostPutDTO } from 'api/axios-client';
-import { Transfer } from 'antd';
 import ClearIcon from '@mui/icons-material/Clear';
+
 import { unionBy } from 'lodash';
 import { Route } from 'routes/RouteNames';
 import { UserContext } from 'routes/Root';
+import { UserSelectTable } from 'components/Table/UserSelectTable';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.userGroupsGET(params.Id);
@@ -41,9 +42,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   const navigate = useNavigate();
   const user = useLoaderData() as UserGroupDTO;
   const [statusText, setStatusText] = useState<string>();
-  const [targetUserKeys, setTargetUserKeys] = useState<string[]>(
-    user?.users?.map((x) => x.id) ?? [],
-  );
+  const [groupUsers, setGroupUsers] = useState<string[]>(user?.users?.map((x) => x.id));
   const usersQuery = useUsersAllQuery();
   const [value, setValue] = useState<string | undefined>(user?.ownerGroupId ?? '');
   const ownerGroupQuery = useUserGroupsGETQuery(value ?? '');
@@ -78,7 +77,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
       postMutation?.mutateAsync(
         new UserGroupPostPutDTO({
           name: nameRef.current!.value,
-          userIds: targetUserKeys,
+          userIds: groupUsers,
           ownerGroupId: ownerGroupInputRef.current!.value,
         }),
         {
@@ -97,7 +96,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
     } else {
       const updatedGroup = new UserGroupPostPutDTO({
         name: nameRef.current!.value,
-        userIds: targetUserKeys,
+        userIds: groupUsers,
         ownerGroupId: ownerGroupInputRef.current!.value,
       });
       updateMutation?.mutateAsync(updatedGroup, {
@@ -125,13 +124,6 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   useEffect(() => {
     if (!userContext?.isLoading && !userContext?.user) throw new Error('Nejste přihlášení.');
   }, [userContext?.user, userContext?.isLoading]);
-
-  const filterOption = (inputValue: string, option: UserDTO) =>
-    option.name.indexOf(inputValue) > -1 || option.email.indexOf(inputValue) > -1;
-
-  const handleChange = (newTargetKeys: string[]) => {
-    setTargetUserKeys(newTargetKeys);
-  };
 
   return (
     <Box margin={4} component="form" onSubmit={handleSubmit} onKeyDown={onKeyDown}>
@@ -168,31 +160,14 @@ export function UserGroupEdit({ newGroup = false }: Props) {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} height="60vh">
+            <Grid item xs={12}>
               <Typography variant="subtitle1" gutterBottom>
                 Uživatelé
               </Typography>
-              <Transfer
-                dataSource={usersQuery.data}
-                showSearch
-                filterOption={filterOption}
-                onChange={handleChange}
-                targetKeys={targetUserKeys}
-                rowKey={(item) => item.id}
-                style={{ width: '100%', height: '90%' }}
-                listStyle={{ width: '100%', height: '90%' }}
-                render={(item) => `${item.name}(${item.email})`}
-                locale={{
-                  titles: ['', 've skupině'],
-                  itemsUnit: 'uživatelé',
-                  itemUnit: 'uživatel',
-                  notFoundContent: 'Kde nic tu nic',
-                  searchPlaceholder: 'Hledat',
-                  remove: 'Odebrat',
-                  selectAll: 'Vybrat vše',
-                  selectCurrent: 'Vybrat aktuální',
-                  selectInvert: 'Otočit výběr',
-                }}
+              <UserSelectTable
+                allUsers={usersQuery.data}
+                groupUsers={groupUsers}
+                setGroupUsers={setGroupUsers}
               />
             </Grid>
           </Grid>

@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
 import { useMyPlaylistsQuery } from 'api/axios-client/Query';
-import { ApiException, PlaylistDTO, VideoDTO } from 'api/axios-client';
+import { ApiException, PlaylistDTO, UserDTO, UserGroupDTO, VideoDTO } from 'api/axios-client';
 import AddIcon from '@mui/icons-material/Add';
 import { Route } from 'routes/RouteNames';
 import DeleteIcon from '@mui/icons-material/Delete';

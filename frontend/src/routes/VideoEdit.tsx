@@ -481,6 +481,14 @@ function VideoEditInner({ newVideo }: InnerProps) {
 
               {advancedPermissions && (
                 <Grid container gap={2}>
+                  <Typography variant="subtitle1" pl={2} pt={1}>
+                    Zahrnuté skupiny a uživatelé
+                  </Typography>
+                  <UserSelectTable
+                    allUsers={usersQuery.data}
+                    groupUsers={includedUserIds ?? []}
+                    setGroupUsers={setIncludedUserIds}
+                  />
                   <Paper elevation={2}>
                     <Typography variant="subtitle1" pl={2} pt={1}>
                       Zahrnuté skupiny a uživatelé
