@@ -20,13 +20,13 @@ import {
   useUsersAllQuery,
 } from 'api/axios-client/Query';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { ApiException, UserDTO, UserGroupDTO, UserGroupPostPutDTO } from 'api/axios-client';
+import { ApiException, UserGroupDTO, UserGroupPostPutDTO } from 'api/axios-client';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import { unionBy } from 'lodash';
 import { Route } from 'routes/RouteNames';
 import { UserContext } from 'routes/Root';
-import { UserSelectTable } from 'components/Table/UserSelectTable';
+import { UserSelectTable } from 'components/Table/SpecificTables/UserSelectTable';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.userGroupsGET(params.Id);

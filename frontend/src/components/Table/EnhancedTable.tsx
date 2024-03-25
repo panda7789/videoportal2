@@ -195,12 +195,13 @@ export interface EnhancedTableProps<T> {
   buttons?: ToolbarButton[];
   staticButtons?: ToolbarButton[];
   rowClick?(event: React.MouseEvent<unknown>, name: string): void;
-  checkClick?(event: React.MouseEvent<unknown>, name: string): void;
+  checkClick?(name: string): void;
   rows: T[];
   orderBy: keyof T;
   desc?: Order;
   checkVisible?: boolean;
   adjustWidth?: boolean;
+  hidePagination?: boolean;
 }
 
 export default function EnhancedTable<T extends TableDataBase>({
@@ -214,6 +215,7 @@ export default function EnhancedTable<T extends TableDataBase>({
   staticButtons,
   adjustWidth,
   checkClick,
+  hidePagination,
 }: EnhancedTableProps<T>) {
   const [order, setOrder] = React.useState<Order>(desc ?? 'asc');
   const [orderBy, setOrderBy] = React.useState<keyof T>(_orderby ?? 'id');
@@ -231,6 +233,7 @@ export default function EnhancedTable<T extends TableDataBase>({
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.id);
       setSelected(newSelected);
+      newSelected.forEach((n) => checkClick?.(n));
       return;
     }
     setSelected([]);
@@ -246,7 +249,7 @@ export default function EnhancedTable<T extends TableDataBase>({
     event.preventDefault();
     event.stopPropagation();
     if (checkClick) {
-      checkClick(event, name);
+      checkClick(name);
     }
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
@@ -297,16 +300,18 @@ export default function EnhancedTable<T extends TableDataBase>({
             aria-labelledby="tableTitle"
             size="medium"
           >
-            <EnhancedTableHead
-              attributes={attributes}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-              checkVisible={checkVisible}
-            />
+            {(!hidePagination || rows.length > 0) && (
+              <EnhancedTableHead
+                attributes={attributes}
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+                checkVisible={checkVisible}
+              />
+            )}
             <TableBody>
               {stableSort<T>(rows, getComparator<T, typeof orderBy>(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -397,17 +402,19 @@ export default function EnhancedTable<T extends TableDataBase>({
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[8, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Řádků na stránku"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} z ${count}`}
-        />
+        {!hidePagination && (
+          <TablePagination
+            rowsPerPageOptions={[8, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Řádků na stránku"
+            labelDisplayedRows={({ from, to, count }) => `${from}-${to} z ${count}`}
+          />
+        )}
       </Paper>
     </Box>
   );

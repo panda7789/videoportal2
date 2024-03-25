@@ -37,6 +37,8 @@ import { Route } from 'routes/RouteNames';
 import { Transfer } from 'antd';
 import theme from 'Theme';
 import { DropDownMenuAction, DropDownMenuCustomAction } from 'components/DropDownMenu/DropDownMenu';
+import { GroupSelectTable } from 'components/Table/SpecificTables/GroupSelectTable';
+import { UserSelectTable } from 'components/Table/SpecificTables/UserSelectTable';
 
 export const loader = ({ params }: { params: any }) => {
   return AxiosQuery.Client.playlistsGET(params.Id);
@@ -297,77 +299,59 @@ export function PlaylistDetail({ newPlaylist }: Props) {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Paper>
-                    <FormControlLabel
-                      sx={{ pl: 1 }}
-                      control={
-                        <Switch
-                          id="isPublic"
-                          name="isPublic"
-                          checked={publicCheckbox}
-                          onChange={(_, checked) => setPublicCheckbox(checked)}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                      label="Veřejný playlist"
-                    />
-                    {!publicCheckbox && (
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} minHeight="200px">
-                          <Transfer
-                            dataSource={groupsQuery.data}
-                            showSearch
-                            filterOption={(inputValue, option) =>
-                              option.name.indexOf(inputValue) > -1
-                            }
-                            onChange={(newTargetKeys) => setPermissionsGroupIds(newTargetKeys)}
-                            targetKeys={permissionsGroupIds}
-                            rowKey={(item) => item.id}
-                            style={{ width: '100%' }}
-                            listStyle={{ width: '100%' }}
-                            render={(item) => `${item.name}`}
-                            locale={{
-                              titles: ['', 's oprávněním'],
-                              itemsUnit: 'skupiny',
-                              itemUnit: 'skupina',
-                              notFoundContent: 'Kde nic tu nic',
-                              searchPlaceholder: 'Hledat',
-                              remove: 'Odebrat',
-                              selectAll: 'Vybrat vše',
-                              selectCurrent: 'Vybrat aktuální',
-                              selectInvert: 'Otočit výběr',
-                            }}
+                  <FormControlLabel
+                    sx={{ pl: 1 }}
+                    control={
+                      <Switch
+                        id="isPublic"
+                        name="isPublic"
+                        checked={publicCheckbox}
+                        onChange={(_, checked) => setPublicCheckbox(checked)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                      />
+                    }
+                    label="Veřejný playlist"
+                  />
+                  {!publicCheckbox && (
+                    <Grid container gap={2} pt={2}>
+                      <Paper
+                        variant="outlined"
+                        component={Grid}
+                        container
+                        item
+                        xs={12}
+                        spacing={1}
+                        pr={1}
+                        ml={0}
+                      >
+                        <Grid item xs={12}>
+                          <Typography variant="subtitle1" pl={1}>
+                            Kdo smí playlist vidět
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} pt={0}>
+                          <Typography variant="subtitle2" pl={2} pb={0.5}>
+                            uživatelé
+                          </Typography>
+                          <UserSelectTable
+                            allUsers={usersQuery.data}
+                            groupUsers={permissionsUserIds ?? []}
+                            setGroupUsers={setPermissionsUserIds}
                           />
                         </Grid>
-                        <Grid item xs={12} minHeight="200px">
-                          <Transfer
-                            dataSource={usersQuery.data}
-                            showSearch
-                            filterOption={(inputValue, option) =>
-                              option.name.indexOf(inputValue) > -1 ||
-                              option.email.indexOf(inputValue) > -1
-                            }
-                            onChange={(newTargetKeys) => setPermissionsUserIds(newTargetKeys)}
-                            targetKeys={permissionsUserIds}
-                            rowKey={(item) => item.id}
-                            style={{ width: '100%' }}
-                            listStyle={{ ...(isDesktop && { width: '100%' }) }}
-                            render={(item) => `${item.name}(${item.email})`}
-                            locale={{
-                              titles: ['', 's oprávněním'],
-                              itemsUnit: 'uživatelé',
-                              itemUnit: 'uživatel',
-                              notFoundContent: 'Kde nic tu nic',
-                              searchPlaceholder: 'Hledat',
-                              remove: 'Odebrat',
-                              selectAll: 'Vybrat vše',
-                              selectCurrent: 'Vybrat aktuální',
-                            }}
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" pl={2} pb={0.5}>
+                            skupiny
+                          </Typography>
+                          <GroupSelectTable
+                            allUsers={groupsQuery.data}
+                            groupUsers={permissionsGroupIds ?? []}
+                            setGroupUsers={setPermissionsGroupIds}
                           />
                         </Grid>
-                      </Grid>
-                    )}
-                  </Paper>
+                      </Paper>
+                    </Grid>
+                  )}
                 </Grid>
               </Grid>
             ) : (

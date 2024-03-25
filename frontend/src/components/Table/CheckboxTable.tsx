@@ -44,14 +44,14 @@ function CheckboxTable<T extends TableDataBase>({
   };
 
   return (
-    <Dialog open onClose={handleCancelClick} aria-labelledby="dialog-title">
+    <Dialog open onClose={handleCancelClick} aria-labelledby="dialog-title" fullWidth maxWidth="md">
       <DialogTitle id="dialog-title">{title}</DialogTitle>
       <DialogContent>
         <EnhancedTable
           attributes={attributes}
           rows={items}
           orderBy={orderBy}
-          checkClick={(_, id) => handleCheckboxChange(id)}
+          checkClick={(id) => handleCheckboxChange(id)}
         />
       </DialogContent>
       <DialogActions>

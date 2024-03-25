@@ -1,32 +1,34 @@
-import { UserDTO } from 'api/axios-client';
 import CheckboxTable from 'components/Table/CheckboxTable';
-import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/EnhancedTable';
+import EnhancedTable, {
+  Attribute,
+  TableDataBase,
+  ToolbarButton,
+} from 'components/Table/EnhancedTable';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
+import { Box } from '@mui/system';
 
-export interface Props {
-  allUsers?: UserDTO[];
-  groupUsers: string[];
-  setGroupUsers: (newTargetKeys: string[]) => void;
+export interface Props<T> {
+  all?: T[];
+  selected: string[];
+  setSelected: (newTargetKeys: string[]) => void;
+  attributes: Attribute<T>[];
+  orderBy: keyof T;
 }
 
-export function UserSelectTable({ allUsers, groupUsers, setGroupUsers }: Props) {
+export function AddRemoveTable<T extends TableDataBase>({
+  all: allUsers,
+  selected: groupUsers,
+  setSelected: setGroupUsers,
+  attributes,
+  orderBy,
+}: Props<T>) {
   const [userSelectOpen, setUserSelectOpen] = useState(false);
 
   const handleChange = (newTargetKeys: string[]) => {
     setGroupUsers(newTargetKeys);
   };
-  const attributes: Attribute<UserDTO>[] = [
-    {
-      id: 'name',
-      label: 'Název',
-    },
-    {
-      id: 'email',
-      label: 'Email',
-    },
-  ];
   const buttons: ToolbarButton[] = [];
   buttons.push({
     label: 'Smazat',
@@ -40,7 +42,7 @@ export function UserSelectTable({ allUsers, groupUsers, setGroupUsers }: Props) 
   const staticButtons: ToolbarButton[] = [
     {
       icon: <AddIcon />,
-      label: 'Přidat uživatele do skupiny',
+      label: 'Přidat',
       onClick: () => setUserSelectOpen(true),
     },
   ];
@@ -49,15 +51,16 @@ export function UserSelectTable({ allUsers, groupUsers, setGroupUsers }: Props) 
     handleChange([...groupUsers, ...items]);
   };
   return (
-    <>
+    <Box>
       <EnhancedTable
         attributes={attributes}
         rows={allUsers?.filter((x) => groupUsers.findIndex((y) => y === x.id) !== -1) ?? []}
-        orderBy="name"
+        orderBy={orderBy}
         desc="desc"
         buttons={buttons}
         staticButtons={staticButtons}
         adjustWidth
+        hidePagination
       />
       {userSelectOpen && (
         <CheckboxTable
@@ -65,10 +68,10 @@ export function UserSelectTable({ allUsers, groupUsers, setGroupUsers }: Props) 
           attributes={attributes}
           handleClose={() => setUserSelectOpen(false)}
           items={allUsers?.filter((x) => groupUsers.findIndex((y) => y === x.id) === -1) ?? []}
-          orderBy="email"
+          orderBy={orderBy}
           resultCallback={handleUserSelect}
         />
       )}
-    </>
+    </Box>
   );
 }

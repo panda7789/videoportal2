@@ -58,9 +58,10 @@ import {
   generateVideoThumbnailViaUrl,
 } from '@rajesh896/video-thumbnails-generator';
 import { getFileFromBase64 } from 'components/Utils/FileUtils';
-import { Transfer } from 'antd';
 import theme from 'Theme';
 import { Route } from 'routes/RouteNames';
+import { UserSelectTable } from 'components/Table/SpecificTables/UserSelectTable';
+import { GroupSelectTable } from 'components/Table/SpecificTables/GroupSelectTable';
 import { UserContext } from './Root';
 
 export async function loader({ params }: { params: any }) {
@@ -480,131 +481,75 @@ function VideoEditInner({ newVideo }: InnerProps) {
               </Box>
 
               {advancedPermissions && (
-                <Grid container gap={2}>
-                  <Typography variant="subtitle1" pl={2} pt={1}>
-                    Zahrnuté skupiny a uživatelé
-                  </Typography>
-                  <UserSelectTable
-                    allUsers={usersQuery.data}
-                    groupUsers={includedUserIds ?? []}
-                    setGroupUsers={setIncludedUserIds}
-                  />
-                  <Paper elevation={2}>
-                    <Typography variant="subtitle1" pl={2} pt={1}>
-                      Zahrnuté skupiny a uživatelé
-                    </Typography>
-                    <Grid container p={1} spacing={2}>
-                      <Grid item xs={12} minHeight="100px">
-                        <Transfer
-                          dataSource={groupsQuery.data}
-                          showSearch
-                          filterOption={(inputValue, option) =>
-                            option.name.indexOf(inputValue) > -1
-                          }
-                          onChange={(newTargetKeys) => setIncludedGroupIds(newTargetKeys)}
-                          targetKeys={includedGroupIds}
-                          rowKey={(item) => item.id}
-                          style={{ width: '100%' }}
-                          listStyle={{ width: '100%' }}
-                          render={(item) => `${item.name}`}
-                          locale={{
-                            titles: ['', 'zahrnuté skupiny'],
-                            itemsUnit: 'skupiny',
-                            itemUnit: 'skupin',
-                            notFoundContent: 'Kde nic tu nic',
-                            searchPlaceholder: 'Hledat',
-                            remove: 'Odebrat',
-                            selectAll: 'Vybrat vše',
-                            selectCurrent: 'Vybrat aktuální',
-                            selectInvert: 'Otočit výběr',
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} minHeight="100px">
-                        <Transfer
-                          dataSource={usersQuery.data}
-                          showSearch
-                          filterOption={(inputValue, option) =>
-                            option.name.indexOf(inputValue) > -1 ||
-                            option.email.indexOf(inputValue) > -1
-                          }
-                          onChange={(newTargetKeys) => setIncludedUserIds(newTargetKeys)}
-                          targetKeys={includedUserIds}
-                          rowKey={(item) => item.id}
-                          style={{ width: '100%' }}
-                          listStyle={{ ...(isDesktop && { width: '100%' }) }}
-                          render={(item) => `${item.name}(${item.email})`}
-                          locale={{
-                            titles: ['', 'zahrnutí uživatelé'],
-                            itemsUnit: 'uživatelé',
-                            itemUnit: 'uživatel',
-                            notFoundContent: 'Kde nic tu nic',
-                            searchPlaceholder: 'Hledat',
-                            remove: 'Odebrat',
-                            selectAll: 'Vybrat vše',
-                            selectCurrent: 'Vybrat aktuální',
-                          }}
-                        />
-                      </Grid>
+                <Grid container gap={2} pt={2}>
+                  <Paper
+                    variant="outlined"
+                    component={Grid}
+                    container
+                    item
+                    xs={12}
+                    spacing={1}
+                    pr={1}
+                  >
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle1" pl={1}>
+                        Kdo smí video vidět
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} pt={0}>
+                      <Typography variant="subtitle2" pl={2} pb={0.5}>
+                        uživatelé
+                      </Typography>
+                      <UserSelectTable
+                        allUsers={usersQuery.data}
+                        groupUsers={includedUserIds ?? []}
+                        setGroupUsers={setIncludedUserIds}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" pl={2} pb={0.5}>
+                        skupiny
+                      </Typography>
+                      <GroupSelectTable
+                        allUsers={groupsQuery.data}
+                        groupUsers={includedGroupIds ?? []}
+                        setGroupUsers={setIncludedGroupIds}
+                      />
                     </Grid>
                   </Paper>
-                  <Paper elevation={2}>
-                    <Typography variant="subtitle1" pl={2} pt={1}>
-                      Vyloučené skupiny a uživatelé
-                    </Typography>
-                    <Grid container p={1} spacing={2}>
-                      <Grid item xs={12} minHeight="100px">
-                        <Transfer
-                          dataSource={groupsQuery.data}
-                          showSearch
-                          filterOption={(inputValue, option) =>
-                            option.name.indexOf(inputValue) > -1
-                          }
-                          onChange={(newTargetKeys) => setExcludedGroupIds(newTargetKeys)}
-                          targetKeys={excludedGroupIds}
-                          rowKey={(item) => item.id}
-                          style={{ width: '100%' }}
-                          listStyle={{ width: '100%' }}
-                          render={(item) => `${item.name}`}
-                          locale={{
-                            titles: ['', 'vyloučené skupiny'],
-                            itemsUnit: 'skupiny',
-                            itemUnit: 'skupin',
-                            notFoundContent: 'Kde nic tu nic',
-                            searchPlaceholder: 'Hledat',
-                            remove: 'Odebrat',
-                            selectAll: 'Vybrat vše',
-                            selectCurrent: 'Vybrat aktuální',
-                            selectInvert: 'Otočit výběr',
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} minHeight="100px">
-                        <Transfer
-                          dataSource={usersQuery.data}
-                          showSearch
-                          filterOption={(inputValue, option) =>
-                            option.name.indexOf(inputValue) > -1 ||
-                            option.email.indexOf(inputValue) > -1
-                          }
-                          onChange={(newTargetKeys) => setExcludedUserIds(newTargetKeys)}
-                          targetKeys={excludedUserIds}
-                          rowKey={(item) => item.id}
-                          style={{ width: '100%' }}
-                          listStyle={{ ...(isDesktop && { width: '100%' }) }}
-                          render={(item) => `${item.name}(${item.email})`}
-                          locale={{
-                            titles: ['', 'vyjmutí uživatelé'],
-                            itemsUnit: 'uživatelé',
-                            itemUnit: 'uživatel',
-                            notFoundContent: 'Kde nic tu nic',
-                            searchPlaceholder: 'Hledat',
-                            remove: 'Odebrat',
-                            selectAll: 'Vybrat vše',
-                            selectCurrent: 'Vybrat aktuální',
-                          }}
-                        />
-                      </Grid>
+                  <Paper
+                    component={Grid}
+                    container
+                    item
+                    xs={12}
+                    spacing={1}
+                    pr={1}
+                    variant="outlined"
+                  >
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle1" pl={1}>
+                        Kdo nesmí video vidět
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} pt={0}>
+                      <Typography variant="subtitle2" pl={2} pb={0.5}>
+                        uživatelé
+                      </Typography>
+                      <UserSelectTable
+                        allUsers={usersQuery.data}
+                        groupUsers={excludedUserIds ?? []}
+                        setGroupUsers={setExcludedUserIds}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" pl={2} pb={0.5}>
+                        skupiny
+                      </Typography>
+                      <GroupSelectTable
+                        allUsers={groupsQuery.data}
+                        groupUsers={excludedGroupIds ?? []}
+                        setGroupUsers={setExcludedGroupIds}
+                      />
                     </Grid>
                   </Paper>
                 </Grid>
