@@ -2,7 +2,7 @@ import { useRouteError } from 'react-router-dom';
 import { Typography, Container, Box } from '@mui/material';
 
 export default function ErrorPage() {
-  const error = useRouteError() as Error;
+  const error = useRouteError() as any;
   return (
     <Container maxWidth="md">
       <Box
@@ -27,7 +27,7 @@ export default function ErrorPage() {
         </Typography>
 
         <Typography variant="h6" component="h2" align="center" gutterBottom>
-          {error.message}
+          {error?.message ?? error?.detail}
         </Typography>
       </Box>
     </Container>

@@ -174,7 +174,7 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-            ValidateDuplicates(playlist.Name);
+            ValidateDuplicates(playlist.Name, id);
 
             playlistDB.Description = playlist.Description;
             if (playlist.Thumbnail != null)
@@ -238,7 +238,7 @@ namespace Backend.Controllers
             {
                 return BadRequest();
             }
-            ValidateDuplicates(playlist.Name);
+            ValidateDuplicates(playlist.Name, null);
             var videos = playlist.Videos?.Count > 1 ? _context.Videos.Where(x => playlist.Videos.Contains(x.Id)).ToList() : new List<Video>();
             var playlistDB = new Playlist
             {
@@ -416,11 +416,15 @@ namespace Backend.Controllers
             return playlist;
         }
 
-        private void ValidateDuplicates(string name)
+        private void ValidateDuplicates(string name, Guid? id)
         {
-            if (_context.Playlists.Any(x => x.Name == name))
+            if (name == WatchLaterPlaylistName)
             {
-                throw new Exception("Playlist with this name already exists.");
+                return;
+            }
+            if (_context.Playlists.Any(x => x.Name == name && x.Id != id))
+            {
+                throw new Exception("Playlist se stejným názvem již existuje");
             }
         }
 

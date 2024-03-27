@@ -91,7 +91,7 @@ namespace Backend.Controllers
         {
             if (_context.Videos == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno.");
             }
             var video = await _context.Videos
                     .Include(x => x.Tags)
@@ -102,11 +102,11 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno.");
             }
             if (!HasPermissions(video))
             {
-                return Forbid();
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Na video nemáte oprávnění.");
             }
             return video.ToDTO();
         }

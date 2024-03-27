@@ -59,7 +59,7 @@ namespace Backend.Controllers
             }
             if (video == null)
             {
-                throw new ArgumentException("Either video or playlist must be provided");
+                throw new ArgumentException("Nebylo předáno video ani playlist.");
             }
             permissions = _context.Permissions.Where(x => x.VideoId == video.Id).ToList();
             if (permissions.Any())

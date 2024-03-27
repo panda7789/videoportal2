@@ -38,21 +38,21 @@ namespace Backend.Services
 
             if (!result.Succeeded)
             {
-                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
+                throw new Exception($"Nepovedlo se registrovat uživatele {request.Email} chyba: {GetErrorsText(result.Errors)}");
             }
 
             result = await UsersController.UpdateUserRoles(_userManager, user, null, newUserRoles);
             if (!result.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
-                throw new Exception($"Unable to register user {request.Email} errors: {GetErrorsText(result.Errors)}");
+                throw new Exception($"Nepovedlo se registrovat uživatele {request.Email} chyba: {GetErrorsText(result.Errors)}");
             }
 
             PlaylistsController.CreateWatchLaterPlaylist(user);
             result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                throw new Exception($"Unable to register user {request.Email}, watchlater playlist not created - errors: {GetErrorsText(result.Errors)}");
+                throw new Exception($"Nepovedlo se registrovat uživatele {request.Email}, playlist přehrát pozděni se nepovedlo vytvořit chyba: {GetErrorsText(result.Errors)}");
             }
 
             return await Login(new LoginDTO { Email = request.Email, Password = request.Password });
@@ -64,7 +64,7 @@ namespace Backend.Services
 
             if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
             {
-                throw new Exception($"Unable to authenticate user {request.Email}");
+                throw new Exception($"Uživatele se nepovedlo ověřit {request.Email}");
             }
             var authClaims = new List<Claim>
             {

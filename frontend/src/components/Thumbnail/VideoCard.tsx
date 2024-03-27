@@ -254,7 +254,6 @@ function VideoCard({
                   textDecoration: 'none',
                   color: 'unset',
                   borderRadius: '15px',
-                  zIndex: 999,
                   cursor: 'pointer',
                 }}
               >

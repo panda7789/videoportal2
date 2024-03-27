@@ -8,7 +8,6 @@ import {
   Switch,
   TextField,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { Link, useLoaderData, useNavigate } from 'react-router-dom';
@@ -34,8 +33,6 @@ import {
 import { UserContext } from 'routes/Root';
 import { playlistParams, videoUrl } from 'model/Video';
 import { Route } from 'routes/RouteNames';
-import { Transfer } from 'antd';
-import theme from 'Theme';
 import { DropDownMenuAction, DropDownMenuCustomAction } from 'components/DropDownMenu/DropDownMenu';
 import { GroupSelectTable } from 'components/Table/SpecificTables/GroupSelectTable';
 import { UserSelectTable } from 'components/Table/SpecificTables/UserSelectTable';
@@ -66,7 +63,6 @@ export function PlaylistDetail({ newPlaylist }: Props) {
   const [statusText, setStatusText] = useState<string>();
   const [publicCheckbox, setPublicCheckbox] = useState(playlist?.isPublic ?? true);
   const navigate = useNavigate();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const permissionsQuery = !newPlaylist
     ? usePlaylistPermissionsQuery(playlist?.id ?? '')
@@ -97,7 +93,11 @@ export function PlaylistDetail({ newPlaylist }: Props) {
     setEditMode(value);
   };
 
-  const updatePlaylist = (name: string, description: string | undefined) => {
+  const updatePlaylist = (
+    name: string,
+    description: string | undefined,
+    videos: VideoDTO[] | undefined,
+  ) => {
     updatePlaylistMutation.mutate(
       {
         name,
@@ -108,7 +108,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
         isPublic: publicCheckbox,
         permissions_UserIds: permissionsUserIds,
         permissions_GroupIds: permissionsGroupIds,
-        videos: playlist.videos?.map((x) => x.id),
+        videos: videos?.map((x) => x.id),
       },
       {
         onSuccess: () => {
@@ -142,19 +142,23 @@ export function PlaylistDetail({ newPlaylist }: Props) {
         navigate({ pathname: `/${Route.videoEdit}/${id}` });
       },
     },
-    {
-      name: 'Odebrat z playlistu',
-      onClickWithId: (id) => {
-        if (!playlist.videos || !canEdit) {
-          return;
-        }
-        const newVideos = playlist.videos.filter((video) => video.id !== id);
-        setPlaylist(new PlaylistDTO({ ...playlist, videos: newVideos }));
-        if (!editMode) {
-          updatePlaylist(playlist.name, playlist.description);
-        }
-      },
-    },
+    ...(playlist.isReadOnly
+      ? [
+          {
+            name: 'Odebrat z playlistu',
+            onClickWithId: (id) => {
+              if (!playlist.videos || !canEdit) {
+                return;
+              }
+              const newVideos = playlist.videos.filter((video) => video.id !== id);
+              setPlaylist(new PlaylistDTO({ ...playlist, videos: newVideos }));
+              if (!editMode) {
+                updatePlaylist(playlist.name, playlist.description, newVideos);
+              }
+            },
+          },
+        ]
+      : []),
   ];
   const submitHandler: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -189,7 +193,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
         },
       );
     } else {
-      updatePlaylist(name, description);
+      updatePlaylist(name, description, playlist.videos);
     }
   };
   return (

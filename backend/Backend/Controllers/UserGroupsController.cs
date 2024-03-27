@@ -215,7 +215,7 @@ namespace Backend.Controllers
         {
             if (_context.UserGroups.Any(x => x.Name == name && x.Id != id))
             {
-                throw new Exception("Group with the same name already exists.");
+                throw new Exception("Skupina se stejnýnm názvem již existuje");
             }
         }
     }

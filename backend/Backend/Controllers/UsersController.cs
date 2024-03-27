@@ -264,7 +264,7 @@ namespace Backend.Controllers
         {
             if (_context.Users.Any(x => x.Email == email))
             {
-                throw new Exception("User with the same or email already exists.");
+                throw new Exception("Uživatel se stejným emailem již existuje");
             }
         }
     }
