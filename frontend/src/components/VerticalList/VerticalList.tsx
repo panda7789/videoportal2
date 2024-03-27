@@ -134,7 +134,7 @@ export function VerticalList({
               })
             ) : (
               <Box
-                height="75vh"
+                minHeight="75vh"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"

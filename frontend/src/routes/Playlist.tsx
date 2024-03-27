@@ -375,7 +375,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
       <Box
         sx={{ paddingLeft: editMode ? 'calc(100% / 1.8)' : 'calc(100% / 3)' }}
         pt={3}
-        height="75vh"
+        minHeight="75vh"
       >
         <VerticalList
           videos={playlist?.videos ?? []}
