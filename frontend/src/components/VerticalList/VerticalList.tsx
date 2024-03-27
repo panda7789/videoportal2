@@ -9,7 +9,7 @@ import {
   DraggableProvided,
   DropResult,
 } from 'react-beautiful-dnd';
-import ReorderIcon from '@mui/icons-material/Reorder';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { Video } from 'model/Video';
 import { StrictModeDroppable } from 'components/Utils/StrictModeDroppable';
 import {
@@ -104,9 +104,10 @@ export function VerticalList({
                             padding={1}
                             pl={0}
                             display="flex"
+                            sx={{ cursor: 'grab' }}
                           >
                             <Box alignSelf="center">
-                              <ReorderIcon />
+                              <ImportExportIcon />
                             </Box>
                           </Box>
                         )}
