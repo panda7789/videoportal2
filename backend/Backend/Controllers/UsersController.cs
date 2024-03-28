@@ -47,7 +47,7 @@ namespace Backend.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: e.Message);
             }
         }
 
@@ -57,14 +57,14 @@ namespace Backend.Controllers
         {
             try
             {
-                ValidateDuplicates(request.Email);
+                ValidateDuplicates(request.Email, null);
                 var response = await _authenticationService.Register(request);
                 return Ok(response);
 
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: e.Message);
             }
         }
 
@@ -79,13 +79,13 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             var user = await _context.Users.FindAsync(userId);
 
             if (user == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Uživatel nenalezen");
             }
 
             return user.ToDTO();
@@ -115,9 +115,9 @@ namespace Backend.Controllers
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Uživatel nenalezen");
             }
-            ValidateDuplicates(userDto.Email);
+            ValidateDuplicates(userDto.Email, id);
 
             _context.Entry(user).State = EntityState.Modified;
             user.Name = userDto.Name;
@@ -134,7 +134,7 @@ namespace Backend.Controllers
             result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: result.Errors.FirstOrDefault()?.Description);
             }
 
             return NoContent();
@@ -147,7 +147,7 @@ namespace Backend.Controllers
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Uživatel nenalezen");
             }
 
             var result = await _userManager.DeleteAsync(user);
@@ -158,7 +158,7 @@ namespace Backend.Controllers
             }
 
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            return BadRequest($"Failed to delete user: {errors}");
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Nepovedlo se smazat uživatele: {errors}");
         }
 
         [HttpGet("{id}")]
@@ -168,7 +168,7 @@ namespace Backend.Controllers
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Uživatel nenalezen");
             }
 
             return user.ToDTO();
@@ -260,9 +260,9 @@ namespace Backend.Controllers
             await UpdateUserRoles(userManager, user, new UserRoles(), roles);
         }
 
-        private void ValidateDuplicates(string email)
+        private void ValidateDuplicates(string email, Guid? id)
         {
-            if (_context.Users.Any(x => x.Email == email))
+            if (_context.Users.Any(x => x.Email == email && x.Id != id))
             {
                 throw new Exception("Uživatel se stejným emailem již existuje");
             }

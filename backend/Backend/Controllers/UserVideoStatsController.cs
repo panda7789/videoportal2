@@ -35,7 +35,7 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             return Get(videoId, userId, _context).ToDTO();
         }
@@ -67,15 +67,15 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             if (userVideoStats.UserId != userId)
             {
-                return BadRequest();
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Neplatný uživatel");
             }
             if (userVideoStats.Like && userVideoStats.Dislike)
             {
-                return BadRequest();
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Nelze mít zároveň like a dislike");
             }
             var result = _context.UserVideoStats.Where(x => x.UserId == userId && x.VideoId == videoId).FirstOrDefault();
             if (result == null)
@@ -102,7 +102,7 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
 
             var result = _context.UserVideoStats.Where(x => x.UserId == userId && x.VideoId == videoId).FirstOrDefault();

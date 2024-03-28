@@ -42,7 +42,7 @@
     "serve": "vite preview",
     "fixAll": "eslint --fix .",
     "fileServer": "npx serve C:\\Temp\\videoPortal",
-    "fixErrors": "sed -i '' '/An unexpected server error occurred./c\\return response.data;' src/api/axios-client/Client.ts",
+    "fixErrors": "node ./patches/replaceErrors.js",
     "apiGenerate": "react-query-swagger /tanstack /input:https://localhost:7287/swagger/v1/swagger.json /output:src/api/axios-client.ts /template:Axios /generateOptionalParameters:true /typeStyle:Class /markOptionalProperties:true /nullValue:undefined /generateConstructorInterface:true /modules"
   },
   "eslintConfig": {

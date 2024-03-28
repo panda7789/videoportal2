@@ -23,11 +23,12 @@ export default function ErrorPage() {
         />
 
         <Typography variant="h2" component="h1" align="center" gutterBottom>
-          {(error as any).status ?? ''} - Ups! 😥
+          Ups! 😥
         </Typography>
 
         <Typography variant="h6" component="h2" align="center" gutterBottom>
-          {error?.message ?? error?.detail}
+          {(error as any).status ?? ''} -{' '}
+          {error?.message ?? error?.detail ?? 'Nastala neočekávaná chyba'}
         </Typography>
       </Box>
     </Container>

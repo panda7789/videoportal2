@@ -38,7 +38,7 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             return await
                 _context.Playlists
@@ -60,7 +60,7 @@ namespace Backend.Controllers
             var playlist = await _context.Playlists.FindAsync(id);
             if (playlist == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Playlist nenalezen");
             }
             var permissions = await _context.Permissions.Where(x => x.PlaylistId == id).ToListAsync();
             var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
@@ -143,11 +143,11 @@ namespace Backend.Controllers
 
             if (playlist == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Playlist nenalezen");
             }
             if (!HasPermissions(playlist))
             {
-                return Forbid();
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Přístup odepřen");
             }
             var user = User.GetUser(_context);
             playlist.Videos = playlist.Videos.OrderBy(x => x.Order).Select((x,i) => !VideosController.HasPermissions(x.Video, user) ? new PlaylistVideo() { Video = VideosController.NotPermitedVideo(x.Video), Order = i } : x).ToList();
@@ -159,20 +159,23 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlaylist(Guid id, [FromForm] PlaylistPostPutDTO playlist)
         {
-            // todo tady chybí oprávnění
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             if (playlist == null)
             {
                 return BadRequest();
             }
             var playlistDB = await _context.Playlists.Include(x => x.Videos).Where(x => x.Id ==id).FirstOrDefaultAsync();
-            if (playlistDB == null || playlistDB.Owner.Id != userId)
+            if (playlistDB == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Playlist nenalezen");
+            }
+            if (playlistDB.Owner.Id != userId)
+            {
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Nemáte oprávnění k úpravě playlistu");
             }
             ValidateDuplicates(playlist.Name, id);
 
@@ -197,7 +200,7 @@ namespace Backend.Controllers
                     var video = await _context.Videos.FindAsync(arr[i]);
                     if (video == null)
                     {
-                        return NotFound();
+                        return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
                     }
                     var added = new PlaylistVideo() { Video = video, Order = i, VideoId = video.Id, Playlist = playlistDB, PlaylistId = playlistDB.Id };
                     playlistDB.Videos.Add(added);
@@ -228,11 +231,10 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> PostPlaylist([FromForm] PlaylistPostPutDTO playlist)
         {
-            // todo tady chybí oprávnění
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             if (playlist == null)
             {
@@ -269,7 +271,6 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlaylist(Guid id)
         {
-            // todo oprávnění
             if (_context.Playlists == null)
             {
                 return NotFound();
@@ -277,12 +278,16 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             var playlistDB = _context.Playlists.Include(x => x.Videos).Where(x => x.Id == id).FirstOrDefault();
-            if (playlistDB == null || playlistDB.Owner.Id != userId)
+            if (playlistDB == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
+            }
+            if (playlistDB.Owner.Id != userId)
+            {
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Nemáte oprávnění k smazání playlistu");
             }
             if (playlistDB.Videos.Count > 0)
             {
@@ -302,7 +307,7 @@ namespace Backend.Controllers
             var user = User.GetUser(_context);
             if (user == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
             var userWatchLaterPlaylist = GetOrCreateWatchLater();
             return userWatchLaterPlaylist.Id;
@@ -317,7 +322,7 @@ namespace Backend.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
             }
             var userWatchLaterPlaylist = GetOrCreateWatchLater();
             if (userWatchLaterPlaylist.Videos == null)

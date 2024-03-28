@@ -62,7 +62,7 @@ namespace Backend.Controllers
 
             if (userGroup == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Skupina nenalezena");
             }
 
             return userGroup.ToDTO();
@@ -86,12 +86,12 @@ namespace Backend.Controllers
                     var ownerGroup = await _context.UserGroups.FindAsync(userGroup.OwnerGroupId);
                     if (ownerGroup == null)
                     {
-                        return NotFound("Owner group not found.");
+                        return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Skupina vlastníka nenalezena");
                     }
                     var actualUser = User.GetUser(_context);
                     if (!actualUser.Roles.Administrator && !actualUser.UserGroups.Any(x => x.Id == ownerGroup.Id) && !GetOwnedGroups(actualUser).Result.Contains(ownerGroup))
                     {
-                        return Problem("User is not a member of the owner group.");
+                        return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Uživatel není součástí skupiny vlastníka");
                     }
                     userGroupDB.OwnerGroupId = ownerGroup.Id;
                 }
@@ -140,7 +140,7 @@ namespace Backend.Controllers
         {
             if (_context.UserGroups == null)
             {
-                return Problem("Entity set 'MyDbContext.UserGroups'  is null.");
+                return Problem();
             }
 
             ValidateDuplicates(userGroup.Name, null);
@@ -148,12 +148,12 @@ namespace Backend.Controllers
             var ownerGroup = await _context.UserGroups.FindAsync(userGroup.OwnerGroupId);
             if (ownerGroup == null)
             {
-                return NotFound("Owner group not found.");
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Skupina vlastníka nenalezena");
             }
             var actualUser = User.GetUser(_context);
             if (!actualUser.Roles.Administrator && !actualUser.UserGroups.Any(x => x.Id == ownerGroup.Id) && !GetOwnedGroups(actualUser).Result.Contains(ownerGroup))
             {
-                return Problem("User is not a member of the owner group.");
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Uživatel není součástí skupiny vlastníka");
             }
             var users = new List<User>();
             if (userGroup.UserIds?.Any() ?? false)
@@ -191,7 +191,7 @@ namespace Backend.Controllers
             var userGroup = await _context.UserGroups.FindAsync(id);
             if (userGroup == null)
             {
-                return NotFound();
+                return NotFound("SKupina nenalezena");
             }
 
             _context.UserGroups.Remove(userGroup);

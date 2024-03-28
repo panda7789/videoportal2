@@ -70,7 +70,7 @@ function processCommentsAll(response: AxiosResponse): Promise<Types.CommentDTO[]
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.CommentDTO[]>(null as any);
 }
@@ -126,7 +126,7 @@ function processCommentsPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -177,7 +177,7 @@ function processCommentsDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -230,7 +230,7 @@ function processCommentsPOST(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -289,7 +289,7 @@ function processMyPlaylists(response: AxiosResponse): Promise<Types.PlaylistDTO[
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.PlaylistDTO[]>(null as any);
 }
@@ -344,7 +344,7 @@ function processPlaylistPermissions(response: AxiosResponse): Promise<Types.Obje
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.ObjectPermissions>(null as any);
 }
@@ -418,7 +418,7 @@ function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistBas
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.PlaylistBasicInfoDTO[]>(null as any);
 }
@@ -492,7 +492,7 @@ function processPlaylistsPOST(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -547,7 +547,7 @@ function processPlaylistsGET(response: AxiosResponse): Promise<Types.PlaylistDTO
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.PlaylistDTO>(null as any);
 }
@@ -624,7 +624,7 @@ function processPlaylistsPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -675,7 +675,7 @@ function processPlaylistsDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -728,7 +728,7 @@ function processWatchLaterId(response: AxiosResponse): Promise<string> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<string>(null as any);
 }
@@ -787,7 +787,7 @@ function processAddRemoveWatchLater(response: AxiosResponse): Promise<boolean> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<boolean>(null as any);
 }
@@ -854,7 +854,7 @@ function processSearch(response: AxiosResponse): Promise<Types.WithTotalCountOfV
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.WithTotalCountOfVideoDTO>(null as any);
 }
@@ -913,7 +913,7 @@ function processTagsAll(response: AxiosResponse): Promise<Types.TagDTO[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.TagDTO[]>(null as any);
 }
@@ -966,7 +966,7 @@ function processTagsPOST(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1025,7 +1025,7 @@ function processTagsWithVideos(response: AxiosResponse): Promise<Types.Tag[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.Tag[]>(null as any);
 }
@@ -1076,7 +1076,7 @@ function processTagsDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1135,7 +1135,7 @@ function processUserGroupsAll(response: AxiosResponse): Promise<Types.UserGroupD
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserGroupDTO[]>(null as any);
 }
@@ -1192,7 +1192,7 @@ function processUserGroupsPOST(response: AxiosResponse): Promise<Types.UserGroup
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserGroup>(null as any);
 }
@@ -1251,7 +1251,7 @@ function processMyUsergroups(response: AxiosResponse): Promise<Types.UserGroupDT
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserGroupDTO[]>(null as any);
 }
@@ -1306,7 +1306,7 @@ function processUserGroupsGET(response: AxiosResponse): Promise<Types.UserGroupD
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserGroupDTO>(null as any);
 }
@@ -1362,7 +1362,7 @@ function processUserGroupsPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1413,7 +1413,7 @@ function processUserGroupsDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1471,7 +1471,7 @@ function processLogin(response: AxiosResponse): Promise<string> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<string>(null as any);
 }
@@ -1529,7 +1529,7 @@ function processRegister(response: AxiosResponse): Promise<string> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<string>(null as any);
 }
@@ -1581,7 +1581,7 @@ function processMe(response: AxiosResponse): Promise<Types.UserDTO> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserDTO>(null as any);
 }
@@ -1640,7 +1640,7 @@ function processUsersAll(response: AxiosResponse): Promise<Types.UserDTO[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserDTO[]>(null as any);
 }
@@ -1696,7 +1696,7 @@ function processUsersPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1747,7 +1747,7 @@ function processUsersDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1802,7 +1802,7 @@ function processUsersGET(response: AxiosResponse): Promise<Types.UserDTO> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserDTO>(null as any);
 }
@@ -1855,7 +1855,7 @@ function processResetPassword(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1908,7 +1908,7 @@ function processSubmitResetPassword(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -1963,7 +1963,7 @@ function processUserVideoStatsGET(response: AxiosResponse): Promise<Types.UserVi
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.UserVideoStatsDTO>(null as any);
 }
@@ -2019,7 +2019,7 @@ function processUserVideoStatsPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -2074,7 +2074,7 @@ function processStats(response: AxiosResponse): Promise<Types.LikeDislikeStats> 
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.LikeDislikeStats>(null as any);
 }
@@ -2130,7 +2130,7 @@ function processWatched(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -2204,7 +2204,7 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.VideoDTO[]>(null as any);
 }
@@ -2296,7 +2296,7 @@ function processVideosPOST(response: AxiosResponse): Promise<Types.PostVideoResp
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.PostVideoResponse>(null as any);
 }
@@ -2351,7 +2351,7 @@ function processVideosGET(response: AxiosResponse): Promise<Types.VideoDTO> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.VideoDTO>(null as any);
 }
@@ -2434,7 +2434,7 @@ function processVideosPUT(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -2485,7 +2485,7 @@ function processVideosDELETE(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }
@@ -2547,7 +2547,7 @@ function processVideoPlaylists(response: AxiosResponse): Promise<string[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<string[]>(null as any);
 }
@@ -2602,7 +2602,7 @@ function processVideoPermissions(response: AxiosResponse): Promise<Types.Include
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.IncludeExcludeObjectPermissions>(null as any);
 }
@@ -2661,7 +2661,7 @@ function processMyVideos(response: AxiosResponse): Promise<Types.VideoDTO[]> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.VideoDTO[]>(null as any);
 }
@@ -2723,7 +2723,7 @@ function processRelatedVideos(response: AxiosResponse): Promise<Types.VideoDTO[]
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<Types.VideoDTO[]>(null as any);
 }
@@ -2777,7 +2777,7 @@ function processUpload(response: AxiosResponse): Promise<void> {
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        throw response.data;
     }
     return Promise.resolve<void>(null as any);
 }

@@ -48,11 +48,11 @@ namespace Backend.Controllers
         {
             if (_context.Tags == null)
             {
-                return Problem("Entity set 'MyDbContext.Tags'  is null.");
+                return Problem();
             }
             if (_context.Tags.Any(x => x.Name == tag.Name))
             {
-                return Problem("Tag with this name already exists.");
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Tag s tímto názvem již existuje");
             }
             _context.Tags.Add(new Tag() { Name = tag.Name, Color = tag.Color });
             await _context.SaveChangesAsync();
@@ -70,7 +70,7 @@ namespace Backend.Controllers
             var tag = await _context.Tags.FindAsync(id);
             if (tag == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Tag nenalezen");
             }
 
             _context.Tags.Remove(tag);

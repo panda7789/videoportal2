@@ -121,11 +121,11 @@ namespace Backend.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
             }
             if (!HasPermissions(video))
             {
-                return Forbid();
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Přístup odepřen");
             }
             return await _context.Playlists.Where(x => x.Videos.Any(x => x.VideoId == video.Id)).Select(x => x.Id).ToListAsync();
         }
@@ -140,11 +140,11 @@ namespace Backend.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
             }
             if (!HasPermissions(video))
             {
-                return Forbid();
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Přístup odepřen");
             }
             var permissions = await _context.Permissions.Where(x => x.VideoId == id).ToListAsync();
             var includedUserPermissions = permissions.Where(x => x.UserId != null && x.OverridedEnableWatch == true).Select(x => x.UserId ?? Guid.Empty).ToList();
@@ -166,7 +166,6 @@ namespace Backend.Controllers
         [HttpGet("my-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()
         {
-            // todo tady chybí práva :)
             if (_context.Videos == null)
             {
                 return NotFound();
@@ -174,9 +173,9 @@ namespace Backend.Controllers
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
-            return await _context.Videos.Select(x => x.ToDTO()).ToListAsync();
+            return await _context.Videos.Where(x => x.Owner.Id == userId).Select(x => x.ToDTO()).ToListAsync();
         }
 
         [HttpGet("{id}/related-videos")]
@@ -189,11 +188,11 @@ namespace Backend.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
             }
             if (!HasPermissions(video))
             {
-                return Forbid();
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Přístup odepřen");
             }
 
             var shortedVideoDescription = video?.Description == null ? null : String.Join(' ', video.Description.Split().Take(5));
@@ -218,11 +217,14 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
-            // todo tady chybí práva
             var video = await _context.Videos.Include(x => x.Tags).Include(x => x.MainPlaylist).ThenInclude(x => x.Videos).FirstOrDefaultAsync(x => x.Id == id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
+            }
+            if (video.Owner != User.GetUser(_context))
+            {
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Nemáte oprávnění k úpravě videa");
             }
             _context.Entry(video).State = EntityState.Modified;
             video.Name = modifiedVideo.Name;
@@ -287,10 +289,9 @@ namespace Backend.Controllers
 
         public async Task<ActionResult<PostVideoResponse>> PostVideo([FromForm] PostVideoRequest video)
         {
-            // tady chybí práva?:O
             if (_context.Videos == null)
             {
-                return Problem("Entity set 'MyDbContext.Videos'  is null.");
+                return Problem();
             }
 
             // upload video
@@ -323,7 +324,7 @@ namespace Backend.Controllers
             var videoPlaylist = _context.Playlists.Find(video.PlaylistId);
             if (videoPlaylist == null)
             {
-                return BadRequest("Neplatné ID playlistu");
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Neplatné ID playlistu");
             }
             PlaylistsController.AddVideoToPlaylist(_context, videoPlaylist, videoDB);
             if ((video.IncludedPermissions?.UserIds?.Any() ?? false) || (video.IncludedPermissions?.GroupIds?.Any() ?? false))
@@ -345,11 +346,11 @@ namespace Backend.Controllers
         {
             if (!Request.Headers.TryGetValue("x-guid", out var guid))
             {
-                return Problem("Header x-guid is empty");
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Hlavička x-guid je prázdná");
             }
             if (_context.Videos == null)
             {
-                return Problem("Entity set 'MyDbContext.Videos'  is null.");
+                return Problem();
             }
 
             var videoName = $"{guid}.{file.FileName.Split(".").LastOrDefault()}";
@@ -370,7 +371,6 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(Guid id)
         {
-            // tady chybí práva
             if (_context.Videos == null)
             {
                 return NotFound();
@@ -378,7 +378,11 @@ namespace Backend.Controllers
             var video = await _context.Videos.FindAsync(id);
             if (video == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
+            }
+            if (video.Owner != User.GetUser(_context))
+            {
+                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Nemáte oprávnění ke smazání videa");
             }
             SaveFile.DeleteFile(video.DataUrl);
             SaveFile.DeleteFile(video.ImageUrl);

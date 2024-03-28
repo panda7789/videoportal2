@@ -62,7 +62,7 @@ namespace Backend.Controllers
             var comment = await _context.Comment.FindAsync(id);
             if (comment == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Komentář nenalezen");
             }
             _context.Entry(comment).State = EntityState.Modified;
             comment.Text = commentDTO.Text;
@@ -86,12 +86,12 @@ namespace Backend.Controllers
         {
             if (_context.Comment == null)
             {
-                return Problem("Entity set 'MyDbContext.Comment'  is null.");
+                return Problem();
             }
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
 
             var comment = new Comment()
@@ -126,12 +126,12 @@ namespace Backend.Controllers
             var comment = await _context.Comment.FindAsync(id);
             if (comment == null)
             {
-                return NotFound();
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Komentář nenalezen");
             }
             var userId = User.GetUserId();
             if (userId == null)
             {
-                return Unauthorized();
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
             }
 
             _context.Comment.Remove(comment);

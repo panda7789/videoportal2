@@ -25,7 +25,7 @@ namespace Backend.Controllers
             }
             if (string.IsNullOrEmpty(q))
             {
-                return BadRequest();
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Neplatné vyhledávání");
             }
             var isTagSearch = q.StartsWith("tags:");
             IQueryable<Video> query;
