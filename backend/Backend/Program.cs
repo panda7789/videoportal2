@@ -123,6 +123,7 @@ dbContextOptions => dbContextOptions
 
 var fsBasePath = builder?.Configuration["FSBasePath"] ?? null;
 SaveFile.Init(fsBasePath);
+var apiPrefix = builder?.Configuration["ApiPrefix"] ?? null;
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -136,8 +137,15 @@ using (var scope = app.Services.CreateScope())
     }
     await UsersController.SeedUsers(userManager);
 }
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = $"{(!string.IsNullOrEmpty(apiPrefix) ? $"{apiPrefix}/" : "")}swagger/{{documentName}}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint($"{(!string.IsNullOrEmpty(apiPrefix) ? $"/{apiPrefix}" : "")}/swagger/v1/swagger.json", "API");
+    c.RoutePrefix = $"{(!string.IsNullOrEmpty(apiPrefix) ? $"{apiPrefix}/" : "")}swagger";
+});
 app.UseCors("AllowReactClient");
 app.UseHttpsRedirection();
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // claim not overwriten

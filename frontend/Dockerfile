@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY ./package.json .
 COPY ./tsconfig.json .
+COPY ./patches ./patches
 
 RUN npm install -g pnpm
 RUN pnpm install
