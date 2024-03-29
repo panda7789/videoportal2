@@ -27,51 +27,10 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // GET: api/Playlists/my
-        [HttpGet("my-playlists")]
-        public async Task<ActionResult<IEnumerable<PlaylistDTO>>> GetMyPlaylists()
-        {
-            if (_context.Playlists == null)
-            {
-                return NotFound();
-            }
-            var userId = User.GetUserId();
-            if (userId == null)
-            {
-                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
-            }
-            return await
-                _context.Playlists
-                    .Include(x => x.Owner)
-                    .Where(x => x.Owner.Id == userId)
-                    .Include(x => x.Videos)
-                                           .AsNoTracking()
-                    .Select(x => x.ToDTO())
-                    .ToListAsync();
-        }
-
-        [HttpGet("{id}/playlist-permissions")]
-        public async Task<ActionResult<ObjectPermissions>> GetPlaylistPermissions(Guid id)
-        {
-            if (_context.Playlists == null)
-            {
-                return NotFound();
-            }
-            var playlist = await _context.Playlists.FindAsync(id);
-            if (playlist == null)
-            {
-                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Playlist nenalezen");
-            }
-            var permissions = await _context.Permissions.Where(x => x.PlaylistId == id).ToListAsync();
-            var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
-            var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
-            return new ObjectPermissions(
-                UserIds: userPermissions,
-                GroupIds: groupPermissions
-                );
-        }
-
         // GET: api/Playlists
+        /// <summary>
+        /// Vrací playlisty, které uživatel může vidět.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlaylistBasicInfoDTO>>> GetPlaylists([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
         {
@@ -126,6 +85,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/Playlists/5
+        /// <summary>
+        /// Vrací playlist
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<PlaylistDTO>> GetPlaylist(Guid id)
         {
@@ -156,6 +118,9 @@ namespace Backend.Controllers
         }
 
         // PUT: api/Playlists/5
+        /// <summary>
+        /// Upravuje existující playlist
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlaylist(Guid id, [FromForm] PlaylistPostPutDTO playlist)
         {
@@ -227,7 +192,9 @@ namespace Backend.Controllers
         }
 
         // POST: api/Playlists
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Vytváří nový playlist
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> PostPlaylist([FromForm] PlaylistPostPutDTO playlist)
         {
@@ -268,6 +235,9 @@ namespace Backend.Controllers
         }
 
         // DELETE: api/Playlists/5
+        /// <summary>
+        /// Maže playlist
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlaylist(Guid id)
         {
@@ -300,6 +270,60 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Vrací seznam pokročilých oprávnění pro playlist
+        /// </summary>
+        [HttpGet("{id}/playlist-permissions")]
+        public async Task<ActionResult<ObjectPermissions>> GetPlaylistPermissions(Guid id)
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            var playlist = await _context.Playlists.FindAsync(id);
+            if (playlist == null)
+            {
+                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Playlist nenalezen");
+            }
+            var permissions = await _context.Permissions.Where(x => x.PlaylistId == id).ToListAsync();
+            var userPermissions = permissions.Where(x => x.UserId != null).Select(x => x.UserId ?? Guid.Empty).ToList();
+            var groupPermissions = permissions.Where(x => x.UserGroupId != null).Select(x => x.UserGroupId ?? Guid.Empty).ToList();
+            return new ObjectPermissions(
+                UserIds: userPermissions,
+                GroupIds: groupPermissions
+                );
+        }
+
+        /// GET: api/Playlists/my
+        /// <summary>
+        /// Vrací seznam playlistů, které vlastní přihlášený uživatel.
+        /// </summary>
+        [HttpGet("my-playlists")]
+        public async Task<ActionResult<IEnumerable<PlaylistDTO>>> GetMyPlaylists()
+        {
+            if (_context.Playlists == null)
+            {
+                return NotFound();
+            }
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: $"Nepřihlášen");
+            }
+            return await
+                _context.Playlists
+                    .Include(x => x.Owner)
+                    .Where(x => x.Owner.Id == userId)
+                    .Include(x => x.Videos)
+                                           .AsNoTracking()
+                    .Select(x => x.ToDTO())
+                    .ToListAsync();
+        }
+
+
+        /// <summary>
+        /// Vrací ID playlistu 'Přehrát později' pro přihlášeného uživatele.
+        /// </summary>
         [HttpGet("watch-later-id")]
         public async Task<ActionResult<Guid>> GetWatchLaterId()
         {
@@ -364,12 +388,18 @@ namespace Backend.Controllers
 
         }
 
+        /// <summary>
+        /// Přidá video do playlistu
+        /// </summary>
         public static void AddVideoToPlaylist(MyDbContext _context, Playlist playlist, Video video)
         {
             playlist.Videos ??= new List<PlaylistVideo>();
             playlist.Videos.Add(new PlaylistVideo() { Video = video, Order = playlist.Videos.LastOrDefault()?.Order + 1 ?? 0, Playlist = playlist });
             _context.SaveChanges();
         }
+        /// <summary>
+        /// Odebere video z playlistu
+        /// </summary>
         public static void RemoveVideoFromPlaylist(MyDbContext _context, Playlist playlist, Video video)
         {
             playlist.Videos ??= new List<PlaylistVideo>();

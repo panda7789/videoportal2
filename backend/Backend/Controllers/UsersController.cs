@@ -36,6 +36,9 @@ namespace Backend.Controllers
             _mailService = emailService;
         }
 
+        /// <summary>
+        /// Přihlásí uživatele
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login([FromBody] LoginDTO request)
@@ -51,6 +54,9 @@ namespace Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Registruje uživatele
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register([FromBody] RegisterDTO request)
@@ -69,6 +75,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/users/me
+        /// <summary>
+        /// Vrátí aktuálně přihlášeného uživatele
+        /// </summary>
         [HttpGet("me")]
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
@@ -91,6 +100,9 @@ namespace Backend.Controllers
             return user.ToDTO();
         }
 
+        /// <summary>
+        /// Vrací seznam uživatelů
+        /// </summary>
         [HttpGet]
         [Roles(new[] { RoleNames.Admin, RoleNames.Editor })]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
@@ -101,6 +113,9 @@ namespace Backend.Controllers
             return Ok(userDtos);
         }
 
+        /// <summary>
+        /// Aktualizuje uživatele
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDTO userDto)
         {
@@ -140,6 +155,9 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        ///  Smaže uživatele
+        /// </summary>
         [HttpDelete("{id}")]
         [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> DeleteUser(Guid id)
@@ -161,6 +179,9 @@ namespace Backend.Controllers
             return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Nepovedlo se smazat uživatele: {errors}");
         }
 
+        /// <summary>
+        /// Vrací konkrétního uživatele
+        /// </summary>
         [HttpGet("{id}")]
         [Authorize(Roles = RoleNames.Admin)]
         public async Task<ActionResult<UserDTO>> GetUser(Guid id)
@@ -174,6 +195,9 @@ namespace Backend.Controllers
             return user.ToDTO();
         }
 
+        /// <summary>
+        /// Vyresetuje heslo
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<ActionResult> ResetPassword([FromBody] string email)
@@ -196,6 +220,9 @@ namespace Backend.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Potvrdí reset hesla dle odkazu v emailu
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("submit-reset-password")]
         public async Task<ActionResult> SubmitPasswordReset([FromBody] PasswordResetDTO passwordReset)

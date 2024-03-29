@@ -25,6 +25,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/UserGroups
+        /// <summary>
+        /// Vrací všechny skupiny uživatelů
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserGroupDTO>>> GetUserGroups()
         {
@@ -34,6 +37,9 @@ namespace Backend.Controllers
             }
             return await _context.UserGroups.Include(x => x.Users).Select(x => x.ToDTO()).ToListAsync();
         }
+        /// <summary>
+        /// Vrací skupiny aktuálně přihlášeného uživatele
+        /// </summary>
         [HttpGet("my-usergroups")]
         public async Task<ActionResult<IEnumerable<UserGroupDTO>>> GetMyUserGroups()
         {
@@ -51,6 +57,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/UserGroups/5
+        /// <summary>
+        /// Vrací konkrétní skupinu uživatelů
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<UserGroupDTO>> GetUserGroup(Guid id)
         {
@@ -69,7 +78,9 @@ namespace Backend.Controllers
         }
 
         // PUT: api/UserGroups/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Upraví skupinu uživatelů
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserGroup(Guid id, UserGroupPostPutDTO userGroup)
         {
@@ -133,7 +144,9 @@ namespace Backend.Controllers
         }
 
         // POST: api/UserGroups
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Vytvoří skupinu uživatelů
+        /// </summary>
         [HttpPost]
         [Roles(RoleNames.Admin, RoleNames.Editor)]
         public async Task<ActionResult<UserGroup>> PostUserGroup(UserGroupPostPutDTO userGroup)
@@ -181,6 +194,9 @@ namespace Backend.Controllers
         }
 
         // DELETE: api/UserGroups/5
+        /// <summary>
+        ///  Smaže skupinu uživatelů
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserGroup(Guid id)
         {

@@ -21,6 +21,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/Tags
+        /// <summary>
+        /// Vrátí tagy
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsDTO()
         {
@@ -31,6 +34,9 @@ namespace Backend.Controllers
             return await _context.Tags.Select(x => x.ToDTO()).ToListAsync();
         }
 
+        /// <summary>
+        /// Vrátí tagy a videa která mají daný tag
+        /// </summary>
         [HttpGet("tagsWithVideos")]
         public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
         {
@@ -41,8 +47,9 @@ namespace Backend.Controllers
             return await _context.Tags.Include(x => x.Videos).ToListAsync();
         }
 
-        // POST: api/Tags
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Vytvoří nový tag
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> PostTag([FromBody] PostTagDTO tag)
         {
@@ -59,7 +66,9 @@ namespace Backend.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Tags/5
+        /// <summary>
+        /// Smaže tag
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTag(Guid id)
         {

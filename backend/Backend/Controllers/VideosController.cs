@@ -31,6 +31,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/Videos
+        /// <summary>
+        /// Vrací videa na které má uživatel právo
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetVideos([FromQuery] string? orderBy = null, int? limit = null, int? offset = null)
         {
@@ -86,6 +89,9 @@ namespace Backend.Controllers
 
 
         // GET: api/Videos/5
+        /// <summary>
+        ///  Vrací konkrétní video
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<VideoDTO>> GetVideo(Guid id)
         {
@@ -111,25 +117,9 @@ namespace Backend.Controllers
             return video.ToDTO();
         }
 
-        [HttpGet("{id}/video-playlists")]
-        public async Task<ActionResult<IEnumerable<Guid>>> GetVideoPlaylists(Guid id)
-        {
-            if (_context.Videos == null)
-            {
-                return NotFound();
-            }
-            var video = await _context.Videos.FindAsync(id);
-            if (video == null)
-            {
-                return Problem(statusCode: StatusCodes.Status404NotFound, detail: "Video nenalezeno");
-            }
-            if (!HasPermissions(video))
-            {
-                return Problem(statusCode: StatusCodes.Status403Forbidden, detail: "Přístup odepřen");
-            }
-            return await _context.Playlists.Where(x => x.Videos.Any(x => x.VideoId == video.Id)).Select(x => x.Id).ToListAsync();
-        }
-
+        /// <summary>
+        /// Vrací pokročilé nastavení oprávnění k videu
+        /// </summary>
         [HttpGet("{id}/video-permissions")]
         public async Task<ActionResult<IncludeExcludeObjectPermissions>> GetVideoPermissions(Guid id)
         {
@@ -162,7 +152,12 @@ namespace Backend.Controllers
                         GroupIds: excludedGroupPermissions)
                 );
         }
+
         // GET: api/videos/my
+        /// <summary>
+        /// Vrací videa, která přihlášený uživatel vlastní
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("my-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetMyVideos()
         {
@@ -178,6 +173,9 @@ namespace Backend.Controllers
             return await _context.Videos.Where(x => x.Owner.Id == userId).Select(x => x.ToDTO()).ToListAsync();
         }
 
+        /// <summary>
+        /// Vrací podobná videa k videu
+        /// </summary>
         [HttpGet("{id}/related-videos")]
         public async Task<ActionResult<IEnumerable<VideoDTO>>> GetRelatedVideos(Guid id)
         {
@@ -213,7 +211,9 @@ namespace Backend.Controllers
         }
 
         // PUT: api/Videos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Aktualizuje existující video
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVideo(Guid id, [FromForm] ModifyVideoDTO modifiedVideo)
         {
@@ -283,10 +283,11 @@ namespace Backend.Controllers
         }
 
         // POST: api/Videos
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Vytvoří video a v odpovědi vrátí dataUrl, které se použije pro nahrání videa pomocí POST /api/videos/upload
+        /// </summary>
         [HttpPost]
         [Authorize(Roles = RoleNames.Editor)]
-
         public async Task<ActionResult<PostVideoResponse>> PostVideo([FromForm] PostVideoRequest video)
         {
             if (_context.Videos == null)
@@ -339,9 +340,12 @@ namespace Backend.Controllers
 
             return Ok(new PostVideoResponse() { DataUrl = videoGuid });
         }
+
+        /// <summary>
+        /// Slouží k nahrání souboru videa. Nejprve je potřeba nahrát informace k videu pomocí POST /api/videos. Data url z POST metody je nutné poslat v hlavičce x-guid.
+        /// </summary>
         [HttpPost("upload")]
         [Authorize(Roles = RoleNames.Editor)]
-
         public async Task<ActionResult> UploadVideo(IFormFile file)
         {
             if (!Request.Headers.TryGetValue("x-guid", out var guid))
@@ -368,6 +372,9 @@ namespace Backend.Controllers
         }
 
         // DELETE: api/Videos/5
+        /// <summary>
+        /// Smaže video
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(Guid id)
         {

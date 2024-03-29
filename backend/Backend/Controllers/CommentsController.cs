@@ -27,6 +27,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/Comments
+        /// <summary>
+        /// Vrací komentáře k videu
+        /// </summary>
         [HttpGet("{videoId}")]
         public async Task<ActionResult<IEnumerable<CommentDTO>>> GetComment(Guid videoId)
         {
@@ -51,7 +54,9 @@ namespace Backend.Controllers
         }
 
         // PUT: api/Comments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Upraví komentář
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(Guid id, CommentPutDTO commentDTO)
         {
@@ -80,7 +85,9 @@ namespace Backend.Controllers
         }
 
         // POST: api/Comments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Vytvoří komentář
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult> PostComment(CommentPostDTO commentDTO)
         {
@@ -115,6 +122,9 @@ namespace Backend.Controllers
         }
 
         // DELETE: api/Comments/5
+        /// <summary>
+        /// Smaže komentář
+        /// </summary>
         [Authorize(Roles = RoleNames.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(Guid id)

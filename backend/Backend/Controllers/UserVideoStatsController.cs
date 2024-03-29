@@ -24,6 +24,9 @@ namespace Backend.Controllers
         }
 
         // GET: api/UserVideoStats/5
+        /// <summary>
+        /// Vrátí statistiky přihlášeného uživatele k videu
+        /// </summary>
         [HttpGet("{videoId}")]
         public async Task<ActionResult<UserVideoStatsDTO>> GetUserVideoStats(Guid videoId)
         {
@@ -40,6 +43,9 @@ namespace Backend.Controllers
             return Get(videoId, userId, _context).ToDTO();
         }
 
+        /// <summary>
+        /// Vrátí počet like a dislike
+        /// </summary>
         [HttpGet("{videoId}/stats")]
         public async Task<ActionResult<LikeDislikeStats>> GetLikeDislikeStats(Guid videoId)
         {
@@ -56,7 +62,9 @@ namespace Backend.Controllers
         }
 
         // PUT: api/UserVideoStats/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Aktualizuje statistiky přihlášeného uživatele k videu
+        /// </summary>
         [HttpPut("{videoId}")]
         public async Task<IActionResult> PutUserVideoStats(Guid videoId, UserVideoStatsDTO userVideoStats)
         {
@@ -96,6 +104,9 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Uloží kolik sekund přihlášený uživatel zhlédl videa
+        /// </summary>
         [HttpPut("{videoId}/watched")]
         public async Task<IActionResult> PutVideoWatchedtime(Guid videoId, [FromBody] int watchedSec)
         {

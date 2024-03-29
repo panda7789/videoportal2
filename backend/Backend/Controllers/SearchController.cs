@@ -16,6 +16,9 @@ namespace Backend.Controllers
         {
             _context = context;
         }
+        /// <summary>
+        /// Vyhledá videa nejvíce podobné dle parametru q
+        /// </summary>
         [HttpPut("")]
         public async Task<ActionResult<WithTotalCount<VideoDTO>>> Search([FromQuery] string q, [FromQuery] int? limit = null, int? offset = null)
         {
