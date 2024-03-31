@@ -294,6 +294,11 @@ namespace Backend.Controllers
             {
                 return Problem();
             }
+            var user = User.GetUser(_context);
+            if (video.PlaylistId == user.WatchLaterPlaylistId)
+            {
+                return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Nelze nahrávat videa do playlistu přehrát později");
+            }
 
             // upload video
             var videoGuid = $"{video.PlaylistId}{Guid.NewGuid()}";
@@ -304,7 +309,7 @@ namespace Backend.Controllers
 
             var videoDB = new Video()
             {
-                Owner = User.GetUser(_context),
+                Owner = user,
                 Name = video.Name,
                 Description = video.Description,
                 Duration = new TimeSpan(0, 0, 0, video.DurationSec, 0),
@@ -312,7 +317,7 @@ namespace Backend.Controllers
                 DislikeCount = 0,
                 LikeCount = 0,
                 Views = 0,
-                UploadTimestamp = DateTime.UtcNow,
+                UploadTimestamp = DateTime.Now,
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
                 MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId),
