@@ -307,7 +307,7 @@ namespace Backend.Controllers
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
             var thumbnailUrl = await SaveThumbnailAsync(video.PlaylistId, video.Image);
-            var cstZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            var cstZone = TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time");
             var time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cstZone);
 
 
