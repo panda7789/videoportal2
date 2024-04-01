@@ -70,3 +70,4 @@ docker/db/data_demo
 *.7z
 *.zip
 /example_client/thumbnail.jpg
+frontend/.env.production
