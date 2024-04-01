@@ -1,6 +1,6 @@
 $thumbnailPath = "./thumbnail.jpg"
-#$baseAddress = "https://videoportal.panda7789.fun"
-$baseAddress = "https://localhost:7287"
+$baseAddress = "https://videoportal.panda7789.fun"
+#$baseAddress = "https://localhost:7287"
 
 function Login {
     $email = Read-Host "Zadejte email"
