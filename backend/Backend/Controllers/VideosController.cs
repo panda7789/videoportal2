@@ -16,6 +16,7 @@ using NuGet.Packaging;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Backend.Migrations;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
 
 namespace Backend.Controllers
 {
@@ -306,6 +307,9 @@ namespace Backend.Controllers
             string videoUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Video, videoName, null);
 
             var thumbnailUrl = await SaveThumbnailAsync(video.PlaylistId, video.Image);
+            var cstZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            var time = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cstZone);
+
 
             var videoDB = new Video()
             {
@@ -317,7 +321,7 @@ namespace Backend.Controllers
                 DislikeCount = 0,
                 LikeCount = 0,
                 Views = 0,
-                UploadTimestamp = DateTime.Now,
+                UploadTimestamp = time,
                 DataUrl = videoUrl,
                 ImageUrl = thumbnailUrl,
                 MainPlaylist = _context.Playlists.Single(x => x.Id == video.PlaylistId),
