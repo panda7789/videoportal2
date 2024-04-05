@@ -221,7 +221,7 @@ Aplikaci je možné provozovat také jako každou komponentu samostatně.
   <summary>Standalone</summary>
 
 ### Backend
-Pro backend budete potřebovat zkompilovanou verzi aplikace. Poslední taková se nachází v adresáři /backend/Publish/.
+Pro backend budete potřebovat zkompilovanou verzi aplikace. Poslední taková se nachází [zde](https://github.com/panda7789/videoportal2/releases), případně jako příloha k textu BP.
 Tyto soubory je poté nutné nasadit na nějaký webový server, například na IIS ve Windows Server.
 
 <details>
@@ -232,7 +232,7 @@ Poté stačí zbuildit případně publishnout a zkopírovat vytvořené DLL na 
 
 ### Frontend
 Pro frontned budete také potřebovat zkompilovanou verzi aplikace.
-Pokud vám vyhovují porty na api https://localhost:7287 a na fileserver http://localhost:10005 můžete použít již zkompilovanou verzi v /frontend/dist, kterou stačí zkopírovat na jakýkoliv webový server, já použil nginx.
+Pokud vám vyhovují porty na api https://localhost:7287 a na fileserver http://localhost:10005 můžete použít již zkompilovanou verzi [zde](https://github.com/panda7789/videoportal2/releases) (případně ji najdete jako přílohu k textu BP), kterou stačí zkopírovat na jakýkoliv webový server, já použil nginx.
 
 Pokud vám porty nevyhovují nebo jste provedli nějaké změny, je potřeba aplikaci znovu zkompilovat.
 <details>
