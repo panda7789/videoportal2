@@ -66,13 +66,13 @@ namespace Backend.Models
         string Name,
         DateTime CreatedTimestamp,
         string? Description,
-        [Description("Odkaz na ručně nastavený náhled playlistu.")]
+        [property: Description("Odkaz na ručně nastavený náhled playlistu.")]
         string? ThumbnailUrl,
-        [Description("Odkaz na náhled prvního videa v playlistu.")]
+        [property : Description("Odkaz na náhled prvního videa v playlistu.")]
         string? FirstVideoThumbnailUrl,
-        [Description("Id prvního videa v playlistu.")]
+        [property : Description("Id prvního videa v playlistu.")]
         Guid? FirstVideoId,
-        [Description("Uživatelské informace o vlastníkovi playlistu.")]
+        [property: Description("Uživatelské informace o vlastníkovi playlistu.")]
         UserDTO Owner,
         TimeSpan TotalDuration,
         int VideoCount);
@@ -82,16 +82,16 @@ namespace Backend.Models
         string Name,
         DateTime CreatedTimestamp,
         string? Description,
-        [Description("Odkaz na ručně nastavený náhled playlistu.")]
+        [property : Description("Odkaz na ručně nastavený náhled playlistu.")]
         string? ThumbnailUrl,
-        [Description("Kolekce videí v playlistu, seřazené dle uloženého pořadí.")]
+        [property : Description("Kolekce videí v playlistu, seřazené dle uloženého pořadí.")]
         ICollection<VideoDTO>? Videos,
-        [Description("Uživatelské informace o vlastníkovi playlistu.")]
+        [property : Description("Uživatelské informace o vlastníkovi playlistu.")]
         UserDTO Owner,
         TimeSpan TotalDuration,
-        [Description("Příznak, zdali je playlist veřejný.")]
+        [property: Description("Příznak, zdali je playlist veřejný.")]
         bool IsPublic,
-        [Description("Příznak, zdali je playlist pro přihlášeného uživatele pouze ke čtení.")]
+        [property : Description("Příznak, zdali je playlist pro přihlášeného uživatele pouze ke čtení.")]
         bool IsReadOnly
     );
 

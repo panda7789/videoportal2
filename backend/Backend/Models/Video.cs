@@ -28,13 +28,13 @@ namespace Backend.Models
     }
 
     public record UserVideoStatsDTO(
-        [Description("Příznak, zda přihlášený uživatel má u videa like.")]
+        [property : Description("Příznak, zda přihlášený uživatel má u videa like.")]
         bool Like,
-        [Description("Příznak, zda přihlášený uživatel má u videa dislike.")]
+        [property : Description("Příznak, zda přihlášený uživatel má u videa dislike.")]
         bool Dislike,
-        [Description("Příznak, zda si přihlášený uživatel video přidal do playlistu přehrát později.")]
+        [property : Description("Příznak, zda si přihlášený uživatel video přidal do playlistu přehrát později.")]
         bool AddedToPlaylist,
-        [Description("Celkový čas, který uživatel z videa již viděl. Slouží pro pokračování přehrávání tam, kde uživatel skončil.")]
+        [property : Description("Celkový čas, který uživatel z videa již viděl. Slouží pro pokračování přehrávání tam, kde uživatel skončil.")]
         int TimeWatchedSec,
         Guid UserId,
         Guid VideoId
@@ -117,27 +117,27 @@ namespace Backend.Models
     public record VideoDTO(
         Guid Id,
         string Name,
-        [Description("Odkaz na náhledový obrázek videa.")]
+        [property: Description("Odkaz na náhledový obrázek videa.")]
         string ImageUrl,
         TimeSpan Duration,
         string? Description,
-        [Description("Odkaz na surová data videa.")]
+        [property: Description("Odkaz na surová data videa.")]
         string DataUrl,
         int LikeCount,
         int DislikeCount,
         int Views,
         DateTime UploadTimestamp,
-        [Description("Kolekce tagů, které video má.")]
+        [property : Description("Kolekce tagů, které video má.")]
         ICollection<TagDTO>? Tags,
-        [Description("Původní atribut pro seznam playlistů obsahující tohle video, avšak nyní je nahrazeno atributem " + nameof(MainPlaylistId))]
+        [property: Description("Původní atribut pro seznam playlistů obsahující tohle video, avšak nyní je nahrazeno atributem MainPlaylistId")]
         ICollection<PlaylistDTO>? Playlists,
-        [Description("Id playlistu, do kterého video patří.")]
+        [property : Description("Id playlistu, do kterého video patří.")]
         Guid MainPlaylistId,
-        [Description("Název playlistu, do kterého video patří.")]
+        [property : Description("Název playlistu, do kterého video patří.")]
         string MainPlaylistName,
-        [Description("Uživatelská data o vlastníkovi videa.")]
+        [property : Description("Uživatelská data o vlastníkovi videa.")]
         UserDTO Owner,
-        [Description("Příznak, zdali se jedná o video na které nemá uživatel právo.")]
+        [property : Description("Příznak, zdali se jedná o video na které nemá uživatel právo.")]
         bool? IsEmpty = false
         );
 
@@ -146,9 +146,9 @@ namespace Backend.Models
         ICollection<Guid>? GroupIds);
 
     public record IncludeExcludeObjectPermissions(
-        [Description("Kolekce uživatelů a skupin, které mají na objekt právo.")]
+        [property : Description("Kolekce uživatelů a skupin, které mají na objekt právo.")]
         ObjectPermissions? IncludedPermissions,
-        [Description("Kolekce uživatelů a skupin, které nemají na objekt právo.")]
+        [property : Description("Kolekce uživatelů a skupin, které nemají na objekt právo.")]
         ObjectPermissions? ExcludedPermissions
         );
 }
