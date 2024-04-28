@@ -91,7 +91,7 @@ namespace Backend.Controllers
 
         // GET: api/Videos/5
         /// <summary>
-        ///  Vrací konkrétní video
+        ///  Vrací konkrétní video. V případě že uživatel nemá na video právo je objekt videa s prázdnými daty.
         /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<VideoDTO>> GetVideo(Guid id)

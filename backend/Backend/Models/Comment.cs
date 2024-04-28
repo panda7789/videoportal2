@@ -16,10 +16,13 @@ namespace Backend.Models
     public class CommentDTO
     {
         public Guid Id { get; set; }
+        /// <summary>Id uživatele, který komentář vytvořil.</summary>
         public Guid UserId { get; set;}
+        [Description("Id videa, ke kterému komentář patří.")]
         public Guid VideoId { get; set;}
         public string Text { get; set; }
         public DateTime Created { get; set; }
+        [Description("Podrobnější informace o uživateli, který komentář vytvořil.")]
         public UserDTO User { get; set; }
     }
 
@@ -31,6 +34,7 @@ namespace Backend.Models
 
     public class CommentPostDTO
     {
+        [Description("Id videa, ke kterému komentář patří.")]
         public Guid VideoId { get; set; }
         public string Text { get; set; }
     }

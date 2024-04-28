@@ -1,6 +1,7 @@
 ﻿using Backend.Controllers;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models
@@ -65,9 +66,13 @@ namespace Backend.Models
         string Name,
         DateTime CreatedTimestamp,
         string? Description,
+        [Description("Odkaz na ručně nastavený náhled playlistu.")]
         string? ThumbnailUrl,
+        [Description("Odkaz na náhled prvního videa v playlistu.")]
         string? FirstVideoThumbnailUrl,
+        [Description("Id prvního videa v playlistu.")]
         Guid? FirstVideoId,
+        [Description("Uživatelské informace o vlastníkovi playlistu.")]
         UserDTO Owner,
         TimeSpan TotalDuration,
         int VideoCount);
@@ -77,11 +82,16 @@ namespace Backend.Models
         string Name,
         DateTime CreatedTimestamp,
         string? Description,
+        [Description("Odkaz na ručně nastavený náhled playlistu.")]
         string? ThumbnailUrl,
+        [Description("Kolekce videí v playlistu, seřazené dle uloženého pořadí.")]
         ICollection<VideoDTO>? Videos,
+        [Description("Uživatelské informace o vlastníkovi playlistu.")]
         UserDTO Owner,
         TimeSpan TotalDuration,
+        [Description("Příznak, zdali je playlist veřejný.")]
         bool IsPublic,
+        [Description("Příznak, zdali je playlist pro přihlášeného uživatele pouze ke čtení.")]
         bool IsReadOnly
     );
 
@@ -89,9 +99,12 @@ namespace Backend.Models
     {
         public string Name { get; set; }
         public string? Description { get; set; }
+        [Description("Soubor s ručně nastaveným náhledovým obrázkem.")]
         public IFormFile? Thumbnail { get; set; }
+        [Description("Kolekce ID videí, které do playlistu patří.")]
         public ICollection<Guid>? Videos { get; set; }
         public bool IsPublic { get; set; }
+        [Description("Pokročilé oprávnění u playlistu, obsahuje povolené a zakázané uživatele/skupiny.")]
         public ObjectPermissions? Permissions { get; set; }
     }
 }

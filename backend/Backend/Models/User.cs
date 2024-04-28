@@ -2,6 +2,7 @@
 using System.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace Backend.Models
 {
@@ -54,15 +55,20 @@ namespace Backend.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        [Description("Iniciály uživatele.")]
         public string Initials { get; set; }
+        [Description("Objekt s příznaky u rolí, které uživatel má.")]
         public UserRoles Roles { get; set; }
     }
 
     [Owned]
     public class UserRoles
     {
+        [Description("Role uživatel, má ji každý přihlášený uživatel.")]
         public bool User { get; set; }
+        [Description("Role video editor, která dovoluje uživateli nahrávat videa a vytvářet playlisty.")]
         public bool VideoEditor { get; set; }
+        [Description("Role pro aplikačního administrátora.")]
         public bool Administrator { get; set; }
 
         public IEnumerable<string> GetActiveRoles()

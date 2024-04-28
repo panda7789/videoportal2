@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace Backend.Models
@@ -21,12 +22,14 @@ namespace Backend.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        [Description("Hex barva tagu.")]
         public string Color { get; set; }
     }
 
     public record class PostTagDTO
     {
         public string Name { get; set; }
+        [Description("Hex barva tagu.")]
         public string Color { get; set; }
     }
 }

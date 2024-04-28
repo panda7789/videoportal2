@@ -101,7 +101,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Vrací seznam uživatelů
+        /// Vrací seznam uživatelů (pouze pro uživatele s rolí Admin nebo Editor)
         /// </summary>
         [HttpGet]
         [Roles(new[] { RoleNames.Admin, RoleNames.Editor })]
@@ -156,7 +156,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        ///  Smaže uživatele
+        ///  Smaže uživatele (pouze pro uživatele s rolí Admin)
         /// </summary>
         [HttpDelete("{id}")]
         [Authorize(Roles = RoleNames.Admin)]
@@ -180,7 +180,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Vrací konkrétního uživatele
+        /// Vrací konkrétního uživatele (pouze pro uživatele s rolí Admin)
         /// </summary>
         [HttpGet("{id}")]
         [Authorize(Roles = RoleNames.Admin)]
@@ -196,7 +196,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Vyresetuje heslo
+        /// Zažádá o reset hesla. Na email přijde odkaz s tokenem pro změnu hesla. Lze poslat bez přihlášení.
         /// </summary>
         [AllowAnonymous]
         [HttpPost("reset-password")]
@@ -221,7 +221,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Potvrdí reset hesla dle odkazu v emailu
+        /// Potvrdí reset hesla dle odkazu v emailu. Lze poslat bez přihlášení.
         /// </summary>
         [AllowAnonymous]
         [HttpPost("submit-reset-password")]

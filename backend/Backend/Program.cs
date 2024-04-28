@@ -38,6 +38,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SupportNonNullableReferenceTypes();
     c.SchemaFilter<MarkAsRequiredIfNonNullable>();
     c.OperationFilter<SwaggerOptionalFormDataFilter>();
+    c.SchemaFilter<DescriptionSchemaFilter>();
     c.CustomSchemaIds(i => i.FriendlyId());
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
