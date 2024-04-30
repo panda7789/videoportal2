@@ -8,7 +8,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { playlistParams, videoUrlId } from 'model/Video';
 import { Route } from 'routes/RouteNames';
 import { PlaylistBasicInfoDTO } from 'api/axios-client';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 
 export interface Props {
   playlist: PlaylistBasicInfoDTO;
@@ -55,7 +55,7 @@ export function PlaylistCard({ playlist, fullWidth, smallThumbnail }: Props) {
                 component="img"
                 draggable={false}
                 sx={{ maxHeight: '100%', width: '100%', objectFit: 'cover' }}
-                image={ApiPath(
+                image={FsPath(
                   playlist?.thumbnailUrl ? playlist.thumbnailUrl : playlist.firstVideoThumbnailUrl,
                 )}
                 alt="Náhled playlistu"

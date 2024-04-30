@@ -13,7 +13,7 @@ const root = createRoot(container);
 const queryClient = new QueryClient();
 
 onlineManager.setOnline(true);
-AxiosQuery.setBaseUrl(`${import.meta.env.VITE_API_URL}`);
+AxiosQuery.setBaseUrl(`${import.meta.env.API_URL}`);
 AxiosQuery.setAxiosFactory(() => {
   const instance = axios.create();
   instance.interceptors.request.use(

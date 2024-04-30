@@ -9,24 +9,31 @@ namespace Backend.Utils
         public static string PathBase = Path.Combine(Directory.GetCurrentDirectory(), "storage");
         public static string VideosPath = "videos";
         public static string ThumbnailsPath = "thumbnails";
-        public static string ImagePath = "images";
+        public static string FSUrl = "";
 
-        public enum FileType {
+        public static string FileAttributeUrl(string? attr)
+        {
+            return !string.IsNullOrEmpty(attr) ? FSUrl + "/" + attr : null;
+        }
+        public enum FileType
+        {
             Video,
-            Thumbnail,
-            Image
+            Thumbnail
         }
 
-        public static void Init(string pathBaseFolder = null)
+        public static void Init(string pathBaseFolder = null, string fsUrl = null)
         {
             if (pathBaseFolder != null)
             {
                 PathBase = pathBaseFolder;
             }
+            if (fsUrl != null)
+            {
+                FSUrl = fsUrl;
+            }
             Directory.CreateDirectory(PathBase);
             Directory.CreateDirectory(Path.Combine(PathBase, VideosPath));
             Directory.CreateDirectory(Path.Combine(PathBase, ThumbnailsPath));
-            Directory.CreateDirectory(Path.Combine(PathBase, ImagePath));
         }
 
         public static async Task<string> SaveFileAsync(FileType filetype, string fileName, IFormFile? file, bool chunks=false)
@@ -41,9 +48,6 @@ namespace Backend.Utils
                     break;
                 case FileType.Thumbnail:
                     path = Path.Combine(ThumbnailsPath, fileName);
-                    break;
-                case FileType.Image:
-                    path = Path.Combine(ImagePath, fileName);
                     break;
             }
             using (var stream = new FileStream(Path.Combine(PathBase, path), chunks ? FileMode.Append : FileMode.Create))

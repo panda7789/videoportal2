@@ -25,7 +25,7 @@ import { ExpandedPlaylistInlineList } from 'components/InlineList/PlaylistInline
 import { TailSpin } from 'react-loader-spinner';
 import ChipLine from 'components/Chip/ChipLine';
 import { CommentPostDTO, VideoDTO as Video } from 'api/axios-client';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 import { AxiosQuery } from 'api';
 import {
   useCommentsAllQuery,
@@ -128,7 +128,7 @@ function VideoDetail() {
       <Grid item xs={12}>
         {video?.dataUrl ? (
           <VideoPlayer
-            videoSrc={ApiPath(video.dataUrl)!}
+            videoSrc={FsPath(video.dataUrl)!}
             triggerWatched={userWatchedHandle}
             watchedTimeSec={
               !userVideoStatsQuery?.isRefetchError

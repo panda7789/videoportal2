@@ -21,7 +21,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { ApiException, PlaylistDTO, VideoDTO } from 'api/axios-client';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 import {
   useMyUsergroupsQuery,
   usePlaylistPermissionsQuery,
@@ -233,7 +233,7 @@ export function PlaylistDetail({ newPlaylist }: Props) {
               <FileUploadWithPreview
                 uploadedFile={imageToUpload}
                 setUploadedFile={setImageToUpload}
-                existingImageUrl={ApiPath(
+                existingImageUrl={FsPath(
                   playlist?.thumbnailUrl
                     ? playlist.thumbnailUrl
                     : playlist?.videos?.length

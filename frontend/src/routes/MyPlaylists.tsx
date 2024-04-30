@@ -9,7 +9,7 @@ import { Route } from 'routes/RouteNames';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AxiosQuery } from 'api';
 import { Alert, Grid, Skeleton } from '@mui/material';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 import AspectRatio from 'components/Utils/AspectRatio';
 import { UserContext } from 'routes/Root';
 
@@ -19,7 +19,7 @@ function MyPlaylistsThumbnail(row: PlaylistDTO) {
       <img
         alt="Náhled playlistu"
         style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
-        src={ApiPath(
+        src={FsPath(
           row?.thumbnailUrl
             ? row.thumbnailUrl
             : row?.videos?.length

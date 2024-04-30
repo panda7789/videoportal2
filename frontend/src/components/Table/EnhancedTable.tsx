@@ -17,7 +17,7 @@ import { Box, alpha } from '@mui/system';
 import React, { useEffect } from 'react';
 import { visuallyHidden } from '@mui/utils';
 import AspectRatio from 'components/Utils/AspectRatio';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 
 export interface ToolbarButton {
   label: string;
@@ -374,7 +374,7 @@ export default function EnhancedTable<T extends TableDataBase>({
                               {row[attr.id] && (
                                 <img
                                   style={{ maxHeight: '100%', width: '100%', objectFit: 'contain' }}
-                                  src={ApiPath(String(row[attr.id]))}
+                                  src={FsPath(String(row[attr.id]))}
                                 />
                               )}
                             </AspectRatio>

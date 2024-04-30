@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;                   
-using Microsoft.OpenApi.Models; 
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -123,7 +123,8 @@ dbContextOptions => dbContextOptions
     );
 
 var fsBasePath = builder?.Configuration["FSBasePath"] ?? null;
-SaveFile.Init(fsBasePath);
+var fsUrl = builder?.Configuration["FSUrl"] ?? null;
+SaveFile.Init(fsBasePath, fsUrl);
 var apiPrefix = builder?.Configuration["ApiPrefix"] ?? null;
 
 var app = builder.Build();
@@ -134,7 +135,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<User>>();
     if (context.Database.GetPendingMigrations().Any())
     {
-         context.Database.Migrate();
+        context.Database.Migrate();
     }
     await UsersController.SeedUsers(userManager);
 }

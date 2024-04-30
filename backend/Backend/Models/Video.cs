@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Backend.Utils;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -68,10 +69,10 @@ namespace Backend.Models
         public VideoDTO ToDTO() => new VideoDTO(
                 Id: Id,
                 Name: Name,
-                ImageUrl: ImageUrl,
+                ImageUrl: SaveFile.FileAttributeUrl(ImageUrl),
                 Duration: Duration,
                 Description: Description,
-                DataUrl: DataUrl,
+                DataUrl: SaveFile.FileAttributeUrl(DataUrl),
                 LikeCount: UserVideoStats.Count(x => x.Like),
                 DislikeCount: UserVideoStats.Count(x => x.Dislike),
                 Views: UserVideoStats.Count,

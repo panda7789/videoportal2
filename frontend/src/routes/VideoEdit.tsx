@@ -38,7 +38,7 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { asUploadButton } from '@rpldy/upload-button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { FileUploadWithPreview } from 'components/Utils/FileUploadWithPreview';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 import {
   uploadUrl,
   useMyUsergroupsQuery,
@@ -139,7 +139,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
     if (!timeThumbDialogInput.current?.value) return;
     const sec = Number.parseInt(timeThumbDialogInput.current.value, 10);
     if (video) {
-      generateVideoThumbnailViaUrl(ApiPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
+      generateVideoThumbnailViaUrl(FsPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
         setImageToUpload(getFileFromBase64(thumbnailArray, 'generatedThumbnail.jpeg'));
         setGeneratedSecond(sec);
       });
@@ -166,7 +166,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
   const selectRandomThumbnail = (createNew = false) => {
     if (createNew && !newVideo && video?.dataUrl) {
       const sec = Math.floor(Math.random() * videoDurationSeconds);
-      generateVideoThumbnailViaUrl(ApiPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
+      generateVideoThumbnailViaUrl(FsPath(video.dataUrl)!, sec).then((thumbnailArray: string) => {
         setImageToUpload(getFileFromBase64(thumbnailArray, 'generatedThumbnail.jpeg'));
         setGeneratedSecond(sec);
       });
@@ -568,7 +568,7 @@ function VideoEditInner({ newVideo }: InnerProps) {
           <FileUploadWithPreview
             uploadedFile={imageToUpload}
             setUploadedFile={setImageToUpload}
-            existingImageUrl={ApiPath(video?.imageUrl)}
+            existingImageUrl={FsPath(video?.imageUrl)}
             additionalButtons={thumbnailAdditionalButtons}
           />
           <Grid item xs={12}>

@@ -148,7 +148,7 @@ namespace Backend.Controllers
             if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
-                playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, playlist.Thumbnail);
+                playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, posterName, playlist.Thumbnail);
             }
             var originalPublic = playlist.IsPublic;
             foreach (var video in playlistDB.Videos)
@@ -221,7 +221,7 @@ namespace Backend.Controllers
             if (playlist.Thumbnail != null)
             {
                 var posterName = $"{playlist.Thumbnail.Name}[GUID].{playlist.Thumbnail.FileName.Split(".")[1]}";
-                playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Image, posterName, playlist.Thumbnail);
+                playlistDB.ThumbnailUrl = await SaveFile.SaveFileAsync(SaveFile.FileType.Thumbnail, posterName, playlist.Thumbnail);
             }
 
             _context.Playlists.Add(playlistDB);

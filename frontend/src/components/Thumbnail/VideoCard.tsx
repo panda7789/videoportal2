@@ -15,7 +15,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import theme from 'Theme';
 import ChipLine from 'components/Chip/ChipLine';
-import { ApiPath } from 'components/Utils/APIUtils';
+import { FsPath } from 'components/Utils/APIUtils';
 import { TimeSpanToReadableFormat, TimestampToAgoWords } from 'components/Utils/NumberUtils';
 import { ChannelAvatar } from 'components/Avatar/ChannelAvatar';
 import { Route } from 'routes/RouteNames';
@@ -110,7 +110,7 @@ function VideoCard({
                 <CardMedia
                   component="img"
                   draggable={false}
-                  image={notPermittedVideo ? '/notPermitted.webp' : ApiPath(imageUrl)}
+                  image={notPermittedVideo ? '/notPermitted.webp' : FsPath(imageUrl)}
                   alt={imageUrl}
                   sx={{
                     maxHeight: '100%',

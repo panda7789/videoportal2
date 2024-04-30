@@ -26,8 +26,8 @@ namespace Backend.Models
                 Description: Description,
                 Name: Name,
                 Owner: Owner.ToDTO(),
-                ThumbnailUrl: ThumbnailUrl,
-                FirstVideoThumbnailUrl: Videos?.Any() ?? false ? Videos.First().Video.ImageUrl : null,
+                ThumbnailUrl: SaveFile.FileAttributeUrl(ThumbnailUrl),
+                FirstVideoThumbnailUrl: Videos?.Any() ?? false ? SaveFile.FileAttributeUrl(Videos.First().Video.ImageUrl) : null,
                 FirstVideoId: Videos?.Any() ?? false ? Videos.First().Video.Id : null,
                 VideoCount: Videos?.Count() ?? 0,
                 TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Video.Duration).Sum() : TimeSpan.Zero);
@@ -42,7 +42,7 @@ namespace Backend.Models
                 Description: Description,
                 Name: Name,
                 Owner: Owner.ToDTO(),
-                ThumbnailUrl: ThumbnailUrl,
+                ThumbnailUrl: SaveFile.FileAttributeUrl(ThumbnailUrl),
                 TotalDuration: Videos?.Any() ?? false ? Videos.Select(x => x.Video.Duration).Sum() : TimeSpan.Zero,
                 IsPublic: Public,
                 IsReadOnly: Name == PlaylistsController.WatchLaterPlaylistName
