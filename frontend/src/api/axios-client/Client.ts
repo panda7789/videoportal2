@@ -14,6 +14,7 @@ import { throwException, isAxiosError } from '../axios-client';
 import { getAxios, getBaseUrl } from './helpers';
 
 /**
+ * Vrací komentáře k videu
  * @return Success
  */
 export function commentsAll(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.CommentDTO[]> {
@@ -76,6 +77,7 @@ function processCommentsAll(response: AxiosResponse): Promise<Types.CommentDTO[]
 }
 
 /**
+ * Upraví komentář
  * @param body (optional) 
  * @return Success
  */
@@ -132,6 +134,7 @@ function processCommentsPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Smaže komentář
  * @return Success
  */
 export function commentsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -183,6 +186,7 @@ function processCommentsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vytvoří komentář
  * @param body (optional) 
  * @return Success
  */
@@ -236,120 +240,7 @@ function processCommentsPOST(response: AxiosResponse): Promise<void> {
 }
 
 /**
- * @return Success
- */
-export function myPlaylists(config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO[]> {
-    let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
-      url_ = url_.replace(/[?&]$/, "");
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigMyPlaylists,
-        ...config,
-        method: "GET",
-        url: url_,
-        headers: {
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processMyPlaylists(_response);
-    });
-}
-
-function processMyPlaylists(response: AxiosResponse): Promise<Types.PlaylistDTO[]> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-                result200!.push(Types.PlaylistDTO.fromJS(item));
-        }
-        else {
-            result200 = <any>null;
-        }
-        return Promise.resolve<Types.PlaylistDTO[]>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        throw response.data;
-    }
-    return Promise.resolve<Types.PlaylistDTO[]>(null as any);
-}
-
-/**
- * @return Success
- */
-export function playlistPermissions(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ObjectPermissions> {
-    let url_ = getBaseUrl() + "/api/Playlists/{id}/playlist-permissions";
-    if (id === undefined || id === null)
-      throw new Error("The parameter 'id' must be defined.");
-    url_ = url_.replace("{id}", encodeURIComponent("" + id));
-      url_ = url_.replace(/[?&]$/, "");
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigPlaylistPermissions,
-        ...config,
-        method: "GET",
-        url: url_,
-        headers: {
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processPlaylistPermissions(_response);
-    });
-}
-
-function processPlaylistPermissions(response: AxiosResponse): Promise<Types.ObjectPermissions> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.ObjectPermissions.fromJS(resultData200);
-        return Promise.resolve<Types.ObjectPermissions>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        throw response.data;
-    }
-    return Promise.resolve<Types.ObjectPermissions>(null as any);
-}
-
-/**
+ * Vrací playlisty, které uživatel může vidět.
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -424,10 +315,11 @@ function processPlaylistsAll(response: AxiosResponse): Promise<Types.PlaylistBas
 }
 
 /**
+ * Vytváří nový playlist
  * @param name (optional) 
  * @param description (optional) 
- * @param thumbnail (optional) 
- * @param videos (optional) 
+ * @param thumbnail (optional) Soubor s ručně nastaveným náhledovým obrázkem.
+ * @param videos (optional) Kolekce ID videí, které do playlistu patří.
  * @param isPublic (optional) 
  * @param permissions_UserIds (optional) 
  * @param permissions_GroupIds (optional) 
@@ -498,6 +390,7 @@ function processPlaylistsPOST(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrací playlist
  * @return Success
  */
 export function playlistsGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO> {
@@ -553,10 +446,11 @@ function processPlaylistsGET(response: AxiosResponse): Promise<Types.PlaylistDTO
 }
 
 /**
+ * Upravuje existující playlist
  * @param name (optional) 
  * @param description (optional) 
- * @param thumbnail (optional) 
- * @param videos (optional) 
+ * @param thumbnail (optional) Soubor s ručně nastaveným náhledovým obrázkem.
+ * @param videos (optional) Kolekce ID videí, které do playlistu patří.
  * @param isPublic (optional) 
  * @param permissions_UserIds (optional) 
  * @param permissions_GroupIds (optional) 
@@ -630,6 +524,7 @@ function processPlaylistsPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Maže playlist
  * @return Success
  */
 export function playlistsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -681,6 +576,123 @@ function processPlaylistsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrací seznam pokročilých oprávnění pro playlist
+ * @return Success
+ */
+export function playlistPermissions(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.ObjectPermissions> {
+    let url_ = getBaseUrl() + "/api/Playlists/{id}/playlist-permissions";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPlaylistPermissions,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPlaylistPermissions(_response);
+    });
+}
+
+function processPlaylistPermissions(response: AxiosResponse): Promise<Types.ObjectPermissions> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.ObjectPermissions.fromJS(resultData200);
+        return Promise.resolve<Types.ObjectPermissions>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        throw response.data;
+    }
+    return Promise.resolve<Types.ObjectPermissions>(null as any);
+}
+
+/**
+ * Vrací seznam playlistů, které vlastní přihlášený uživatel.
+ * @return Success
+ */
+export function myPlaylists(config?: AxiosRequestConfig | undefined): Promise<Types.PlaylistDTO[]> {
+    let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigMyPlaylists,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processMyPlaylists(_response);
+    });
+}
+
+function processMyPlaylists(response: AxiosResponse): Promise<Types.PlaylistDTO[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.PlaylistDTO.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.PlaylistDTO[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        throw response.data;
+    }
+    return Promise.resolve<Types.PlaylistDTO[]>(null as any);
+}
+
+/**
+ * Vrací ID playlistu 'Přehrát později' pro přihlášeného uživatele.
  * @return Success
  */
 export function watchLaterId(config?: AxiosRequestConfig | undefined): Promise<string> {
@@ -793,6 +805,7 @@ function processAddRemoveWatchLater(response: AxiosResponse): Promise<boolean> {
 }
 
 /**
+ * Vyhledá videa nejvíce podobné dle parametru q
  * @param q (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -860,6 +873,7 @@ function processSearch(response: AxiosResponse): Promise<Types.WithTotalCountOfV
 }
 
 /**
+ * Vrátí tagy
  * @return Success
  */
 export function tagsAll(config?: AxiosRequestConfig | undefined): Promise<Types.TagDTO[]> {
@@ -919,6 +933,7 @@ function processTagsAll(response: AxiosResponse): Promise<Types.TagDTO[]> {
 }
 
 /**
+ * Vytvoří nový tag
  * @param body (optional) 
  * @return Success
  */
@@ -972,6 +987,7 @@ function processTagsPOST(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrátí tagy a videa která mají daný tag
  * @return Success
  */
 export function tagsWithVideos(config?: AxiosRequestConfig | undefined): Promise<Types.Tag[]> {
@@ -1031,6 +1047,7 @@ function processTagsWithVideos(response: AxiosResponse): Promise<Types.Tag[]> {
 }
 
 /**
+ * Smaže tag
  * @return Success
  */
 export function tagsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -1082,122 +1099,7 @@ function processTagsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
- * @return Success
- */
-export function userGroupsAll(config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO[]> {
-    let url_ = getBaseUrl() + "/api/UserGroups";
-      url_ = url_.replace(/[?&]$/, "");
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigUserGroupsAll,
-        ...config,
-        method: "GET",
-        url: url_,
-        headers: {
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processUserGroupsAll(_response);
-    });
-}
-
-function processUserGroupsAll(response: AxiosResponse): Promise<Types.UserGroupDTO[]> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-                result200!.push(Types.UserGroupDTO.fromJS(item));
-        }
-        else {
-            result200 = <any>null;
-        }
-        return Promise.resolve<Types.UserGroupDTO[]>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        throw response.data;
-    }
-    return Promise.resolve<Types.UserGroupDTO[]>(null as any);
-}
-
-/**
- * @param body (optional) 
- * @return Success
- */
-export function userGroupsPOST(body?: Types.UserGroupPostPutDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserGroup> {
-    let url_ = getBaseUrl() + "/api/UserGroups";
-      url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(body);
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigUserGroupsPOST,
-        ...config,
-        data: content_,
-        method: "POST",
-        url: url_,
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processUserGroupsPOST(_response);
-    });
-}
-
-function processUserGroupsPOST(response: AxiosResponse): Promise<Types.UserGroup> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.UserGroup.fromJS(resultData200);
-        return Promise.resolve<Types.UserGroup>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        throw response.data;
-    }
-    return Promise.resolve<Types.UserGroup>(null as any);
-}
-
-/**
+ * Vrací skupiny aktuálně přihlášeného uživatele, tedy vlastněné. Pro Administrátora jsou vráceny všechny.
  * @return Success
  */
 export function myUsergroups(config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO[]> {
@@ -1257,6 +1159,7 @@ function processMyUsergroups(response: AxiosResponse): Promise<Types.UserGroupDT
 }
 
 /**
+ * Vrací konkrétní skupinu uživatelů
  * @return Success
  */
 export function userGroupsGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserGroupDTO> {
@@ -1312,6 +1215,7 @@ function processUserGroupsGET(response: AxiosResponse): Promise<Types.UserGroupD
 }
 
 /**
+ * Upraví skupinu uživatelů
  * @param body (optional) 
  * @return Success
  */
@@ -1368,6 +1272,7 @@ function processUserGroupsPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Smaže skupinu uživatelů
  * @return Success
  */
 export function userGroupsDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -1419,6 +1324,65 @@ function processUserGroupsDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vytvoří skupinu uživatelů
+ * @param body (optional) 
+ * @return Success
+ */
+export function userGroupsPOST(body?: Types.UserGroupPostPutDTO | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserGroup> {
+    let url_ = getBaseUrl() + "/api/UserGroups";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigUserGroupsPOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processUserGroupsPOST(_response);
+    });
+}
+
+function processUserGroupsPOST(response: AxiosResponse): Promise<Types.UserGroup> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.UserGroup.fromJS(resultData200);
+        return Promise.resolve<Types.UserGroup>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        throw response.data;
+    }
+    return Promise.resolve<Types.UserGroup>(null as any);
+}
+
+/**
+ * Přihlásí uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1477,6 +1441,7 @@ function processLogin(response: AxiosResponse): Promise<string> {
 }
 
 /**
+ * Registruje uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1535,6 +1500,7 @@ function processRegister(response: AxiosResponse): Promise<string> {
 }
 
 /**
+ * Vrátí aktuálně přihlášeného uživatele
  * @return Success
  */
 export function me(config?: AxiosRequestConfig | undefined): Promise<Types.UserDTO> {
@@ -1587,6 +1553,7 @@ function processMe(response: AxiosResponse): Promise<Types.UserDTO> {
 }
 
 /**
+ * Vrací seznam uživatelů (pouze pro uživatele s rolí Admin nebo Editor)
  * @return Success
  */
 export function usersAll(config?: AxiosRequestConfig | undefined): Promise<Types.UserDTO[]> {
@@ -1646,6 +1613,7 @@ function processUsersAll(response: AxiosResponse): Promise<Types.UserDTO[]> {
 }
 
 /**
+ * Aktualizuje uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1702,6 +1670,7 @@ function processUsersPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Smaže uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function usersDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -1753,6 +1722,7 @@ function processUsersDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrací konkrétního uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function usersGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserDTO> {
@@ -1808,7 +1778,8 @@ function processUsersGET(response: AxiosResponse): Promise<Types.UserDTO> {
 }
 
 /**
- * @param body (optional) 
+ * Zažádá o reset hesla. Na email přijde odkaz s tokenem pro změnu hesla. Lze poslat bez přihlášení.
+ * @param body (optional) Email uživatele
  * @return Success
  */
 export function resetPassword(body?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -1861,6 +1832,7 @@ function processResetPassword(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Potvrdí reset hesla dle odkazu v emailu. Lze poslat bez přihlášení.
  * @param body (optional) 
  * @return Success
  */
@@ -1914,6 +1886,7 @@ function processSubmitResetPassword(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrátí statistiky přihlášeného uživatele k videu
  * @return Success
  */
 export function userVideoStatsGET(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.UserVideoStatsDTO> {
@@ -1969,6 +1942,7 @@ function processUserVideoStatsGET(response: AxiosResponse): Promise<Types.UserVi
 }
 
 /**
+ * Aktualizuje statistiky přihlášeného uživatele k videu
  * @param body (optional) 
  * @return Success
  */
@@ -2025,6 +1999,7 @@ function processUserVideoStatsPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrátí počet like a dislike
  * @return Success
  */
 export function stats(videoId: string, config?: AxiosRequestConfig | undefined): Promise<Types.LikeDislikeStats> {
@@ -2080,6 +2055,7 @@ function processStats(response: AxiosResponse): Promise<Types.LikeDislikeStats> 
 }
 
 /**
+ * Uloží kolik sekund přihlášený uživatel zhlédl videa
  * @param body (optional) 
  * @return Success
  */
@@ -2136,6 +2112,7 @@ function processWatched(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Vrací videa na které má uživatel právo
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -2210,6 +2187,7 @@ function processVideosAll(response: AxiosResponse): Promise<Types.VideoDTO[]> {
 }
 
 /**
+ * Vytvoří video a v odpovědi vrátí dataUrl, které se použije pro nahrání videa pomocí POST /api/videos/upload
  * @param fileName (optional) 
  * @param name (optional) 
  * @param description (optional) 
@@ -2302,6 +2280,7 @@ function processVideosPOST(response: AxiosResponse): Promise<Types.PostVideoResp
 }
 
 /**
+ * Vrací konkrétní video. V případě že uživatel nemá na video právo je objekt videa s prázdnými daty.
  * @return Success
  */
 export function videosGET(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO> {
@@ -2357,6 +2336,7 @@ function processVideosGET(response: AxiosResponse): Promise<Types.VideoDTO> {
 }
 
 /**
+ * Aktualizuje existující video
  * @param name (optional) 
  * @param description (optional) 
  * @param image (optional) 
@@ -2440,6 +2420,7 @@ function processVideosPUT(response: AxiosResponse): Promise<void> {
 }
 
 /**
+ * Smaže video
  * @return Success
  */
 export function videosDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
@@ -2491,68 +2472,7 @@ function processVideosDELETE(response: AxiosResponse): Promise<void> {
 }
 
 /**
- * @return Success
- */
-export function videoPlaylists(id: string, config?: AxiosRequestConfig | undefined): Promise<string[]> {
-    let url_ = getBaseUrl() + "/api/Videos/{id}/video-playlists";
-    if (id === undefined || id === null)
-      throw new Error("The parameter 'id' must be defined.");
-    url_ = url_.replace("{id}", encodeURIComponent("" + id));
-      url_ = url_.replace(/[?&]$/, "");
-
-    let options_: AxiosRequestConfig = {
-        ..._requestConfigVideoPlaylists,
-        ...config,
-        method: "GET",
-        url: url_,
-        headers: {
-            "Accept": "text/plain"
-        }
-    };
-
-    return getAxios().request(options_).catch((_error: any) => {
-        if (isAxiosError(_error) && _error.response) {
-            return _error.response;
-        } else {
-            throw _error;
-        }
-    }).then((_response: AxiosResponse) => {
-        return processVideoPlaylists(_response);
-    });
-}
-
-function processVideoPlaylists(response: AxiosResponse): Promise<string[]> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && typeof response.headers === "object") {
-        for (let k in response.headers) {
-            if (response.headers.hasOwnProperty(k)) {
-                _headers[k] = response.headers[k];
-            }
-        }
-    }
-    if (status === 200) {
-        const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-                result200!.push(item);
-        }
-        else {
-            result200 = <any>null;
-        }
-        return Promise.resolve<string[]>(result200);
-
-    } else if (status !== 200 && status !== 204) {
-        const _responseText = response.data;
-        throw response.data;
-    }
-    return Promise.resolve<string[]>(null as any);
-}
-
-/**
+ * Vrací pokročilé nastavení oprávnění k videu
  * @return Success
  */
 export function videoPermissions(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.IncludeExcludeObjectPermissions> {
@@ -2608,6 +2528,7 @@ function processVideoPermissions(response: AxiosResponse): Promise<Types.Include
 }
 
 /**
+ * Vrací videa, která přihlášený uživatel vlastní
  * @return Success
  */
 export function myVideos(config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
@@ -2667,6 +2588,7 @@ function processMyVideos(response: AxiosResponse): Promise<Types.VideoDTO[]> {
 }
 
 /**
+ * Vrací podobná videa k videu
  * @return Success
  */
 export function relatedVideos(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.VideoDTO[]> {
@@ -2729,6 +2651,7 @@ function processRelatedVideos(response: AxiosResponse): Promise<Types.VideoDTO[]
 }
 
 /**
+ * Slouží k nahrání souboru videa. Nejprve je potřeba nahrát informace k videu pomocí POST /api/videos. Data url z POST metody je nutné poslat v hlavičce x-guid.
  * @param file (optional) 
  * @return Success
  */
@@ -2825,28 +2748,6 @@ export function patchCommentsPOSTRequestConfig(patch: (value: Partial<AxiosReque
   _requestConfigCommentsPOST = patch(_requestConfigCommentsPOST ?? {});
 }
 
-let _requestConfigMyPlaylists: Partial<AxiosRequestConfig> | undefined;
-export function getMyPlaylistsRequestConfig() {
-  return _requestConfigMyPlaylists;
-}
-export function setMyPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigMyPlaylists = value;
-}
-export function patchMyPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigMyPlaylists = patch(_requestConfigMyPlaylists ?? {});
-}
-
-let _requestConfigPlaylistPermissions: Partial<AxiosRequestConfig> | undefined;
-export function getPlaylistPermissionsRequestConfig() {
-  return _requestConfigPlaylistPermissions;
-}
-export function setPlaylistPermissionsRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigPlaylistPermissions = value;
-}
-export function patchPlaylistPermissionsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigPlaylistPermissions = patch(_requestConfigPlaylistPermissions ?? {});
-}
-
 let _requestConfigPlaylistsAll: Partial<AxiosRequestConfig> | undefined;
 export function getPlaylistsAllRequestConfig() {
   return _requestConfigPlaylistsAll;
@@ -2900,6 +2801,28 @@ export function setPlaylistsDELETERequestConfig(value: Partial<AxiosRequestConfi
 }
 export function patchPlaylistsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigPlaylistsDELETE = patch(_requestConfigPlaylistsDELETE ?? {});
+}
+
+let _requestConfigPlaylistPermissions: Partial<AxiosRequestConfig> | undefined;
+export function getPlaylistPermissionsRequestConfig() {
+  return _requestConfigPlaylistPermissions;
+}
+export function setPlaylistPermissionsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistPermissions = value;
+}
+export function patchPlaylistPermissionsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPlaylistPermissions = patch(_requestConfigPlaylistPermissions ?? {});
+}
+
+let _requestConfigMyPlaylists: Partial<AxiosRequestConfig> | undefined;
+export function getMyPlaylistsRequestConfig() {
+  return _requestConfigMyPlaylists;
+}
+export function setMyPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigMyPlaylists = value;
+}
+export function patchMyPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigMyPlaylists = patch(_requestConfigMyPlaylists ?? {});
 }
 
 let _requestConfigWatchLaterId: Partial<AxiosRequestConfig> | undefined;
@@ -2979,28 +2902,6 @@ export function patchTagsDELETERequestConfig(patch: (value: Partial<AxiosRequest
   _requestConfigTagsDELETE = patch(_requestConfigTagsDELETE ?? {});
 }
 
-let _requestConfigUserGroupsAll: Partial<AxiosRequestConfig> | undefined;
-export function getUserGroupsAllRequestConfig() {
-  return _requestConfigUserGroupsAll;
-}
-export function setUserGroupsAllRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigUserGroupsAll = value;
-}
-export function patchUserGroupsAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigUserGroupsAll = patch(_requestConfigUserGroupsAll ?? {});
-}
-
-let _requestConfigUserGroupsPOST: Partial<AxiosRequestConfig> | undefined;
-export function getUserGroupsPOSTRequestConfig() {
-  return _requestConfigUserGroupsPOST;
-}
-export function setUserGroupsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigUserGroupsPOST = value;
-}
-export function patchUserGroupsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigUserGroupsPOST = patch(_requestConfigUserGroupsPOST ?? {});
-}
-
 let _requestConfigMyUsergroups: Partial<AxiosRequestConfig> | undefined;
 export function getMyUsergroupsRequestConfig() {
   return _requestConfigMyUsergroups;
@@ -3043,6 +2944,17 @@ export function setUserGroupsDELETERequestConfig(value: Partial<AxiosRequestConf
 }
 export function patchUserGroupsDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigUserGroupsDELETE = patch(_requestConfigUserGroupsDELETE ?? {});
+}
+
+let _requestConfigUserGroupsPOST: Partial<AxiosRequestConfig> | undefined;
+export function getUserGroupsPOSTRequestConfig() {
+  return _requestConfigUserGroupsPOST;
+}
+export function setUserGroupsPOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPOST = value;
+}
+export function patchUserGroupsPOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigUserGroupsPOST = patch(_requestConfigUserGroupsPOST ?? {});
 }
 
 let _requestConfigLogin: Partial<AxiosRequestConfig> | undefined;
@@ -3241,17 +3153,6 @@ export function setVideosDELETERequestConfig(value: Partial<AxiosRequestConfig>)
 }
 export function patchVideosDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigVideosDELETE = patch(_requestConfigVideosDELETE ?? {});
-}
-
-let _requestConfigVideoPlaylists: Partial<AxiosRequestConfig> | undefined;
-export function getVideoPlaylistsRequestConfig() {
-  return _requestConfigVideoPlaylists;
-}
-export function setVideoPlaylistsRequestConfig(value: Partial<AxiosRequestConfig>) {
-  _requestConfigVideoPlaylists = value;
-}
-export function patchVideoPlaylistsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
-  _requestConfigVideoPlaylists = patch(_requestConfigVideoPlaylists ?? {});
 }
 
 let _requestConfigVideoPermissions: Partial<AxiosRequestConfig> | undefined;

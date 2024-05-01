@@ -146,6 +146,9 @@ importers:
       eslint-plugin-unused-imports:
         specifier: ^2.0.0
         version: 2.0.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.50.0)
+      nswag-portable:
+        specifier: 13.20.0-v.17
+        version: 13.20.0-v.17
       react-query-swagger:
         specifier: ^15.9.5
         version: 15.9.5(@tanstack/react-query-persist-client@4.35.7)(@tanstack/react-query@4.35.7)(react-query@3.39.3)(react@18.2.0)(typescript@4.9.5)
@@ -3336,6 +3339,11 @@ packages:
 
   /nswag-portable@13.20.0-v.13:
     resolution: {integrity: sha512-vyzQPt9w0lLYyKZvHoxYU4Z5UhfONGsze6ykaUYn7k68Ga6kMIObYVAYdyBoJAoZVzdV19mQF6FzriJJ9tFXPQ==}
+    hasBin: true
+    dev: true
+
+  /nswag-portable@13.20.0-v.17:
+    resolution: {integrity: sha512-rK1WrAGA62fEVLiyMFMI6U3oanbqIWrsvFCLS0faKrbKuPewF1FF6qZW/6eoakYoZOsNtU/U+SSG+/ktye5SWw==}
     hasBin: true
     dev: true
 

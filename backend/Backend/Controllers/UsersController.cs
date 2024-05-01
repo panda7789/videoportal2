@@ -198,6 +198,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Zažádá o reset hesla. Na email přijde odkaz s tokenem pro změnu hesla. Lze poslat bez přihlášení.
         /// </summary>
+        /// <param name="email">Email uživatele</param>
         [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<ActionResult> ResetPassword([FromBody] string email)

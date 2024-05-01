@@ -20,10 +20,13 @@ export * as Query from './axios-client/Query';
 //-----Types.File-----
 export class CommentDTO implements ICommentDTO {
     id!: string;
+    /** Id uživatele, který komentář vytvořil. */
     userId!: string;
+    /** Id videa, ke kterému komentář patří. */
     videoId!: string;
     text!: string;
     created!: Date;
+    /** Podrobnější informace o uživateli, který komentář vytvořil. */
     user!: UserDTO;
 
     constructor(data?: ICommentDTO) {
@@ -70,14 +73,18 @@ export class CommentDTO implements ICommentDTO {
 
 export interface ICommentDTO {
     id: string;
+    /** Id uživatele, který komentář vytvořil. */
     userId: string;
+    /** Id videa, ke kterému komentář patří. */
     videoId: string;
     text: string;
     created: Date;
+    /** Podrobnější informace o uživateli, který komentář vytvořil. */
     user: UserDTO;
 }
 
 export class CommentPostDTO implements ICommentPostDTO {
+    /** Id videa, ke kterému komentář patří. */
     videoId!: string;
     text!: string;
 
@@ -113,6 +120,7 @@ export class CommentPostDTO implements ICommentPostDTO {
 }
 
 export interface ICommentPostDTO {
+    /** Id videa, ke kterému komentář patří. */
     videoId: string;
     text: string;
 }
@@ -154,7 +162,9 @@ export interface ICommentPutDTO {
 }
 
 export class IncludeExcludeObjectPermissions implements IIncludeExcludeObjectPermissions {
+    /** Kolekce uživatelů a skupin, které mají na objekt právo. */
     includedPermissions?: ObjectPermissions | undefined;
+    /** Kolekce uživatelů a skupin, které nemají na objekt právo. */
     excludedPermissions?: ObjectPermissions | undefined;
 
     constructor(data?: IIncludeExcludeObjectPermissions) {
@@ -189,7 +199,9 @@ export class IncludeExcludeObjectPermissions implements IIncludeExcludeObjectPer
 }
 
 export interface IIncludeExcludeObjectPermissions {
+    /** Kolekce uživatelů a skupin, které mají na objekt právo. */
     includedPermissions?: ObjectPermissions | undefined;
+    /** Kolekce uživatelů a skupin, které nemají na objekt právo. */
     excludedPermissions?: ObjectPermissions | undefined;
 }
 
@@ -332,6 +344,7 @@ export interface IObjectPermissions {
 export class PasswordResetDTO implements IPasswordResetDTO {
     email!: string;
     password!: string;
+    /** Token z odkazu v přijatém emailovém potvrzení. */
     token!: string;
 
     constructor(data?: IPasswordResetDTO) {
@@ -370,6 +383,7 @@ export class PasswordResetDTO implements IPasswordResetDTO {
 export interface IPasswordResetDTO {
     email: string;
     password: string;
+    /** Token z odkazu v přijatém emailovém potvrzení. */
     token: string;
 }
 
@@ -383,6 +397,7 @@ export class Permission implements IPermission {
     playlist?: Playlist | undefined;
     videoId?: string | undefined;
     video?: Video | undefined;
+    /** Příznak který je možné nastavit pouze v případě že se jedná o právo na video, a určuje, zdali má uživatel právo na video případně nemá. */
     overridedEnableWatch?: boolean | undefined;
 
     constructor(data?: IPermission) {
@@ -442,6 +457,7 @@ export interface IPermission {
     playlist?: Playlist | undefined;
     videoId?: string | undefined;
     video?: Video | undefined;
+    /** Příznak který je možné nastavit pouze v případě že se jedná o právo na video, a určuje, zdali má uživatel právo na video případně nemá. */
     overridedEnableWatch?: boolean | undefined;
 }
 
@@ -538,9 +554,13 @@ export class PlaylistBasicInfoDTO implements IPlaylistBasicInfoDTO {
     name!: string;
     createdTimestamp!: Date;
     description?: string | undefined;
+    /** Odkaz na ručně nastavený náhled playlistu. */
     thumbnailUrl?: string | undefined;
+    /** Odkaz na náhled prvního videa v playlistu. */
     firstVideoThumbnailUrl?: string | undefined;
+    /** Id prvního videa v playlistu. */
     firstVideoId?: string | undefined;
+    /** Uživatelské informace o vlastníkovi playlistu. */
     owner!: UserDTO;
     totalDuration!: string;
     videoCount!: number;
@@ -600,9 +620,13 @@ export interface IPlaylistBasicInfoDTO {
     name: string;
     createdTimestamp: Date;
     description?: string | undefined;
+    /** Odkaz na ručně nastavený náhled playlistu. */
     thumbnailUrl?: string | undefined;
+    /** Odkaz na náhled prvního videa v playlistu. */
     firstVideoThumbnailUrl?: string | undefined;
+    /** Id prvního videa v playlistu. */
     firstVideoId?: string | undefined;
+    /** Uživatelské informace o vlastníkovi playlistu. */
     owner: UserDTO;
     totalDuration: string;
     videoCount: number;
@@ -613,11 +637,16 @@ export class PlaylistDTO implements IPlaylistDTO {
     name!: string;
     createdTimestamp!: Date;
     description?: string | undefined;
+    /** Odkaz na ručně nastavený náhled playlistu. */
     thumbnailUrl?: string | undefined;
+    /** Kolekce videí v playlistu, seřazené dle uloženého pořadí. */
     videos?: VideoDTO[] | undefined;
+    /** Uživatelské informace o vlastníkovi playlistu. */
     owner!: UserDTO;
     totalDuration!: string;
+    /** Příznak, zdali je playlist veřejný. */
     isPublic!: boolean;
+    /** Příznak, zdali je playlist pro přihlášeného uživatele pouze ke čtení. */
     isReadOnly!: boolean;
 
     constructor(data?: IPlaylistDTO) {
@@ -683,11 +712,16 @@ export interface IPlaylistDTO {
     name: string;
     createdTimestamp: Date;
     description?: string | undefined;
+    /** Odkaz na ručně nastavený náhled playlistu. */
     thumbnailUrl?: string | undefined;
+    /** Kolekce videí v playlistu, seřazené dle uloženého pořadí. */
     videos?: VideoDTO[] | undefined;
+    /** Uživatelské informace o vlastníkovi playlistu. */
     owner: UserDTO;
     totalDuration: string;
+    /** Příznak, zdali je playlist veřejný. */
     isPublic: boolean;
+    /** Příznak, zdali je playlist pro přihlášeného uživatele pouze ke čtení. */
     isReadOnly: boolean;
 }
 
@@ -749,6 +783,7 @@ export interface IPlaylistVideo {
 
 export class PostTagDTO implements IPostTagDTO {
     name!: string;
+    /** Hex barva tagu. */
     color!: string;
 
     constructor(data?: IPostTagDTO) {
@@ -784,6 +819,7 @@ export class PostTagDTO implements IPostTagDTO {
 
 export interface IPostTagDTO {
     name: string;
+    /** Hex barva tagu. */
     color: string;
 }
 
@@ -871,7 +907,7 @@ export class Tag implements ITag {
     id!: string;
     name!: string;
     videos!: Video[];
-    color?: string | undefined;
+    color!: string;
 
     constructor(data?: ITag) {
         if (data) {
@@ -923,13 +959,14 @@ export interface ITag {
     id: string;
     name: string;
     videos: Video[];
-    color?: string | undefined;
+    color: string;
 }
 
 export class TagDTO implements ITagDTO {
     id!: string;
     name!: string;
-    color?: string | undefined;
+    /** Hex barva tagu. */
+    color!: string;
 
     constructor(data?: ITagDTO) {
         if (data) {
@@ -967,7 +1004,8 @@ export class TagDTO implements ITagDTO {
 export interface ITagDTO {
     id: string;
     name: string;
-    color?: string | undefined;
+    /** Hex barva tagu. */
+    color: string;
 }
 
 export class User implements IUser {
@@ -1102,7 +1140,9 @@ export class UserDTO implements IUserDTO {
     id!: string;
     name!: string;
     email!: string;
+    /** Iniciály uživatele. */
     initials!: string;
+    /** Objekt s příznaky u rolí, které uživatel má. */
     roles!: UserRoles;
 
     constructor(data?: IUserDTO) {
@@ -1149,7 +1189,9 @@ export interface IUserDTO {
     id: string;
     name: string;
     email: string;
+    /** Iniciály uživatele. */
     initials: string;
+    /** Objekt s příznaky u rolí, které uživatel má. */
     roles: UserRoles;
 }
 
@@ -1215,7 +1257,9 @@ export interface IUserGroup {
 export class UserGroupDTO implements IUserGroupDTO {
     id!: string;
     name!: string;
+    /** Kolekce informací o uživatelích patřící do skupiny. */
     users!: UserDTO[];
+    /** Id vlastnické skupiny, tedy skupiny, která skupinu vytvořila a může ji také upravovat. */
     ownerGroupId?: string | undefined;
 
     constructor(data?: IUserGroupDTO) {
@@ -1267,13 +1311,17 @@ export class UserGroupDTO implements IUserGroupDTO {
 export interface IUserGroupDTO {
     id: string;
     name: string;
+    /** Kolekce informací o uživatelích patřící do skupiny. */
     users: UserDTO[];
+    /** Id vlastnické skupiny, tedy skupiny, která skupinu vytvořila a může ji také upravovat. */
     ownerGroupId?: string | undefined;
 }
 
 export class UserGroupPostPutDTO implements IUserGroupPostPutDTO {
     name!: string;
+    /** Kolekce ID uživatelů patřících do skupiny. */
     userIds!: string[];
+    /** Id vlastnické skupiny, tedy skupiny, která skupinu vytvořila a může ji také upravovat. */
     ownerGroupId?: string | undefined;
 
     constructor(data?: IUserGroupPostPutDTO) {
@@ -1322,13 +1370,18 @@ export class UserGroupPostPutDTO implements IUserGroupPostPutDTO {
 
 export interface IUserGroupPostPutDTO {
     name: string;
+    /** Kolekce ID uživatelů patřících do skupiny. */
     userIds: string[];
+    /** Id vlastnické skupiny, tedy skupiny, která skupinu vytvořila a může ji také upravovat. */
     ownerGroupId?: string | undefined;
 }
 
 export class UserRoles implements IUserRoles {
+    /** Role uživatel, má ji každý přihlášený uživatel. */
     user!: boolean;
+    /** Role video editor, která dovoluje uživateli nahrávat videa a vytvářet playlisty. */
     videoEditor!: boolean;
+    /** Role pro aplikačního administrátora. */
     administrator!: boolean;
 
     constructor(data?: IUserRoles) {
@@ -1365,8 +1418,11 @@ export class UserRoles implements IUserRoles {
 }
 
 export interface IUserRoles {
+    /** Role uživatel, má ji každý přihlášený uživatel. */
     user: boolean;
+    /** Role video editor, která dovoluje uživateli nahrávat videa a vytvářet playlisty. */
     videoEditor: boolean;
+    /** Role pro aplikačního administrátora. */
     administrator: boolean;
 }
 
@@ -1434,9 +1490,13 @@ export interface IUserVideoStats {
 }
 
 export class UserVideoStatsDTO implements IUserVideoStatsDTO {
+    /** Příznak, zda přihlášený uživatel má u videa like. */
     like!: boolean;
+    /** Příznak, zda přihlášený uživatel má u videa dislike. */
     dislike!: boolean;
+    /** Příznak, zda si přihlášený uživatel video přidal do playlistu přehrát později. */
     addedToPlaylist!: boolean;
+    /** Celkový čas, který uživatel z videa již viděl. Slouží pro pokračování přehrávání tam, kde uživatel skončil. */
     timeWatchedSec!: number;
     userId!: string;
     videoId!: string;
@@ -1481,9 +1541,13 @@ export class UserVideoStatsDTO implements IUserVideoStatsDTO {
 }
 
 export interface IUserVideoStatsDTO {
+    /** Příznak, zda přihlášený uživatel má u videa like. */
     like: boolean;
+    /** Příznak, zda přihlášený uživatel má u videa dislike. */
     dislike: boolean;
+    /** Příznak, zda si přihlášený uživatel video přidal do playlistu přehrát později. */
     addedToPlaylist: boolean;
+    /** Celkový čas, který uživatel z videa již viděl. Slouží pro pokračování přehrávání tam, kde uživatel skončil. */
     timeWatchedSec: number;
     userId: string;
     videoId: string;
@@ -1501,7 +1565,6 @@ export class Video implements IVideo {
     views!: number;
     uploadTimestamp!: Date;
     tags?: Tag[] | undefined;
-    playlists?: Playlist[] | undefined;
     mainPlaylist!: Playlist;
     owner!: User;
     permissions!: Permission[];
@@ -1538,11 +1601,6 @@ export class Video implements IVideo {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
                     this.tags!.push(Tag.fromJS(item));
-            }
-            if (Array.isArray(_data["playlists"])) {
-                this.playlists = [] as any;
-                for (let item of _data["playlists"])
-                    this.playlists!.push(Playlist.fromJS(item));
             }
             this.mainPlaylist = _data["mainPlaylist"] ? Playlist.fromJS(_data["mainPlaylist"]) : new Playlist();
             this.owner = _data["owner"] ? User.fromJS(_data["owner"]) : new User();
@@ -1583,11 +1641,6 @@ export class Video implements IVideo {
             for (let item of this.tags)
                 data["tags"].push(item.toJSON());
         }
-        if (Array.isArray(this.playlists)) {
-            data["playlists"] = [];
-            for (let item of this.playlists)
-                data["playlists"].push(item.toJSON());
-        }
         data["mainPlaylist"] = this.mainPlaylist ? this.mainPlaylist.toJSON() : <any>undefined;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         if (Array.isArray(this.permissions)) {
@@ -1616,7 +1669,6 @@ export interface IVideo {
     views: number;
     uploadTimestamp: Date;
     tags?: Tag[] | undefined;
-    playlists?: Playlist[] | undefined;
     mainPlaylist: Playlist;
     owner: User;
     permissions: Permission[];
@@ -1626,19 +1678,25 @@ export interface IVideo {
 export class VideoDTO implements IVideoDTO {
     id!: string;
     name!: string;
+    /** Odkaz na náhledový obrázek videa. */
     imageUrl!: string;
     duration!: string;
     description?: string | undefined;
+    /** Odkaz na surová data videa. */
     dataUrl!: string;
     likeCount!: number;
     dislikeCount!: number;
     views!: number;
     uploadTimestamp!: Date;
+    /** Kolekce tagů, které video má. */
     tags?: TagDTO[] | undefined;
-    playlists?: PlaylistDTO[] | undefined;
+    /** Id playlistu, do kterého video patří. */
     mainPlaylistId!: string;
+    /** Název playlistu, do kterého video patří. */
     mainPlaylistName!: string;
+    /** Uživatelská data o vlastníkovi videa. */
     owner!: UserDTO;
+    /** Příznak, zdali se jedná o video na které nemá uživatel právo. */
     isEmpty?: boolean | undefined;
 
     constructor(data?: IVideoDTO) {
@@ -1669,11 +1727,6 @@ export class VideoDTO implements IVideoDTO {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
                     this.tags!.push(TagDTO.fromJS(item));
-            }
-            if (Array.isArray(_data["playlists"])) {
-                this.playlists = [] as any;
-                for (let item of _data["playlists"])
-                    this.playlists!.push(PlaylistDTO.fromJS(item));
             }
             this.mainPlaylistId = _data["mainPlaylistId"];
             this.mainPlaylistName = _data["mainPlaylistName"];
@@ -1706,11 +1759,6 @@ export class VideoDTO implements IVideoDTO {
             for (let item of this.tags)
                 data["tags"].push(item.toJSON());
         }
-        if (Array.isArray(this.playlists)) {
-            data["playlists"] = [];
-            for (let item of this.playlists)
-                data["playlists"].push(item.toJSON());
-        }
         data["mainPlaylistId"] = this.mainPlaylistId;
         data["mainPlaylistName"] = this.mainPlaylistName;
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
@@ -1722,22 +1770,29 @@ export class VideoDTO implements IVideoDTO {
 export interface IVideoDTO {
     id: string;
     name: string;
+    /** Odkaz na náhledový obrázek videa. */
     imageUrl: string;
     duration: string;
     description?: string | undefined;
+    /** Odkaz na surová data videa. */
     dataUrl: string;
     likeCount: number;
     dislikeCount: number;
     views: number;
     uploadTimestamp: Date;
+    /** Kolekce tagů, které video má. */
     tags?: TagDTO[] | undefined;
-    playlists?: PlaylistDTO[] | undefined;
+    /** Id playlistu, do kterého video patří. */
     mainPlaylistId: string;
+    /** Název playlistu, do kterého video patří. */
     mainPlaylistName: string;
+    /** Uživatelská data o vlastníkovi videa. */
     owner: UserDTO;
+    /** Příznak, zdali se jedná o video na které nemá uživatel právo. */
     isEmpty?: boolean | undefined;
 }
 
+/** Struktura obalující seznam položek a jejich celkový počet. Používá se pro stránkování. */
 export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {
     items!: VideoDTO[];
     totalCount!: number;
@@ -1784,6 +1839,7 @@ export class WithTotalCountOfVideoDTO implements IWithTotalCountOfVideoDTO {
     }
 }
 
+/** Struktura obalující seznam položek a jejich celkový počet. Používá se pro stránkování. */
 export interface IWithTotalCountOfVideoDTO {
     items: VideoDTO[];
     totalCount: number;
@@ -1922,13 +1978,12 @@ export function getResultTypeClassKey(queryKey: QueryKey): string {
 export function initPersister() {
   
   addResultTypeFactory('Client___commentsAll', (data: any) => { const result = new CommentDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___myPlaylists', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
-  addResultTypeFactory('Client___playlistPermissions', (data: any) => { const result = new ObjectPermissions(); result.init(data); return result; });
   addResultTypeFactory('Client___playlistsAll', (data: any) => { const result = new PlaylistBasicInfoDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___playlistsGET', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
+  addResultTypeFactory('Client___playlistPermissions', (data: any) => { const result = new ObjectPermissions(); result.init(data); return result; });
+  addResultTypeFactory('Client___myPlaylists', (data: any) => { const result = new PlaylistDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsAll', (data: any) => { const result = new TagDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___tagsWithVideos', (data: any) => { const result = new Tag(); result.init(data); return result; });
-  addResultTypeFactory('Client___userGroupsAll', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___myUsergroups', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___userGroupsGET', (data: any) => { const result = new UserGroupDTO(); result.init(data); return result; });
   addResultTypeFactory('Client___me', (data: any) => { const result = new UserDTO(); result.init(data); return result; });

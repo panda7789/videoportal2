@@ -60,7 +60,6 @@ namespace Backend.Models
         public int Views { get; set; }
         public DateTime UploadTimestamp { get; set; }
         public ICollection<Tag>? Tags { get; set; }
-        public ICollection<Playlist>? Playlists { get; set; }
         public Playlist MainPlaylist { get; set; }
         public User Owner { get; set; }
         public ICollection<Permission> Permissions { get; set; }
@@ -78,7 +77,6 @@ namespace Backend.Models
                 Views: UserVideoStats.Count,
                 UploadTimestamp: UploadTimestamp,
                 Tags: Tags?.Select(x => x.ToDTO()).ToList(),
-                Playlists: null,
                 MainPlaylistId: MainPlaylist.Id,
                 MainPlaylistName: MainPlaylist.Name,
                 Owner: Owner.ToDTO(),
@@ -130,8 +128,6 @@ namespace Backend.Models
         DateTime UploadTimestamp,
         [property : Description("Kolekce tagů, které video má.")]
         ICollection<TagDTO>? Tags,
-        [property: Description("Původní atribut pro seznam playlistů obsahující tohle video, avšak nyní je nahrazeno atributem MainPlaylistId")]
-        ICollection<PlaylistDTO>? Playlists,
         [property : Description("Id playlistu, do kterého video patří.")]
         Guid MainPlaylistId,
         [property : Description("Název playlistu, do kterého video patří.")]

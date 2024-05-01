@@ -5,7 +5,7 @@ import EnhancedTable, { Attribute, ToolbarButton } from 'components/Table/Enhanc
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { UserGroupDTO } from 'api/axios-client';
-import { useMyUsergroupsQuery, useUserGroupsAllQuery } from 'api/axios-client/Query';
+import { useMyUsergroupsQuery } from 'api/axios-client/Query';
 import { AxiosQuery } from 'api';
 import { Route } from 'routes/RouteNames';
 import { Alert } from '@mui/material';

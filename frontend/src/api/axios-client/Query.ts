@@ -30,10 +30,6 @@ export type CommentsDELETEQueryParameters = {
   id: string ;
 }
 
-export type PlaylistPermissionsQueryParameters = {
-  id: string ;
-}
-
 export type PlaylistsAllQueryParameters = {
   orderBy?: string | undefined ;
   limit?: number | undefined ;
@@ -79,6 +75,10 @@ export type PlaylistsDELETEQueryParameters = {
   id: string ;
 }
 
+export type PlaylistPermissionsQueryParameters = {
+  id: string ;
+}
+
 export type AddRemoveWatchLaterQueryParameters = {
   id?: string | undefined ;
 }
@@ -94,7 +94,6 @@ export type TagsDELETEQueryParameters = {
   id: string ;
 }
 
-
 export type UserGroupsGETQueryParameters = {
   id: string ;
 }
@@ -106,7 +105,6 @@ export type UserGroupsPUTQueryParameters = {
 export type UserGroupsDELETEQueryParameters = {
   id: string ;
 }
-
 
 
 export type UsersPUTQueryParameters = {
@@ -190,10 +188,6 @@ export type VideosDELETEQueryParameters = {
   id: string ;
 }
 
-export type VideoPlaylistsQueryParameters = {
-  id: string ;
-}
-
 export type VideoPermissionsQueryParameters = {
   id: string ;
 }
@@ -250,6 +244,7 @@ function __commentsAll(context: QueryFunctionContext) {
 
 export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(dto: CommentsAllQueryParameters, options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací komentáře k videu
  * @return Success
  */
 export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = unknown>(videoId: string, options?: UseQueryOptions<Types.CommentDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -283,6 +278,7 @@ export function useCommentsAllQuery<TSelectData = Types.CommentDTO[], TError = u
   });
 }
 /**
+ * Vrací komentáře k videu
  * @return Success
  */
 export function setCommentsAllData(queryClient: QueryClient, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[], videoId: string) {
@@ -292,6 +288,7 @@ export function setCommentsAllData(queryClient: QueryClient, updater: (data: Typ
 }
 
 /**
+ * Vrací komentáře k videu
  * @return Success
  */
 export function setCommentsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.CommentDTO[] | undefined) => Types.CommentDTO[]) {
@@ -316,6 +313,7 @@ export function commentsPUTMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Upraví komentář
  * @param body (optional) 
  * @return Success
  */
@@ -333,6 +331,7 @@ type CommentsPUT__MutationParameters = CommentsPUTQueryParameters & {
 }
 
 /**
+ * Upraví komentář
  * @param body (optional) 
  * @return Success
  */
@@ -363,6 +362,7 @@ export function commentsDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Smaže komentář
  * @return Success
  */
 export function useCommentsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -377,6 +377,7 @@ export function useCommentsDELETEMutation<TContext>(id: string, options?: Omit<U
 type CommentsDELETE__MutationParameters = CommentsDELETEQueryParameters
 
 /**
+ * Smaže komentář
  * @return Success
  */
 export function useCommentsDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, CommentsDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: CommentsDELETEQueryParameters}): UseMutationResult<void, unknown, CommentsDELETE__MutationParameters, TContext> {
@@ -402,6 +403,7 @@ export function commentsPOSTMutationKey(): MutationKey {
 }
 
 /**
+ * Vytvoří komentář
  * @param body (optional) 
  * @return Success
  */
@@ -414,168 +416,6 @@ export function useCommentsPOSTMutation<TContext>(options?: Omit<UseMutationOpti
   return useMutation((body: Types.CommentPostDTO) => Client.commentsPOST(body), {...options, mutationKey: key});
 }
   
-export function myPlaylistsUrl(): string {
-  let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-let myPlaylistsDefaultOptions: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> = {
-  queryFn: __myPlaylists,
-};
-export function getMyPlaylistsDefaultOptions(): UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> {
-  return myPlaylistsDefaultOptions;
-};
-export function setMyPlaylistsDefaultOptions(options: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]>) {
-  myPlaylistsDefaultOptions = options;
-}
-
-export function myPlaylistsQueryKey(): QueryKey;
-export function myPlaylistsQueryKey(...params: any[]): QueryKey {
-  return trimArrayEnd([
-      'Client',
-      'myPlaylists',
-    ]);
-}
-function __myPlaylists() {
-  return Client.myPlaylists(
-    );
-}
-
-/**
- * @return Success
- */
-export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(options?: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData> | undefined = undefined;
-  let axiosConfig: AxiosRequestConfig |undefined;
-  
-
-  options = params[0] as any;
-  axiosConfig = params[1] as any;
-
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  if (axiosConfig) {
-    options = options ?? { } as any;
-    options!.meta = { ...options!.meta, axiosConfig };
-  }
-
-  return useQuery<Types.PlaylistDTO[], TError, TSelectData>({
-    queryFn: __myPlaylists,
-    queryKey: myPlaylistsQueryKey(),
-    ...myPlaylistsDefaultOptions as unknown as UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>,
-    ...options,
-  });
-}
-/**
- * @return Success
- */
-export function setMyPlaylistsData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[], ) {
-  queryClient.setQueryData(myPlaylistsQueryKey(),
-    updater
-  );
-}
-
-/**
- * @return Success
- */
-export function setMyPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[]) {
-  queryClient.setQueryData(queryKey, updater);
-}
-    
-export function playlistPermissionsUrl(id: string): string {
-  let url_ = getBaseUrl() + "/api/Playlists/{id}/playlist-permissions";
-if (id === undefined || id === null)
-  throw new Error("The parameter 'id' must be defined.");
-url_ = url_.replace("{id}", encodeURIComponent("" + id));
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-let playlistPermissionsDefaultOptions: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> = {
-  queryFn: __playlistPermissions,
-};
-export function getPlaylistPermissionsDefaultOptions(): UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> {
-  return playlistPermissionsDefaultOptions;
-};
-export function setPlaylistPermissionsDefaultOptions(options: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions>) {
-  playlistPermissionsDefaultOptions = options;
-}
-
-export function playlistPermissionsQueryKey(id: string): QueryKey;
-export function playlistPermissionsQueryKey(...params: any[]): QueryKey {
-  if (params.length === 1 && isParameterObject(params[0])) {
-    const { id,  } = params[0] as PlaylistPermissionsQueryParameters;
-
-    return trimArrayEnd([
-        'Client',
-        'playlistPermissions',
-        id as any,
-      ]);
-  } else {
-    return trimArrayEnd([
-        'Client',
-        'playlistPermissions',
-        ...params
-      ]);
-  }
-}
-function __playlistPermissions(context: QueryFunctionContext) {
-  return Client.playlistPermissions(
-      context.queryKey[2] as string    );
-}
-
-export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(dto: PlaylistPermissionsQueryParameters, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-/**
- * @return Success
- */
-export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData> | undefined = undefined;
-  let axiosConfig: AxiosRequestConfig |undefined;
-  let id: any = undefined;
-  
-  if (params.length > 0) {
-    if (isParameterObject(params[0])) {
-      ({ id,  } = params[0] as PlaylistPermissionsQueryParameters);
-      options = params[1];
-      axiosConfig = params[2];
-    } else {
-      [id, options, axiosConfig] = params;
-    }
-  }
-
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  if (axiosConfig) {
-    options = options ?? { } as any;
-    options!.meta = { ...options!.meta, axiosConfig };
-  }
-
-  return useQuery<Types.ObjectPermissions, TError, TSelectData>({
-    queryFn: __playlistPermissions,
-    queryKey: playlistPermissionsQueryKey(id),
-    ...playlistPermissionsDefaultOptions as unknown as UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>,
-    ...options,
-  });
-}
-/**
- * @return Success
- */
-export function setPlaylistPermissionsData(queryClient: QueryClient, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions, id: string) {
-  queryClient.setQueryData(playlistPermissionsQueryKey(id),
-    updater
-  );
-}
-
-/**
- * @return Success
- */
-export function setPlaylistPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions) {
-  queryClient.setQueryData(queryKey, updater);
-}
-    
 export function playlistsAllUrl(orderBy?: string | undefined, limit?: number | undefined, offset?: number | undefined): string {
   let url_ = getBaseUrl() + "/api/Playlists?";
 if (orderBy === null)
@@ -632,6 +472,7 @@ function __playlistsAll(context: QueryFunctionContext) {
 
 export function usePlaylistsAllQuery<TSelectData = Types.PlaylistBasicInfoDTO[], TError = unknown>(dto: PlaylistsAllQueryParameters, options?: UseQueryOptions<Types.PlaylistBasicInfoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací playlisty, které uživatel může vidět.
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -670,6 +511,7 @@ export function usePlaylistsAllQuery<TSelectData = Types.PlaylistBasicInfoDTO[],
   });
 }
 /**
+ * Vrací playlisty, které uživatel může vidět.
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -682,6 +524,7 @@ export function setPlaylistsAllData(queryClient: QueryClient, updater: (data: Ty
 }
 
 /**
+ * Vrací playlisty, které uživatel může vidět.
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -705,10 +548,11 @@ export function playlistsPOSTMutationKey(): MutationKey {
 }
 
 /**
+ * Vytváří nový playlist
  * @param name (optional) 
  * @param description (optional) 
- * @param thumbnail (optional) 
- * @param videos (optional) 
+ * @param thumbnail (optional) Soubor s ručně nastaveným náhledovým obrázkem.
+ * @param videos (optional) Kolekce ID videí, které do playlistu patří.
  * @param isPublic (optional) 
  * @param permissions_UserIds (optional) 
  * @param permissions_GroupIds (optional) 
@@ -767,6 +611,7 @@ function __playlistsGET(context: QueryFunctionContext) {
 
 export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = unknown>(dto: PlaylistsGETQueryParameters, options?: UseQueryOptions<Types.PlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací playlist
  * @return Success
  */
 export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.PlaylistDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -800,6 +645,7 @@ export function usePlaylistsGETQuery<TSelectData = Types.PlaylistDTO, TError = u
   });
 }
 /**
+ * Vrací playlist
  * @return Success
  */
 export function setPlaylistsGETData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO | undefined) => Types.PlaylistDTO, id: string) {
@@ -809,6 +655,7 @@ export function setPlaylistsGETData(queryClient: QueryClient, updater: (data: Ty
 }
 
 /**
+ * Vrací playlist
  * @return Success
  */
 export function setPlaylistsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO | undefined) => Types.PlaylistDTO) {
@@ -833,10 +680,11 @@ export function playlistsPUTMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Upravuje existující playlist
  * @param name (optional) 
  * @param description (optional) 
- * @param thumbnail (optional) 
- * @param videos (optional) 
+ * @param thumbnail (optional) Soubor s ručně nastaveným náhledovým obrázkem.
+ * @param videos (optional) Kolekce ID videí, které do playlistu patří.
  * @param isPublic (optional) 
  * @param permissions_UserIds (optional) 
  * @param permissions_GroupIds (optional) 
@@ -856,10 +704,11 @@ type PlaylistsPUT__MutationParameters = PlaylistsPUTQueryParameters & {
 }
 
 /**
+ * Upravuje existující playlist
  * @param name (optional) 
  * @param description (optional) 
- * @param thumbnail (optional) 
- * @param videos (optional) 
+ * @param thumbnail (optional) Soubor s ručně nastaveným náhledovým obrázkem.
+ * @param videos (optional) Kolekce ID videí, které do playlistu patří.
  * @param isPublic (optional) 
  * @param permissions_UserIds (optional) 
  * @param permissions_GroupIds (optional) 
@@ -892,6 +741,7 @@ export function playlistsDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Maže playlist
  * @return Success
  */
 export function usePlaylistsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -906,6 +756,7 @@ export function usePlaylistsDELETEMutation<TContext>(id: string, options?: Omit<
 type PlaylistsDELETE__MutationParameters = PlaylistsDELETEQueryParameters
 
 /**
+ * Maže playlist
  * @return Success
  */
 export function usePlaylistsDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, PlaylistsDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PlaylistsDELETEQueryParameters}): UseMutationResult<void, unknown, PlaylistsDELETE__MutationParameters, TContext> {
@@ -917,6 +768,174 @@ export function usePlaylistsDELETEMutationWithParameters<TContext>(options?: Omi
 return useMutation((data: PlaylistsDELETE__MutationParameters) => Client.playlistsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
+export function playlistPermissionsUrl(id: string): string {
+  let url_ = getBaseUrl() + "/api/Playlists/{id}/playlist-permissions";
+if (id === undefined || id === null)
+  throw new Error("The parameter 'id' must be defined.");
+url_ = url_.replace("{id}", encodeURIComponent("" + id));
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let playlistPermissionsDefaultOptions: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> = {
+  queryFn: __playlistPermissions,
+};
+export function getPlaylistPermissionsDefaultOptions(): UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions> {
+  return playlistPermissionsDefaultOptions;
+};
+export function setPlaylistPermissionsDefaultOptions(options: UseQueryOptions<Types.ObjectPermissions, unknown, Types.ObjectPermissions>) {
+  playlistPermissionsDefaultOptions = options;
+}
+
+export function playlistPermissionsQueryKey(id: string): QueryKey;
+export function playlistPermissionsQueryKey(...params: any[]): QueryKey {
+  if (params.length === 1 && isParameterObject(params[0])) {
+    const { id,  } = params[0] as PlaylistPermissionsQueryParameters;
+
+    return trimArrayEnd([
+        'Client',
+        'playlistPermissions',
+        id as any,
+      ]);
+  } else {
+    return trimArrayEnd([
+        'Client',
+        'playlistPermissions',
+        ...params
+      ]);
+  }
+}
+function __playlistPermissions(context: QueryFunctionContext) {
+  return Client.playlistPermissions(
+      context.queryKey[2] as string    );
+}
+
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(dto: PlaylistPermissionsQueryParameters, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+/**
+ * Vrací seznam pokročilých oprávnění pro playlist
+ * @return Success
+ */
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function usePlaylistPermissionsQuery<TSelectData = Types.ObjectPermissions, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.ObjectPermissions, TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  let id: any = undefined;
+  
+  if (params.length > 0) {
+    if (isParameterObject(params[0])) {
+      ({ id,  } = params[0] as PlaylistPermissionsQueryParameters);
+      options = params[1];
+      axiosConfig = params[2];
+    } else {
+      [id, options, axiosConfig] = params;
+    }
+  }
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.ObjectPermissions, TError, TSelectData>({
+    queryFn: __playlistPermissions,
+    queryKey: playlistPermissionsQueryKey(id),
+    ...playlistPermissionsDefaultOptions as unknown as UseQueryOptions<Types.ObjectPermissions, TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * Vrací seznam pokročilých oprávnění pro playlist
+ * @return Success
+ */
+export function setPlaylistPermissionsData(queryClient: QueryClient, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions, id: string) {
+  queryClient.setQueryData(playlistPermissionsQueryKey(id),
+    updater
+  );
+}
+
+/**
+ * Vrací seznam pokročilých oprávnění pro playlist
+ * @return Success
+ */
+export function setPlaylistPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.ObjectPermissions | undefined) => Types.ObjectPermissions) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
+export function myPlaylistsUrl(): string {
+  let url_ = getBaseUrl() + "/api/Playlists/my-playlists";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+let myPlaylistsDefaultOptions: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> = {
+  queryFn: __myPlaylists,
+};
+export function getMyPlaylistsDefaultOptions(): UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]> {
+  return myPlaylistsDefaultOptions;
+};
+export function setMyPlaylistsDefaultOptions(options: UseQueryOptions<Types.PlaylistDTO[], unknown, Types.PlaylistDTO[]>) {
+  myPlaylistsDefaultOptions = options;
+}
+
+export function myPlaylistsQueryKey(): QueryKey;
+export function myPlaylistsQueryKey(...params: any[]): QueryKey {
+  return trimArrayEnd([
+      'Client',
+      'myPlaylists',
+    ]);
+}
+function __myPlaylists() {
+  return Client.myPlaylists(
+    );
+}
+
+/**
+ * Vrací seznam playlistů, které vlastní přihlášený uživatel.
+ * @return Success
+ */
+export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(options?: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useMyPlaylistsQuery<TSelectData = Types.PlaylistDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData> | undefined = undefined;
+  let axiosConfig: AxiosRequestConfig |undefined;
+  
+
+  options = params[0] as any;
+  axiosConfig = params[1] as any;
+
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  if (axiosConfig) {
+    options = options ?? { } as any;
+    options!.meta = { ...options!.meta, axiosConfig };
+  }
+
+  return useQuery<Types.PlaylistDTO[], TError, TSelectData>({
+    queryFn: __myPlaylists,
+    queryKey: myPlaylistsQueryKey(),
+    ...myPlaylistsDefaultOptions as unknown as UseQueryOptions<Types.PlaylistDTO[], TError, TSelectData>,
+    ...options,
+  });
+}
+/**
+ * Vrací seznam playlistů, které vlastní přihlášený uživatel.
+ * @return Success
+ */
+export function setMyPlaylistsData(queryClient: QueryClient, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[], ) {
+  queryClient.setQueryData(myPlaylistsQueryKey(),
+    updater
+  );
+}
+
+/**
+ * Vrací seznam playlistů, které vlastní přihlášený uživatel.
+ * @return Success
+ */
+export function setMyPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PlaylistDTO[] | undefined) => Types.PlaylistDTO[]) {
+  queryClient.setQueryData(queryKey, updater);
+}
+    
 export function watchLaterIdUrl(): string {
   let url_ = getBaseUrl() + "/api/Playlists/watch-later-id";
   url_ = url_.replace(/[?&]$/, "");
@@ -946,6 +965,7 @@ function __watchLaterId() {
 }
 
 /**
+ * Vrací ID playlistu 'Přehrát později' pro přihlášeného uživatele.
  * @return Success
  */
 export function useWatchLaterIdQuery<TSelectData = string, TError = unknown>(options?: UseQueryOptions<string, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -972,6 +992,7 @@ export function useWatchLaterIdQuery<TSelectData = string, TError = unknown>(...
   });
 }
 /**
+ * Vrací ID playlistu 'Přehrát později' pro přihlášeného uživatele.
  * @return Success
  */
 export function setWatchLaterIdData(queryClient: QueryClient, updater: (data: string | undefined) => string, ) {
@@ -981,6 +1002,7 @@ export function setWatchLaterIdData(queryClient: QueryClient, updater: (data: st
 }
 
 /**
+ * Vrací ID playlistu 'Přehrát později' pro přihlášeného uživatele.
  * @return Success
  */
 export function setWatchLaterIdDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: string | undefined) => string) {
@@ -1064,6 +1086,7 @@ export function searchMutationKey(q?: string | undefined, limit?: number | undef
 }
 
 /**
+ * Vyhledá videa nejvíce podobné dle parametru q
  * @param q (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -1081,6 +1104,7 @@ export function useSearchMutation<TContext>(q?: string | undefined, limit?: numb
 type Search__MutationParameters = SearchQueryParameters
 
 /**
+ * Vyhledá videa nejvíce podobné dle parametru q
  * @param q (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -1124,6 +1148,7 @@ function __tagsAll() {
 }
 
 /**
+ * Vrátí tagy
  * @return Success
  */
 export function useTagsAllQuery<TSelectData = Types.TagDTO[], TError = unknown>(options?: UseQueryOptions<Types.TagDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1150,6 +1175,7 @@ export function useTagsAllQuery<TSelectData = Types.TagDTO[], TError = unknown>(
   });
 }
 /**
+ * Vrátí tagy
  * @return Success
  */
 export function setTagsAllData(queryClient: QueryClient, updater: (data: Types.TagDTO[] | undefined) => Types.TagDTO[], ) {
@@ -1159,6 +1185,7 @@ export function setTagsAllData(queryClient: QueryClient, updater: (data: Types.T
 }
 
 /**
+ * Vrátí tagy
  * @return Success
  */
 export function setTagsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.TagDTO[] | undefined) => Types.TagDTO[]) {
@@ -1179,6 +1206,7 @@ export function tagsPOSTMutationKey(): MutationKey {
 }
 
 /**
+ * Vytvoří nový tag
  * @param body (optional) 
  * @return Success
  */
@@ -1220,6 +1248,7 @@ function __tagsWithVideos() {
 }
 
 /**
+ * Vrátí tagy a videa která mají daný tag
  * @return Success
  */
 export function useTagsWithVideosQuery<TSelectData = Types.Tag[], TError = unknown>(options?: UseQueryOptions<Types.Tag[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1246,6 +1275,7 @@ export function useTagsWithVideosQuery<TSelectData = Types.Tag[], TError = unkno
   });
 }
 /**
+ * Vrátí tagy a videa která mají daný tag
  * @return Success
  */
 export function setTagsWithVideosData(queryClient: QueryClient, updater: (data: Types.Tag[] | undefined) => Types.Tag[], ) {
@@ -1255,6 +1285,7 @@ export function setTagsWithVideosData(queryClient: QueryClient, updater: (data: 
 }
 
 /**
+ * Vrátí tagy a videa která mají daný tag
  * @return Success
  */
 export function setTagsWithVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Tag[] | undefined) => Types.Tag[]) {
@@ -1279,6 +1310,7 @@ export function tagsDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Smaže tag
  * @return Success
  */
 export function useTagsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -1293,6 +1325,7 @@ export function useTagsDELETEMutation<TContext>(id: string, options?: Omit<UseMu
 type TagsDELETE__MutationParameters = TagsDELETEQueryParameters
 
 /**
+ * Smaže tag
  * @return Success
  */
 export function useTagsDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, TagsDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: TagsDELETEQueryParameters}): UseMutationResult<void, unknown, TagsDELETE__MutationParameters, TContext> {
@@ -1302,102 +1335,6 @@ export function useTagsDELETEMutationWithParameters<TContext>(options?: Omit<Use
   options = addMetaToOptions(options, metaContext);
   
 return useMutation((data: TagsDELETE__MutationParameters) => Client.tagsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
-}
-  
-export function userGroupsAllUrl(): string {
-  let url_ = getBaseUrl() + "/api/UserGroups";
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-let userGroupsAllDefaultOptions: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> = {
-  queryFn: __userGroupsAll,
-};
-export function getUserGroupsAllDefaultOptions(): UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]> {
-  return userGroupsAllDefaultOptions;
-};
-export function setUserGroupsAllDefaultOptions(options: UseQueryOptions<Types.UserGroupDTO[], unknown, Types.UserGroupDTO[]>) {
-  userGroupsAllDefaultOptions = options;
-}
-
-export function userGroupsAllQueryKey(): QueryKey;
-export function userGroupsAllQueryKey(...params: any[]): QueryKey {
-  return trimArrayEnd([
-      'Client',
-      'userGroupsAll',
-    ]);
-}
-function __userGroupsAll() {
-  return Client.userGroupsAll(
-    );
-}
-
-/**
- * @return Success
- */
-export function useUserGroupsAllQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useUserGroupsAllQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData> | undefined = undefined;
-  let axiosConfig: AxiosRequestConfig |undefined;
-  
-
-  options = params[0] as any;
-  axiosConfig = params[1] as any;
-
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  if (axiosConfig) {
-    options = options ?? { } as any;
-    options!.meta = { ...options!.meta, axiosConfig };
-  }
-
-  return useQuery<Types.UserGroupDTO[], TError, TSelectData>({
-    queryFn: __userGroupsAll,
-    queryKey: userGroupsAllQueryKey(),
-    ...userGroupsAllDefaultOptions as unknown as UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>,
-    ...options,
-  });
-}
-/**
- * @return Success
- */
-export function setUserGroupsAllData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[], ) {
-  queryClient.setQueryData(userGroupsAllQueryKey(),
-    updater
-  );
-}
-
-/**
- * @return Success
- */
-export function setUserGroupsAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[]) {
-  queryClient.setQueryData(queryKey, updater);
-}
-    
-export function userGroupsPOSTUrl(): string {
-  let url_ = getBaseUrl() + "/api/UserGroups";
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-export function userGroupsPOSTMutationKey(): MutationKey {
-  return trimArrayEnd([
-      'Client',
-      'userGroupsPOST',
-    ]);
-}
-
-/**
- * @param body (optional) 
- * @return Success
- */
-export function useUserGroupsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext> {
-  const key = userGroupsPOSTMutationKey();
-  
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  
-  return useMutation((body: Types.UserGroupPostPutDTO) => Client.userGroupsPOST(body), {...options, mutationKey: key});
 }
   
 export function myUsergroupsUrl(): string {
@@ -1429,6 +1366,7 @@ function __myUsergroups() {
 }
 
 /**
+ * Vrací skupiny aktuálně přihlášeného uživatele, tedy vlastněné. Pro Administrátora jsou vráceny všechny.
  * @return Success
  */
 export function useMyUsergroupsQuery<TSelectData = Types.UserGroupDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserGroupDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1455,6 +1393,7 @@ export function useMyUsergroupsQuery<TSelectData = Types.UserGroupDTO[], TError 
   });
 }
 /**
+ * Vrací skupiny aktuálně přihlášeného uživatele, tedy vlastněné. Pro Administrátora jsou vráceny všechny.
  * @return Success
  */
 export function setMyUsergroupsData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[], ) {
@@ -1464,6 +1403,7 @@ export function setMyUsergroupsData(queryClient: QueryClient, updater: (data: Ty
 }
 
 /**
+ * Vrací skupiny aktuálně přihlášeného uživatele, tedy vlastněné. Pro Administrátora jsou vráceny všechny.
  * @return Success
  */
 export function setMyUsergroupsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO[] | undefined) => Types.UserGroupDTO[]) {
@@ -1514,6 +1454,7 @@ function __userGroupsGET(context: QueryFunctionContext) {
 
 export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError = unknown>(dto: UserGroupsGETQueryParameters, options?: UseQueryOptions<Types.UserGroupDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací konkrétní skupinu uživatelů
  * @return Success
  */
 export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.UserGroupDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1547,6 +1488,7 @@ export function useUserGroupsGETQuery<TSelectData = Types.UserGroupDTO, TError =
   });
 }
 /**
+ * Vrací konkrétní skupinu uživatelů
  * @return Success
  */
 export function setUserGroupsGETData(queryClient: QueryClient, updater: (data: Types.UserGroupDTO | undefined) => Types.UserGroupDTO, id: string) {
@@ -1556,6 +1498,7 @@ export function setUserGroupsGETData(queryClient: QueryClient, updater: (data: T
 }
 
 /**
+ * Vrací konkrétní skupinu uživatelů
  * @return Success
  */
 export function setUserGroupsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserGroupDTO | undefined) => Types.UserGroupDTO) {
@@ -1580,6 +1523,7 @@ export function userGroupsPUTMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Upraví skupinu uživatelů
  * @param body (optional) 
  * @return Success
  */
@@ -1597,6 +1541,7 @@ type UserGroupsPUT__MutationParameters = UserGroupsPUTQueryParameters & {
 }
 
 /**
+ * Upraví skupinu uživatelů
  * @param body (optional) 
  * @return Success
  */
@@ -1627,6 +1572,7 @@ export function userGroupsDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Smaže skupinu uživatelů
  * @return Success
  */
 export function useUserGroupsDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -1641,6 +1587,7 @@ export function useUserGroupsDELETEMutation<TContext>(id: string, options?: Omit
 type UserGroupsDELETE__MutationParameters = UserGroupsDELETEQueryParameters
 
 /**
+ * Smaže skupinu uživatelů
  * @return Success
  */
 export function useUserGroupsDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, UserGroupsDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: UserGroupsDELETEQueryParameters}): UseMutationResult<void, unknown, UserGroupsDELETE__MutationParameters, TContext> {
@@ -1650,6 +1597,33 @@ export function useUserGroupsDELETEMutationWithParameters<TContext>(options?: Om
   options = addMetaToOptions(options, metaContext);
   
 return useMutation((data: UserGroupsDELETE__MutationParameters) => Client.userGroupsDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
+}
+  
+export function userGroupsPOSTUrl(): string {
+  let url_ = getBaseUrl() + "/api/UserGroups";
+  url_ = url_.replace(/[?&]$/, "");
+  return url_;
+}
+
+export function userGroupsPOSTMutationKey(): MutationKey {
+  return trimArrayEnd([
+      'Client',
+      'userGroupsPOST',
+    ]);
+}
+
+/**
+ * Vytvoří skupinu uživatelů
+ * @param body (optional) 
+ * @return Success
+ */
+export function useUserGroupsPOSTMutation<TContext>(options?: Omit<UseMutationOptions<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.UserGroup, unknown, Types.UserGroupPostPutDTO, TContext> {
+  const key = userGroupsPOSTMutationKey();
+  
+  const metaContext = useContext(QueryMetaContext);
+  options = addMetaToOptions(options, metaContext);
+  
+  return useMutation((body: Types.UserGroupPostPutDTO) => Client.userGroupsPOST(body), {...options, mutationKey: key});
 }
   
 export function loginUrl(): string {
@@ -1666,6 +1640,7 @@ export function loginMutationKey(): MutationKey {
 }
 
 /**
+ * Přihlásí uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1692,6 +1667,7 @@ export function registerMutationKey(): MutationKey {
 }
 
 /**
+ * Registruje uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1733,6 +1709,7 @@ function __me() {
 }
 
 /**
+ * Vrátí aktuálně přihlášeného uživatele
  * @return Success
  */
 export function useMeQuery<TSelectData = Types.UserDTO, TError = unknown>(options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1759,6 +1736,7 @@ export function useMeQuery<TSelectData = Types.UserDTO, TError = unknown>(...par
   });
 }
 /**
+ * Vrátí aktuálně přihlášeného uživatele
  * @return Success
  */
 export function setMeData(queryClient: QueryClient, updater: (data: Types.UserDTO | undefined) => Types.UserDTO, ) {
@@ -1768,6 +1746,7 @@ export function setMeData(queryClient: QueryClient, updater: (data: Types.UserDT
 }
 
 /**
+ * Vrátí aktuálně přihlášeného uživatele
  * @return Success
  */
 export function setMeDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO | undefined) => Types.UserDTO) {
@@ -1803,6 +1782,7 @@ function __usersAll() {
 }
 
 /**
+ * Vrací seznam uživatelů (pouze pro uživatele s rolí Admin nebo Editor)
  * @return Success
  */
 export function useUsersAllQuery<TSelectData = Types.UserDTO[], TError = unknown>(options?: UseQueryOptions<Types.UserDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -1829,6 +1809,7 @@ export function useUsersAllQuery<TSelectData = Types.UserDTO[], TError = unknown
   });
 }
 /**
+ * Vrací seznam uživatelů (pouze pro uživatele s rolí Admin nebo Editor)
  * @return Success
  */
 export function setUsersAllData(queryClient: QueryClient, updater: (data: Types.UserDTO[] | undefined) => Types.UserDTO[], ) {
@@ -1838,6 +1819,7 @@ export function setUsersAllData(queryClient: QueryClient, updater: (data: Types.
 }
 
 /**
+ * Vrací seznam uživatelů (pouze pro uživatele s rolí Admin nebo Editor)
  * @return Success
  */
 export function setUsersAllDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO[] | undefined) => Types.UserDTO[]) {
@@ -1862,6 +1844,7 @@ export function usersPUTMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Aktualizuje uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1879,6 +1862,7 @@ type UsersPUT__MutationParameters = UsersPUTQueryParameters & {
 }
 
 /**
+ * Aktualizuje uživatele
  * @param body (optional) 
  * @return Success
  */
@@ -1909,6 +1893,7 @@ export function usersDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Smaže uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function useUsersDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -1923,6 +1908,7 @@ export function useUsersDELETEMutation<TContext>(id: string, options?: Omit<UseM
 type UsersDELETE__MutationParameters = UsersDELETEQueryParameters
 
 /**
+ * Smaže uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function useUsersDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, UsersDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: UsersDELETEQueryParameters}): UseMutationResult<void, unknown, UsersDELETE__MutationParameters, TContext> {
@@ -1978,6 +1964,7 @@ function __usersGET(context: QueryFunctionContext) {
 
 export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(dto: UsersGETQueryParameters, options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací konkrétního uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.UserDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2011,6 +1998,7 @@ export function useUsersGETQuery<TSelectData = Types.UserDTO, TError = unknown>(
   });
 }
 /**
+ * Vrací konkrétního uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function setUsersGETData(queryClient: QueryClient, updater: (data: Types.UserDTO | undefined) => Types.UserDTO, id: string) {
@@ -2020,6 +2008,7 @@ export function setUsersGETData(queryClient: QueryClient, updater: (data: Types.
 }
 
 /**
+ * Vrací konkrétního uživatele (pouze pro uživatele s rolí Admin)
  * @return Success
  */
 export function setUsersGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserDTO | undefined) => Types.UserDTO) {
@@ -2040,7 +2029,8 @@ export function resetPasswordMutationKey(): MutationKey {
 }
 
 /**
- * @param body (optional) 
+ * Zažádá o reset hesla. Na email přijde odkaz s tokenem pro změnu hesla. Lze poslat bez přihlášení.
+ * @param body (optional) Email uživatele
  * @return Success
  */
 export function useResetPasswordMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, string, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, string, TContext> {
@@ -2066,6 +2056,7 @@ export function submitResetPasswordMutationKey(): MutationKey {
 }
 
 /**
+ * Potvrdí reset hesla dle odkazu v emailu. Lze poslat bez přihlášení.
  * @param body (optional) 
  * @return Success
  */
@@ -2122,6 +2113,7 @@ function __userVideoStatsGET(context: QueryFunctionContext) {
 
 export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStatsDTO, TError = unknown>(dto: UserVideoStatsGETQueryParameters, options?: UseQueryOptions<Types.UserVideoStatsDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrátí statistiky přihlášeného uživatele k videu
  * @return Success
  */
 export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStatsDTO, TError = unknown>(videoId: string, options?: UseQueryOptions<Types.UserVideoStatsDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2155,6 +2147,7 @@ export function useUserVideoStatsGETQuery<TSelectData = Types.UserVideoStatsDTO,
   });
 }
 /**
+ * Vrátí statistiky přihlášeného uživatele k videu
  * @return Success
  */
 export function setUserVideoStatsGETData(queryClient: QueryClient, updater: (data: Types.UserVideoStatsDTO | undefined) => Types.UserVideoStatsDTO, videoId: string) {
@@ -2164,6 +2157,7 @@ export function setUserVideoStatsGETData(queryClient: QueryClient, updater: (dat
 }
 
 /**
+ * Vrátí statistiky přihlášeného uživatele k videu
  * @return Success
  */
 export function setUserVideoStatsGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.UserVideoStatsDTO | undefined) => Types.UserVideoStatsDTO) {
@@ -2188,6 +2182,7 @@ export function userVideoStatsPUTMutationKey(videoId: string): MutationKey {
 }
 
 /**
+ * Aktualizuje statistiky přihlášeného uživatele k videu
  * @param body (optional) 
  * @return Success
  */
@@ -2205,6 +2200,7 @@ type UserVideoStatsPUT__MutationParameters = UserVideoStatsPUTQueryParameters & 
 }
 
 /**
+ * Aktualizuje statistiky přihlášeného uživatele k videu
  * @param body (optional) 
  * @return Success
  */
@@ -2261,6 +2257,7 @@ function __stats(context: QueryFunctionContext) {
 
 export function useStatsQuery<TSelectData = Types.LikeDislikeStats, TError = unknown>(dto: StatsQueryParameters, options?: UseQueryOptions<Types.LikeDislikeStats, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrátí počet like a dislike
  * @return Success
  */
 export function useStatsQuery<TSelectData = Types.LikeDislikeStats, TError = unknown>(videoId: string, options?: UseQueryOptions<Types.LikeDislikeStats, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2294,6 +2291,7 @@ export function useStatsQuery<TSelectData = Types.LikeDislikeStats, TError = unk
   });
 }
 /**
+ * Vrátí počet like a dislike
  * @return Success
  */
 export function setStatsData(queryClient: QueryClient, updater: (data: Types.LikeDislikeStats | undefined) => Types.LikeDislikeStats, videoId: string) {
@@ -2303,6 +2301,7 @@ export function setStatsData(queryClient: QueryClient, updater: (data: Types.Lik
 }
 
 /**
+ * Vrátí počet like a dislike
  * @return Success
  */
 export function setStatsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.LikeDislikeStats | undefined) => Types.LikeDislikeStats) {
@@ -2327,6 +2326,7 @@ export function watchedMutationKey(videoId: string): MutationKey {
 }
 
 /**
+ * Uloží kolik sekund přihlášený uživatel zhlédl videa
  * @param body (optional) 
  * @return Success
  */
@@ -2344,6 +2344,7 @@ type Watched__MutationParameters = WatchedQueryParameters & {
 }
 
 /**
+ * Uloží kolik sekund přihlášený uživatel zhlédl videa
  * @param body (optional) 
  * @return Success
  */
@@ -2412,6 +2413,7 @@ function __videosAll(context: QueryFunctionContext) {
 
 export function useVideosAllQuery<TSelectData = Types.VideoDTO[], TError = unknown>(dto: VideosAllQueryParameters, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací videa na které má uživatel právo
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -2450,6 +2452,7 @@ export function useVideosAllQuery<TSelectData = Types.VideoDTO[], TError = unkno
   });
 }
 /**
+ * Vrací videa na které má uživatel právo
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -2462,6 +2465,7 @@ export function setVideosAllData(queryClient: QueryClient, updater: (data: Types
 }
 
 /**
+ * Vrací videa na které má uživatel právo
  * @param orderBy (optional) 
  * @param limit (optional) 
  * @param offset (optional) 
@@ -2485,6 +2489,7 @@ export function videosPOSTMutationKey(): MutationKey {
 }
 
 /**
+ * Vytvoří video a v odpovědi vrátí dataUrl, které se použije pro nahrání videa pomocí POST /api/videos/upload
  * @param fileName (optional) 
  * @param name (optional) 
  * @param description (optional) 
@@ -2551,6 +2556,7 @@ function __videosGET(context: QueryFunctionContext) {
 
 export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown>(dto: VideosGETQueryParameters, options?: UseQueryOptions<Types.VideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací konkrétní video. V případě že uživatel nemá na video právo je objekt videa s prázdnými daty.
  * @return Success
  */
 export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown>(id: string, options?: UseQueryOptions<Types.VideoDTO, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2584,6 +2590,7 @@ export function useVideosGETQuery<TSelectData = Types.VideoDTO, TError = unknown
   });
 }
 /**
+ * Vrací konkrétní video. V případě že uživatel nemá na video právo je objekt videa s prázdnými daty.
  * @return Success
  */
 export function setVideosGETData(queryClient: QueryClient, updater: (data: Types.VideoDTO | undefined) => Types.VideoDTO, id: string) {
@@ -2593,6 +2600,7 @@ export function setVideosGETData(queryClient: QueryClient, updater: (data: Types
 }
 
 /**
+ * Vrací konkrétní video. V případě že uživatel nemá na video právo je objekt videa s prázdnými daty.
  * @return Success
  */
 export function setVideosGETDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO | undefined) => Types.VideoDTO) {
@@ -2617,6 +2625,7 @@ export function videosPUTMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Aktualizuje existující video
  * @param name (optional) 
  * @param description (optional) 
  * @param image (optional) 
@@ -2642,6 +2651,7 @@ type VideosPUT__MutationParameters = VideosPUTQueryParameters & {
 }
 
 /**
+ * Aktualizuje existující video
  * @param name (optional) 
  * @param description (optional) 
  * @param image (optional) 
@@ -2680,6 +2690,7 @@ export function videosDELETEMutationKey(id: string): MutationKey {
 }
 
 /**
+ * Smaže video
  * @return Success
  */
 export function useVideosDELETEMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
@@ -2694,6 +2705,7 @@ export function useVideosDELETEMutation<TContext>(id: string, options?: Omit<Use
 type VideosDELETE__MutationParameters = VideosDELETEQueryParameters
 
 /**
+ * Smaže video
  * @return Success
  */
 export function useVideosDELETEMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, VideosDELETE__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: VideosDELETEQueryParameters}): UseMutationResult<void, unknown, VideosDELETE__MutationParameters, TContext> {
@@ -2705,98 +2717,6 @@ export function useVideosDELETEMutationWithParameters<TContext>(options?: Omit<U
 return useMutation((data: VideosDELETE__MutationParameters) => Client.videosDELETE(data.id ?? options?.parameters?.id!), {...options, mutationKey: key});
 }
   
-export function videoPlaylistsUrl(id: string): string {
-  let url_ = getBaseUrl() + "/api/Videos/{id}/video-playlists";
-if (id === undefined || id === null)
-  throw new Error("The parameter 'id' must be defined.");
-url_ = url_.replace("{id}", encodeURIComponent("" + id));
-  url_ = url_.replace(/[?&]$/, "");
-  return url_;
-}
-
-let videoPlaylistsDefaultOptions: UseQueryOptions<string[], unknown, string[]> = {
-  queryFn: __videoPlaylists,
-};
-export function getVideoPlaylistsDefaultOptions(): UseQueryOptions<string[], unknown, string[]> {
-  return videoPlaylistsDefaultOptions;
-};
-export function setVideoPlaylistsDefaultOptions(options: UseQueryOptions<string[], unknown, string[]>) {
-  videoPlaylistsDefaultOptions = options;
-}
-
-export function videoPlaylistsQueryKey(id: string): QueryKey;
-export function videoPlaylistsQueryKey(...params: any[]): QueryKey {
-  if (params.length === 1 && isParameterObject(params[0])) {
-    const { id,  } = params[0] as VideoPlaylistsQueryParameters;
-
-    return trimArrayEnd([
-        'Client',
-        'videoPlaylists',
-        id as any,
-      ]);
-  } else {
-    return trimArrayEnd([
-        'Client',
-        'videoPlaylists',
-        ...params
-      ]);
-  }
-}
-function __videoPlaylists(context: QueryFunctionContext) {
-  return Client.videoPlaylists(
-      context.queryKey[2] as string    );
-}
-
-export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(dto: VideoPlaylistsQueryParameters, options?: UseQueryOptions<string[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-/**
- * @return Success
- */
-export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(id: string, options?: UseQueryOptions<string[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useVideoPlaylistsQuery<TSelectData = string[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<string[], TError, TSelectData> | undefined = undefined;
-  let axiosConfig: AxiosRequestConfig |undefined;
-  let id: any = undefined;
-  
-  if (params.length > 0) {
-    if (isParameterObject(params[0])) {
-      ({ id,  } = params[0] as VideoPlaylistsQueryParameters);
-      options = params[1];
-      axiosConfig = params[2];
-    } else {
-      [id, options, axiosConfig] = params;
-    }
-  }
-
-  const metaContext = useContext(QueryMetaContext);
-  options = addMetaToOptions(options, metaContext);
-  if (axiosConfig) {
-    options = options ?? { } as any;
-    options!.meta = { ...options!.meta, axiosConfig };
-  }
-
-  return useQuery<string[], TError, TSelectData>({
-    queryFn: __videoPlaylists,
-    queryKey: videoPlaylistsQueryKey(id),
-    ...videoPlaylistsDefaultOptions as unknown as UseQueryOptions<string[], TError, TSelectData>,
-    ...options,
-  });
-}
-/**
- * @return Success
- */
-export function setVideoPlaylistsData(queryClient: QueryClient, updater: (data: string[] | undefined) => string[], id: string) {
-  queryClient.setQueryData(videoPlaylistsQueryKey(id),
-    updater
-  );
-}
-
-/**
- * @return Success
- */
-export function setVideoPlaylistsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: string[] | undefined) => string[]) {
-  queryClient.setQueryData(queryKey, updater);
-}
-    
 export function videoPermissionsUrl(id: string): string {
   let url_ = getBaseUrl() + "/api/Videos/{id}/video-permissions";
 if (id === undefined || id === null)
@@ -2841,6 +2761,7 @@ function __videoPermissions(context: QueryFunctionContext) {
 
 export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjectPermissions, TError = unknown>(dto: VideoPermissionsQueryParameters, options?: UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací pokročilé nastavení oprávnění k videu
  * @return Success
  */
 export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjectPermissions, TError = unknown>(id: string, options?: UseQueryOptions<Types.IncludeExcludeObjectPermissions, TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2874,6 +2795,7 @@ export function useVideoPermissionsQuery<TSelectData = Types.IncludeExcludeObjec
   });
 }
 /**
+ * Vrací pokročilé nastavení oprávnění k videu
  * @return Success
  */
 export function setVideoPermissionsData(queryClient: QueryClient, updater: (data: Types.IncludeExcludeObjectPermissions | undefined) => Types.IncludeExcludeObjectPermissions, id: string) {
@@ -2883,6 +2805,7 @@ export function setVideoPermissionsData(queryClient: QueryClient, updater: (data
 }
 
 /**
+ * Vrací pokročilé nastavení oprávnění k videu
  * @return Success
  */
 export function setVideoPermissionsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.IncludeExcludeObjectPermissions | undefined) => Types.IncludeExcludeObjectPermissions) {
@@ -2918,6 +2841,7 @@ function __myVideos() {
 }
 
 /**
+ * Vrací videa, která přihlášený uživatel vlastní
  * @return Success
  */
 export function useMyVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -2944,6 +2868,7 @@ export function useMyVideosQuery<TSelectData = Types.VideoDTO[], TError = unknow
   });
 }
 /**
+ * Vrací videa, která přihlášený uživatel vlastní
  * @return Success
  */
 export function setMyVideosData(queryClient: QueryClient, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[], ) {
@@ -2953,6 +2878,7 @@ export function setMyVideosData(queryClient: QueryClient, updater: (data: Types.
 }
 
 /**
+ * Vrací videa, která přihlášený uživatel vlastní
  * @return Success
  */
 export function setMyVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
@@ -3003,6 +2929,7 @@ function __relatedVideos(context: QueryFunctionContext) {
 
 export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(dto: RelatedVideosQueryParameters, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
+ * Vrací podobná videa k videu
  * @return Success
  */
 export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = unknown>(id: string, options?: UseQueryOptions<Types.VideoDTO[], TError, TSelectData>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -3036,6 +2963,7 @@ export function useRelatedVideosQuery<TSelectData = Types.VideoDTO[], TError = u
   });
 }
 /**
+ * Vrací podobná videa k videu
  * @return Success
  */
 export function setRelatedVideosData(queryClient: QueryClient, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[], id: string) {
@@ -3045,6 +2973,7 @@ export function setRelatedVideosData(queryClient: QueryClient, updater: (data: T
 }
 
 /**
+ * Vrací podobná videa k videu
  * @return Success
  */
 export function setRelatedVideosDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.VideoDTO[] | undefined) => Types.VideoDTO[]) {
@@ -3065,6 +2994,7 @@ export function uploadMutationKey(): MutationKey {
 }
 
 /**
+ * Slouží k nahrání souboru videa. Nejprve je potřeba nahrát informace k videu pomocí POST /api/videos. Data url z POST metody je nutné poslat v hlavičce x-guid.
  * @param file (optional) 
  * @return Success
  */

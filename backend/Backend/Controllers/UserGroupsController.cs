@@ -24,21 +24,8 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // GET: api/UserGroups
         /// <summary>
-        /// Vrací všechny skupiny uživatelů
-        /// </summary>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserGroupDTO>>> GetUserGroups()
-        {
-            if (_context.UserGroups == null)
-            {
-                return NotFound();
-            }
-            return await _context.UserGroups.Include(x => x.Users).Select(x => x.ToDTO()).ToListAsync();
-        }
-        /// <summary>
-        /// Vrací skupiny aktuálně přihlášeného uživatele
+        /// Vrací skupiny aktuálně přihlášeného uživatele, tedy vlastněné. Pro Administrátora jsou vráceny všechny.
         /// </summary>
         [HttpGet("my-usergroups")]
         public async Task<ActionResult<IEnumerable<UserGroupDTO>>> GetMyUserGroups()
