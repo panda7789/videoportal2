@@ -149,7 +149,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = $"{(!string.IsNullOrEmpty(apiPrefix) ? $"{apiPrefix}/" : "")}swagger";
 });
 app.UseCors("AllowReactClient");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); // měl by zajišťovat server
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // claim not overwriten
 app.UseAuthentication();
 app.UseAuthorization();
