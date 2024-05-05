@@ -286,6 +286,9 @@ Pro frontend doporučuji port 443 případně 80, jelikož se tyto porty nemusí
 
 Pokud byl vybrán nestandardní port, je opět nutné přidat pravidlo do firewallu, viz sekce backend.
 
+Dále je potřeba nastavit redirect pravidlo. Nejprve je potřeba nainstalovat Rewrite modul z [URL](https://www.iis.net/downloads/microsoft/url-rewrite). Po nainstalování a restartování IIS lze v konfiguraci frontend site nalézt volbu URL Rewrite.
+Zde by již mělo jedno pravidlo být z instalace, případně pokud není je potřeba zkopírovat soubor web.config z release verze frontendu. Pravidlo zajistí, že veškeré dotazy na frontend, které nejsou dotaz na soubor nebo složku, budou vždy směrovat na index.html který si s nimi poradí. Pokud nebude používán IIS, je potřeba hledat na internetu výraz "React-router and [váš server] rewrite".
+
 Frontendová aplikace potřebuje pouze konfiguraci url na API rozhraní. Tuhle konfiguraci je možné změnit přímo v souboru **index.html**, v body při zavádění globální proměnné **import_meta_env**, kde se jedná o položku **API_URL**. Takto změnit index.html je nejjednodušší varianta konfigurace.
 
 Pokud by konfigurace do budoucna bylo více a nastavení by již bylo nepřehledné, je možné využít npm balíček import-meta-env, který po spuštění příkazu:
