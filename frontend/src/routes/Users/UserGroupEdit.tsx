@@ -42,7 +42,7 @@ export function UserGroupEdit({ newGroup = false }: Props) {
   const navigate = useNavigate();
   const user = useLoaderData() as UserGroupDTO;
   const [statusText, setStatusText] = useState<string>();
-  const [groupUsers, setGroupUsers] = useState<string[]>(user?.users?.map((x) => x.id));
+  const [groupUsers, setGroupUsers] = useState<string[]>(user?.users?.map((x) => x.id) ?? []);
   const usersQuery = useUsersAllQuery();
   const [value, setValue] = useState<string | undefined>(user?.ownerGroupId ?? '');
   const ownerGroupQuery = useUserGroupsGETQuery(value ?? '');

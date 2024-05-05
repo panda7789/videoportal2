@@ -54,7 +54,7 @@ export function AddRemoveTable<T extends TableDataBase>({
     <Box>
       <EnhancedTable
         attributes={attributes}
-        rows={allUsers?.filter((x) => groupUsers.findIndex((y) => y === x.id) !== -1) ?? []}
+        rows={allUsers?.filter((x) => groupUsers?.findIndex((y) => y === x.id) !== -1) ?? []}
         orderBy={orderBy}
         desc="desc"
         buttons={buttons}
@@ -67,7 +67,7 @@ export function AddRemoveTable<T extends TableDataBase>({
           title="Vyberte uživatele"
           attributes={attributes}
           handleClose={() => setUserSelectOpen(false)}
-          items={allUsers?.filter((x) => groupUsers.findIndex((y) => y === x.id) === -1) ?? []}
+          items={allUsers?.filter((x) => groupUsers?.findIndex((y) => y === x.id) === -1) ?? []}
           orderBy={orderBy}
           resultCallback={handleUserSelect}
         />
