@@ -39,7 +39,7 @@ git clone https://github.com/panda7789/videoportal2 --depth 1
 
 ## Docker
 
-Pokud si chceme aplkaci vzkoušet, nebo přispět k vývoji, je určitě vhodné využít docker kontejnery.
+Pokud si chceme aplikaci vyzkoušet, nebo přispět k vývoji, je určitě vhodné využít docker kontejnery.
 
 <details>
   <summary>Docker</summary>
@@ -61,17 +61,17 @@ Docker nainstalujeme dle návodu (https://docs.docker.com/desktop/install/window
   <summary>Poznámka pro virtuální ubuntu server</summary>
 Při zvolení image ubuntu server, je nejprve potřeba nainstalovat docker.
 Jelikož přes virtualbox nejde pohodlně vkládat příkazy ze schránky do gui-less prostředí, využíval jsem pro připojení SSH.
-SSH serverf již defaultně v image běží, je tedy potřeba přidat pouze přesměrování.
-Nastavení (VM) -> Síť -> Pokročilé -> Předávání portů -> Zde založit záznam dle screenu.
+SSH server již ve výchozím stavu běží, je tedy potřeba přidat pouze přesměrování.
+Nastavení (VM) -> Síť -> Pokročilé -> Předávání portů -> Zde založit záznam dle obrázku.
 ![Alt text](./readmeImages/image.png)
 Poté je možné se do VM připojit přes jakéhokoliv SSH klienta (putty, kitty) pod adresou localhost:2222.
 
-Kromě tohoto SSH portu je potřeba ještě přidat další porty (80, 5199, 3000) pro funkčnost aplikace.
+Kromě tohoto SSH portu je potřeba ještě přidat další porty (10003 - frontend, 10004 - backend, 10005 - fileserver) pro funkčnost aplikace.
 ![Alt text](./readmeImages/image2.png)
 
 </details>
 <details>
-  <summary>Podrobná instalace dockeru</summary>
+  <summary>Podrobná instalace Dockeru</summary>
 Postupoval jsem dle oficiální dokumentace.
 
 1. přidání docker repozitáře
@@ -112,7 +112,7 @@ Pokud chcete spustit docker stack bez dat je možné využít následující pos
 <details>
   <summary>Spuštění bez dat</summary>
 Pro jednoduché spuštění je vytvořen ve složce _docker_ soubor _docker-compose.yml_.
-V powershellu otevřeme zmíněnou složku /docker a spustíme příkaz:
+V PowerShellu otevřeme zmíněnou složku /docker a spustíme příkaz:
 
 ```powershell
 docker compose --file docker-compose.yml up --build
@@ -123,11 +123,11 @@ Tento příkaz vytvoří a spustí následující kontejnery:
 - frontend
   - kontejner vytvoří webový server nad zkompilovanou veřejnou částí aplikace
   - definice image - /frontend/Dockerfile
-  - vystavený port 80
+  - vystavený port 10003, vnitřní 80
 - api
   - kontejner vytváří serverovou část aplikace
   - definice image - /backend/Backend/Dockerfile
-  - vystavený port 5199
+  - vystavený port 10004, vnitřní 5199
   - namapuje složku pro nahrávání souborů
 - db
   - databáze slouží pro uložení dat
@@ -138,49 +138,19 @@ Tento příkaz vytvoří a spustí následující kontejnery:
 - file-server
   - kontejner zpřístupní obsah složky na http rozhraní
   - definice image - /docker/fileserver/dockerfile
-  - vystavený port 3000
+  - vystavený port 10005, vnitřní 3000
   - data ukládá do adresáře /docker/fileserver/data
 - wait-for-db
   - kontejner čeká až bude připravena databáze a až poté spouští další části aplikace
 
 Po spuštění běží aplikace na adrese
 
-> <http://localhost:80>
+> <http://localhost:10003>
 
 Ve výchozím stavu se vytvoří administrátorský účet:
 
 > uživatelské jméno: admin@admin.cz\
 > heslo: 123
-
-</details>
-
-### Spuštění s demo daty
-
-Pro potřeby prezentace aplikace jsem vytvořil soubor _docker-compose-demo.yml_, který vytvoří aplikaci a naplní ji ukázkovými daty.
-
-<details>
-  <summary>Spuštění demo aplikace</summary>
-Kontejnery se spustí příkazem:
-
-```powershell
-sudo docker compose --file docker-compose-demo.yml up --build
-```
-
-Při vytváření se databáze naplní daty z sql souboru _/docker/db/demo.sql_. \
-Dále se pro fileserver použije adresář _/docker/fileserver/demo_
-
-Aplikaci je opět možné nalézt na adrese
-
-> <http://localhost:80>
-
-Kromě administrátorského uživatele jsou zde vytvořeny i další uživatelé:
-
-| uživatelské jméno | heslo |
-| ----------------- | ----- |
-| aa@tt.cc          | 123   |
-| upol@upol.cz      | 123   |
-| adam@adam.cz      | 123   |
-| nyan@cat.cz       | 123   |
 
 </details>
 
@@ -198,7 +168,7 @@ Kontejnery je možné spustit příkazem:
 docker compose --file docker-compose-dev.yml up --build
 ```
 
-Po spuštění je vytvořena databáze, bacnendový server a fileserver.
+Po spuštění je vytvořena databáze, backendový server a fileserver.
 Bohužel se mi nepodařilo přidat i vývojový kontejner pro frontendovou část aplikace. Tu si je tedy nutné spustit bokem.
 
 Nejprve je potřeba otevřít projekt _/frontend_ ve VS Code (případně jiném editoru). \
@@ -215,7 +185,7 @@ npm run start
 ```
 
 Po spuštění příkazu se spustí vite server, který aplikaci zkompiluje a spustí.\
-Poté stačí upravit jakýkoliv soubor v projektu, nástroj vite změnu zdetekuje a potřebné části aplikace překompiluje. V otevřeném prohlížeči se tak provedené změny projeví automaticky, případně po manuálním refreshi.
+Poté stačí upravit jakýkoliv soubor v projektu, nástroj vite změnu zdetekuje a potřebné části aplikace překompiluje. V otevřeném prohlížeči se tak provedené změny projeví automaticky, případně po manuálním obnovení stránky.
 
 </details>
 </details>
