@@ -32,13 +32,13 @@ Pro testování byl vytvořen docker-compose, který jediným příkazem spustí
 Samozřejmě je možné hostovat i jednotlivé komponenty aplikace zvlášť, například pokud již mám existující databázi a chci ji využít.
 
 ### Naklonování aplikace
-
+Zdrojové kódy je možné naklonovat pomocí:
 ```
 git clone https://github.com/panda7789/videoportal2 --depth 1
 ```
+případně přímo stáhnout backend a frontend zkompilovaný z release [repozitáře](https://github.com/panda7789/videoportal2/releases), případně jako zipy v příloze bakalářské práce.
 
 ## Docker
-
 Pokud si chceme aplikaci vyzkoušet, nebo přispět k vývoji, je určitě vhodné využít docker kontejnery.
 
 <details>
@@ -199,7 +199,7 @@ Aplikaci je možné provozovat také jako každou komponentu samostatně.
 
 ### Backend
 
-Pro backend budete potřebovat zkompilovanou verzi aplikace. Poslední taková se nachází [zde](https://github.com/panda7789/videoportal2/releases), případně jako příloha k textu BP.
+Pro backend budete potřebovat zkompilovanou verzi aplikace. Poslední taková se nachází [zde](https://github.com/panda7789/videoportal2/releases), případně ji najdete jako přílohu k textu BP.
 Tyto soubory je poté nutné nasadit na webový server umožňující provozovat ASP.NET aplikaci. Například IIS na Windows Server, nebo Nginx na Linux. Případně lze aplikaci nasadit do cloudu, který ASP.NET podporuje, třeba Azure. Zde budu uvádět detailně příklad nasazení aplikace na Windows Server.
 
 #### Databáze
@@ -214,10 +214,11 @@ Databázovou strukturu si vytváří backend sám při prvním spuštění.
 
 #### IIS
 
-Pro instalaci lze postupovat dle návodu https://learn.microsoft.com/en-us/aspnet/core/tutorials/publish-to-iis, avšak základní kroky zde shrnu.
+Pro instalaci lze postupovat dle [návodu](https://learn.microsoft.com/en-us/aspnet/core/tutorials/publish-to-iis), avšak základní kroky zde shrnu.
 
-Nejprve je potřeba přidat serverovou roli "Web Server (IIS)", přes Server Manager.
-Poté je potřeba nainstalovat "ASP.NET Hosting Bundle", který lze stáhnout z adresy https://dotnet.microsoft.com/en-us/download/dotnet/6.0, v sekci ASP.NET Core Runtime, v tabulce a řádku Windows odkaz s názvem "Hosting Bundle". Je důležité stáhnout verzi pro .NET 6, jelikož pro tuhle verzi je aplikace napsaná a zkompilovaná jako framework-dependent, kdyby byla zkompilovaná s příznakem self-contained, obsahovala by již všechny potřebné dll.
+Nejprve je potřeba přidat serverovou roli _Web Server (IIS)_, přes Server Manager.
+Poté je potřeba nainstalovat _ASP.NET Hosting Bundle_, který lze stáhnout z [adresy](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), v sekci ASP.NET Core Runtime, v tabulce a řádku Windows odkaz s názvem "Hosting Bundle". Je důležité stáhnout verzi pro .NET 6, jelikož pro tuhle verzi je aplikace napsaná a zkompilovaná jako framework-dependent, kdyby byla zkompilovaná s příznakem self-contained, obsahovala by již všechny potřebné dll.
+
 Po nainstalování je potřeba překopírovat zkompilovanou verzi aplikace do některé lokální složky na serveru.
 
 V IIS je nutné pro aplikaci vytvořit vlastní aplikační pool, jelikož pro aplikace v .NET není možné používat společný pool pro více aplikací, tak jak tomu je například u .NET Framework aplikací.
@@ -225,21 +226,21 @@ V IIS je nutné pro aplikaci vytvořit vlastní aplikační pool, jelikož pro a
 Poté je potřeba vytvořit novou Site, kde se vybere vytvořený pool a určí cesta do složky se zkompilovanou aplikací.
 Po vytvoření site, může být potřeba aplikační pool případně i site spustit tlačítkem Start.
 
-Před spuštěním si zkontrolujte správné nastavení connection stringu do databáze a venkovní URL na souborový server v konfiguračním souboru appsettings.json, umístěný ve složce s aplikací.
+Před spuštěním si zkontrolujte správné nastavení connection stringu do databáze a venkovní URL na souborový server v konfiguračním souboru _appsettings.json_, umístěný ve složce s aplikací.
 
-První spuštění může trvat delší dobu, jelikož se aplikují databázové migrace, které vytváří potřebné struktury. Z tohoto důvodu je v souboru web.config prodloužen timeout startu aplikace z 2 na 10 minut. V případě, že je aplikace při aplikování databázových migrací zastavena, může dojít k tomu, že některá migrace doběhla jen částečně. Jelikož EF Core neumí spouštět migrace v transakcích, které by šly v případě chyby odrolovat, je nutné databázi smazat a začít znovu, případně dle povahy chyby opravit databázovou strukturu.
+První spuštění může trvat delší dobu, jelikož se aplikují databázové migrace, které vytváří potřebné struktury. Z tohoto důvodu je v souboru _web.config_ prodloužen timeout startu aplikace z 2 na 10 minut. V případě, že je aplikace při aplikování databázových migrací zastavena, může dojít k tomu, že některá migrace doběhla jen částečně. Jelikož EF Core neumí spouštět migrace v transakcích, které by šly v případě chyby odrolovat, je nutné databázi smazat a začít znovu, případně dle povahy chyby opravit databázovou strukturu.
 
-V případě problémů lze v Event Viewer ve složce Windows Logs položce Application nalézt chybové hlášky. Případně v souboru web.config lze zapnout podrobné logování proměnnou stdoutLogEnabled na true. Poté bude veškerá komunikace dostupná ve složce logs.
+V případě problémů lze v Event Viewer ve složce Windows Logs položce Application nalézt chybové hlášky. Případně v souboru _web.config_ lze zapnout podrobné logování proměnnou _stdoutLogEnabled_ na true. Poté bude veškerá komunikace dostupná ve složce logs.
 
-Pokud vše proběhlo správně, lze na adrese serveru a cestě /api/swagger/index.html, nalézt dokumentaci k rozhraní a možnost si API vyzkoušet.
+Pokud vše proběhlo správně, lze na adrese serveru a cestě _/api/swagger/index.html_, nalézt dokumentaci k rozhraní a možnost si API vyzkoušet.
 
 Při nestandardních portech může být ještě potřeba přidat pravidlo s daným portem do firewallu, přes aplikaci "Windows Defender Firewall with Advanced Security".
 
 #### Kompilace
 
-Pokud chcete provádět změny, můžete si otevřít /backend/Backend.sln například ve Visual Studio 2022.
+Pokud chcete provádět změny, můžete si otevřít _/backend/Backend.sln_ například ve Visual Studio 2022.
 Provést dané úpravy a aplikaci zkompilovat v release konfiguraci.
-Pokud byla úprava v rámci zdrojového kódu, bude stačit na server nahrát soubor Backend.dll.
+Pokud byla úprava v rámci zdrojového kódu, bude stačit na server nahrát soubor _Backend.dll_.
 
 Pokud se jedná o úpravu většího charakteru (například přidání další knihovny), bude nutné aplikaci zkompilovat volbou publish, která obsahuje všechny potřebné soubory k nasazení. Touto volbou publish je vydáván i zip s releasem aplikace na GitHub.
 
@@ -259,15 +260,13 @@ Pokud byl vybrán nestandardní port, je opět nutné přidat pravidlo do firewa
 Dále je potřeba nastavit redirect pravidlo. Nejprve je potřeba nainstalovat Rewrite modul z [URL](https://www.iis.net/downloads/microsoft/url-rewrite). Po nainstalování a restartování IIS lze v konfiguraci frontend site nalézt volbu URL Rewrite.
 Zde by již mělo jedno pravidlo být z instalace, případně pokud není je potřeba zkopírovat soubor web.config z release verze frontendu. Pravidlo zajistí, že veškeré dotazy na frontend, které nejsou dotaz na soubor nebo složku, budou vždy směrovat na index.html který si s nimi poradí. Pokud nebude používán IIS, je potřeba hledat na internetu výraz "React-router and [váš server] rewrite".
 
-Frontendová aplikace potřebuje pouze konfiguraci url na API rozhraní. Tuhle konfiguraci je možné změnit přímo v souboru **index.html**, v body při zavádění globální proměnné **import_meta_env**, kde se jedná o položku **API_URL**. Takto změnit index.html je nejjednodušší varianta konfigurace.
+Frontendová aplikace potřebuje pouze konfiguraci url na API rozhraní. Tuhle konfiguraci je možné změnit přímo v souboru _index.html_, v body při zavádění globální proměnné `import_meta_env`, kde se jedná o položku API_URL. Takto změnit index.html je nejjednodušší varianta konfigurace.
 
-Pokud by konfigurace do budoucna bylo více a nastavení by již bylo nepřehledné, je možné využít npm balíček import-meta-env, který po spuštění příkazu:
+Pokud by konfigurace do budoucna bylo více a nastavení by již bylo nepřehledné, je možné využít npm balíček _import-meta-env_, který po spuštění příkazu:
 
-```
-npx import-meta-env -x .env -p index.html
-```
+`npx import-meta-env -x .env -p index.html`
 
-upraví index.html dle daného .env souboru. Příklad .env souboru lze najít ve zdrojových kódech. Tento způsob však již vyžaduje na server nainstalovaný Node.js.
+upraví _index.html_ dle daného .env souboru. Příklad .env souboru lze najít ve zdrojových kódech. Tento způsob však již vyžaduje na server nainstalovaný Node.js.
 
 #### Kompilace
 
@@ -291,13 +290,13 @@ Výsledné soubory aplikace najdete ve složce **/frontend/dist**, odkud ji mů�
 ##### Přegenerování dle API
 
 Pokud by došlo k změně na API rozhraní, je nutné přegenerovat komunikační rozhraní frontendu.
-K tomuto je připraven npm skript apiGenerate a fixErrors, které lze spustit:
+K tomuto je připraven npm skript _apiGenerate_ a _fixErrors_, které lze spustit:
 
 ```
 npm run apiGenerate && npm run fixErrors
 ```
 
-Pro generování se využívá swagger rozhraní, je tedy potřeba mít spuštěný backendový server. Výchozí adresa Swaggeru pro generování je https://localhost:7287/api (adresa pokud je spuštěn backend přes Visual Studio), tu však lze změnit v package.json v definici npm skriptu. Bez správně nastavené adresy na swagger nebude generování fungovat.
+Pro generování se využívá swagger rozhraní, je tedy potřeba mít spuštěný backendový server. Výchozí adresa Swaggeru pro generování je _https://localhost:7287/api_ (adresa pokud je spuštěn backend přes Visual Studio), tu však lze změnit v package.json v definici npm skriptu. Bez správně nastavené adresy na swagger nebude generování fungovat.
 
 ### Souborový server
 
@@ -314,7 +313,7 @@ Dále na site není potřeba nic nastavovat, jen zkontrolovat, že v rámci back
 
 ### Backend
 
-Konfigurace backendu se nachází v souboru appsettings.json:
+Konfigurace backendu se nachází v souboru _appsettings.json_:
 
 <details>
   <summary>Konfigurace backendu</summary>
