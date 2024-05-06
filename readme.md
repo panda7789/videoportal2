@@ -1,5 +1,5 @@
 # Video portál
-
+**(Pro instalaci v rámci hodnocení bakalářské práce prosím přejděte na sekci Standalone nasazení, děkuji.)**
 Webová aplikace sloužící k nahrávání a přehrávání videa.
 Jedná se o full-stack projekt, tedy .NET server a react klient.
 
