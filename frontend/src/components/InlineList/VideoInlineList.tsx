@@ -1,7 +1,7 @@
 import React from 'react';
 import VideoCard from 'components/Thumbnail/VideoCard';
 import { Video } from 'model/Video';
-import { Skeleton } from '@mui/material';
+import { Skeleton, Typography } from '@mui/material';
 import { InlineList } from 'components/InlineList/InlineList';
 
 export interface Props {
@@ -22,8 +22,9 @@ export function VideoInlineList({
 }: Props) {
   return (
     <InlineList>
-      {videos
-        ? videos.map((_video, index) => (
+      {videos ? (
+        (videos?.length ?? 0) > 0 ? (
+          videos.map((_video, index) => (
             <VideoCard
               key={_video.id}
               video={_video}
@@ -34,10 +35,15 @@ export function VideoInlineList({
               urlParams={urlParamsGenerator ? urlParamsGenerator(_video, index) : ''}
             />
           ))
-        : [...Array(skeletonCount)].map((_, i) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <Skeleton key={`skeleton-${i}`} variant="rounded" animation="wave" height={220} />
-          ))}
+        ) : (
+          <Typography variant="subtitle1">Nebyly nalezeny žádná videa.</Typography>
+        )
+      ) : (
+        [...Array(skeletonCount)].map((_, i) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Skeleton key={`skeleton-${i}`} variant="rounded" animation="wave" height={220} />
+        ))
+      )}
     </InlineList>
   );
 }

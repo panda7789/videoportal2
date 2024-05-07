@@ -193,7 +193,7 @@ Poté stačí upravit jakýkoliv soubor v projektu, nástroj vite změnu zdeteku
 ## Standalone nasazení
 
 Aplikaci je možné provozovat také jako každou komponentu samostatně.
-
+(Pro hodnocení BP prosím nejprve nainstalovat databázi dle sekce Databáze a poté postupovat dle instrukcí v sekci IIS, měl by stačit spustil pouze PowerShell skript.)
 <details>
   <summary>Standalone</summary>
 
@@ -205,14 +205,28 @@ Tyto soubory je poté nutné nasadit na webový server umožňující provozovat
 #### Databáze
 
 Aplikace ke svému běhu potřebuje MySQL databázi.
-Tu je možné nainstalovat pomocí MySQL instalátoru [zde](https://dev.mysql.com/downloads/installer/).
+Tu je možné nainstalovat pomocí MySQL instalátoru [zde](https://dev.mysql.com/downloads/installer/) (nejlépe zvolit online instalátor, který si potřebné soubory stáhne sám).
 
-V instalátoru vybrat volbu Server only, která pro hostování databáze dostačuje.
-Poté proklikat instalátor a nakonfigurovat ve volbě Config Type - Server Computer, případně upravit porty. Poté je potřeba vyplnit root heslo, vyplnit údaje pro Windows službu a konfiguraci potvrdit.
+V instalátoru vybrat volbu Server only, která pro hostování databáze dostačuje. Poté execute a proklikat instalátor C++.
+Poté proklikat instalátor opět přes Execute a nakonfigurovat ve volbě Config Type - Server Computer. Poté přejít dál volbou Next a vyplnit root heslo(pro ukázku nastavit Heslo123) a konfiguraci potvrdit.
 
 Databázovou strukturu si vytváří backend sám při prvním spuštění.
 
 #### IIS
+(Pro hodnocení BP byl vytvořen speciální PowerShell skript, který je umístěný v odevzdané složce vedle Readme.md a zipů s aplikací. Tyto zipy a skript je potřeba nakopírovat na server. Poté stačí (po nakonfigurování databáze viz předchozí sekce) spustit skript a aplikace by se měla nainstalovat a na konci otevřít prohlížeč s běžící aplikací. První spuštění může trvat déle, jelikož se vytváří databázové struktury. Pokud se někde vyskytne chyba, lze aplikaci nainstalovat dle postupů uvedených v následujících sekcích. 
+
+Skript dělá konkrétně tyto kroky:
+- Rozbalení archivu Backend a Frontend
+- Nainstalování IIS
+- Stažení a nainstalování ASP.NET Hosting bundle
+- Vytvoření aplikačních složek v C:/APP/
+- Překopírování obsahu složky Frontend a Backend do složek na C:/APP/
+- Stažení a nainstalování WebPlatformInstaller
+- Pomocí WebPlatformInstaller nainstalování Rewrite modulu do IIS
+- V IIS odebrání Default Web Site
+- Vytvoření aplikačních poolů pro Backend, Frontend a FileServer
+- Vytvoření Site pro Frontend, Backend a FileServer
+)
 
 Pro instalaci lze postupovat dle [návodu](https://learn.microsoft.com/en-us/aspnet/core/tutorials/publish-to-iis), avšak základní kroky zde shrnu.
 
@@ -264,7 +278,7 @@ Frontendová aplikace potřebuje pouze konfiguraci url na API rozhraní. Tuhle k
 
 Pokud by konfigurace do budoucna bylo více a nastavení by již bylo nepřehledné, je možné využít npm balíček _import-meta-env_, který po spuštění příkazu:
 
-`npx import-meta-env -x .env -p index.html`
+`npx import-meta-env -x .env.example -e .env -p index.html`
 
 upraví _index.html_ dle daného .env souboru. Příklad .env souboru lze najít ve zdrojových kódech. Tento způsob však již vyžaduje na server nainstalovaný Node.js.
 

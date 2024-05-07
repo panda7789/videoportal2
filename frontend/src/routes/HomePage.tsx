@@ -30,35 +30,47 @@ function HomePage() {
       <Grid item xs={12} md={1.5}>
         <Typography variant="h6">Tagy</Typography>
         <Grid container gap={0.5} pt={1} direction={{ xs: 'row', md: 'column' }}>
-          {!tags.isLoading
-            ? tags?.data?.map((tag) => (
+          {!tags.isLoading ? (
+            (tags?.data?.length ?? 0) > 0 ? (
+              tags?.data?.map((tag) => (
                 <CustomChip key={tag.id} text={tag.name} bgColor={tag.color} />
               ))
-            : [...Array(6)].map((_, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <Grid key={`${i}-skeleton`} item xs={12} p={0.5}>
-                  <Skeleton variant="rounded" animation="wave" width="100%" height="32px" />
-                </Grid>
-              ))}
+            ) : (
+              <Typography variant="subtitle1">Nebyly nalezeny žádné tagy.</Typography>
+            )
+          ) : (
+            [...Array(6)].map((_, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Grid key={`${i}-skeleton`} item xs={12} p={0.5}>
+                <Skeleton variant="rounded" animation="wave" width="100%" height="32px" />
+              </Grid>
+            ))
+          )}
         </Grid>{' '}
       </Grid>
       <Grid item xs={12} md={10.5}>
         <Typography variant="h6">Playlisty</Typography>
         <Grid container gap={1}>
-          {!playlists.isLoading
-            ? playlists?.data
+          {!playlists.isLoading ? (
+            (playlists?.data?.length ?? 0) > 0 ? (
+              playlists?.data
                 ?.filter((x) => x.videoCount > 0)
                 .map((playlist) => (
                   <Grid item xs={2.5} key={playlist.id}>
                     <PlaylistCard playlist={playlist} smallThumbnail />
                   </Grid>
                 ))
-            : [...Array(6)].map((_, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <Grid key={`${i}-skeleton`} item xs={6} p={0.5}>
-                  <Skeleton variant="rounded" animation="wave" width="100%" height="64px" />
-                </Grid>
-              ))}
+            ) : (
+              <Typography variant="body1">Nebyly nalezeny žádné playlisty.</Typography>
+            )
+          ) : (
+            [...Array(6)].map((_, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Grid key={`${i}-skeleton`} item xs={6} p={0.5}>
+                <Skeleton variant="rounded" animation="wave" width="100%" height="64px" />
+              </Grid>
+            ))
+          )}
         </Grid>
       </Grid>
     </Grid>

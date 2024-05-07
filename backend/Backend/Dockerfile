@@ -18,6 +18,7 @@ RUN dotnet publish "Backend.csproj" -c Release -o /app/publish /p:UseAppHost=fal
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish /publish
+COPY --from=publish /app/publish/appsettings.Docker.json /publish/appsettings.json
 
 WORKDIR /publish
 EXPOSE 80
